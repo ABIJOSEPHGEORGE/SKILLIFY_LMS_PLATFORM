@@ -17,10 +17,11 @@ module.exports = {
                 return res.status(409).json({msg:'Email already exist'});
             }
             // validating the email
-            const isValid = await emailValidator.validate(email);
-            if(!isValid.valid){
-                return res.status(400).json({msg:'Please enter a valid email address'});
-            }
+            // const isValid = await emailValidator.validate(email);
+            // if(!isValid.valid){
+            //     console.log(isValid)
+            //     return res.status(400).json({msg:'Please enter a valid email address'});
+            // }
             
             // bcrypting the password
             const hash = await bcrypt.hash(password,10);
@@ -118,7 +119,7 @@ module.exports = {
             // checking whether the user exist
             const isExist = await User.findOne({email:email});
             if(!isExist){
-                return res.json({msg:"Email doesn't exist, Please try again..."})
+                return res.status(401).json({msg:"Email doesn't exist, Please try again..."})
             }
             const checkPassword = await bcrypt.compare(password,isExist.password);
             if(!checkPassword){
@@ -140,8 +141,8 @@ module.exports = {
                 role = 'user'
             }
             // generating jwt token
-            const token = jwt.sign({user:isExist.email,isInstructor:isExist.instructor},process.env.JWT_SECRET,{expiresIn:"24hr"})
-            return res.status(200).json(success('OK',{token:token,role:role},res.statusCode))
+            const token = jwt.sign({user:isExist.email,role:role},process.env.JWT_SECRET,{expiresIn:"24hr"})
+            return res.status(200).json(success('OK',{token:token},res.statusCode))
         }catch(err){
             console.log(err)
             res.status(500).json({msg:'Something went wrong, Please try after sometimes'})

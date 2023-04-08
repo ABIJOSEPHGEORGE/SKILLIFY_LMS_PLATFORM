@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Link, useLocation, useNavigate, } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useFormik } from 'formik'
-import { loginSchema } from '../../validations/AuthValidations'
+import { loginSchema } from '../../validations/FormValidations'
 import { userLogin } from '../../helpers/user/AuthHelpers'
 import { ToastContainer,toast} from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
@@ -25,11 +25,13 @@ function Login() {
         onSubmit:async (values)=>{
             userLogin(values)
             .then((res)=>{
+                console.log(res)
                 if(res.data.code===200){
-                    navigate('/user/home',{replace:true})
                     //storing the jwt token in local storage
-                    const user = JSON.stringify({token:res.data.results.token,role:res.data.results.role})
+                    const token = res.data.results.token;
+                    const user = JSON.stringify(token)
                     localStorage.setItem('authKey',user);
+                    navigate('/',{replace:true})
                 }
             })
             .catch((err)=>{

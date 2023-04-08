@@ -1,7 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
-import usersReducer from './users'
+import adminReducer from './admin'
+import authSlice from './authSlice'
+import categorySlice from './categorySlice'
 export default configureStore({
   reducer: {
-    users: usersReducer,
+    admin: adminReducer,
+    auth : authSlice,
+    category:categorySlice,
   },
 })

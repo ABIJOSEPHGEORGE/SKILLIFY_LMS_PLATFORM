@@ -1,10 +1,10 @@
 import React,{useState} from 'react'
 import SideMenu from '../../components/instructors/SideMenu'
 import { useFormik } from 'formik';
-import CourseFormOne from '../../components/instructors/CourseFormOne';
+import CourseFormOne from '../../components/instructors/course/CourseFormOne';
 import { Navigate } from 'react-router-dom';
-import CourseFormTwo from '../../components/instructors/CourseFormTwo';
-import CourseFormThree from '../../components/instructors/CourseFormThree';
+import CourseFormTwo from '../../components/instructors/course/CourseFormTwo';
+import CourseFormThree from '../../components/instructors/course/CourseFormThree';
 
 function CreateCourse() {
     const [activeStep,setActiveStep] = useState(0);

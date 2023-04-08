@@ -1,24 +1,26 @@
-import axios from 'axios'
 import React, { useEffect,useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {toast,ToastContainer} from 'react-toastify'
-import { adminForcedLogout } from '../../helpers/user/AuthHelpers'
+import axios from 'axios'
+import { adminForcedLogout } from '../../../helpers/user/AuthHelpers'
+import { useNavigate } from 'react-router-dom'
 
-function AllUsers() {
-    const [users,setUsers] = useState([])
-    const [status,setStatus]= useState({})
-    const [toggle,setToggle] = useState(false)
-    const [key,setKey] = useState('')
+
+
+function AllInstructors() {
     const navigate = useNavigate()
+    const [instructors,setInstructors] = useState([])
+    const [status,setStatus]= useState({})
+    const [toggle,setToggle] = useState(false);
+    const [key,setKey] = useState('')
 
     useEffect(()=>{
-        fetchUsers()
+        fetchInstructors()
     },[])
-    function fetchUsers(){
-        axios.get('/admin/users')
+    function fetchInstructors(){
+        axios.get('/admin/instructors')
         .then((res)=>{
             console.log(res)
-            setUsers(res.data.results.users)
+            setInstructors(res.data.results.instructors)
         })
         .catch((err)=>{
             if(err.response.status===403){
@@ -27,15 +29,14 @@ function AllUsers() {
             }else{
                 toast.error(err.response.data.message)
             }
-            
         })
     }
-    const updateUser=async({_id,status})=>{
+    const updateInstructor=async({_id,status})=>{
         setToggle(false)
         await axios.put(`/admin/users/status/${_id}?status=${status}`)
         .then((res)=>{
-            toast.success('User Updated Successfully');
-            fetchUsers()
+            toast.success('Instructor Updated Successfully');
+            fetchInstructors()
         })
         .catch((err)=>{
             if(err.response.status===403){
@@ -50,16 +51,17 @@ function AllUsers() {
         setKey(e.target.value)
     }
   return (
-    <div className='w-full h-screen px-3 font-poppins'>
+    <div className='w-full h-screen p-5 font-poppins'>
         <ToastContainer position='top-center' limit={2}></ToastContainer>
         <div className="w-full p-5">
             <input type="text" onChange={(e)=>{handleSearch(e)}} value={key} placeholder='Search by name or email' className="border-b-2 border-primaryBlue focus:outline-none px-2 w-full"/>
         </div>
     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
+       
     <table class="w-full border-collapse bg-white text-left text-sm text-gray-500">
         <thead class="bg-gray-50">
         <tr>
-            <th scope="col" class="px-6 py-4 font-medium text-gray-900">Student Name</th>
+            <th scope="col" class="px-6 py-4 font-medium text-gray-900">Instructor Name</th>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">Email</th>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">Status</th>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">Action</th>
@@ -67,7 +69,7 @@ function AllUsers() {
         </thead>
         <tbody class="divide-y divide-gray-100 border-t border-gray-100">
             {
-                users.filter((item)=>(
+                instructors.filter((item)=>(
                     key!=="" ? item.first_name.includes(key) || item.email.includes(key) : item
                 ))
                 .map((user,index)=>(
@@ -169,7 +171,7 @@ function AllUsers() {
                                                 <button
                                                 className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md outline-none ring-offset-2 ring-red-600 focus:ring-2"
                                                 onClick={() =>
-                                                    updateUser(status)
+                                                    updateInstructor(status)
                                                 }
                                             >
                                                 Block
@@ -178,7 +180,7 @@ function AllUsers() {
                                             <button
                                                 className="w-full mt-2 p-2.5 flex-1 text-white bg-green-600 rounded-md outline-none ring-offset-2 ring-green-600 focus:ring-2"
                                                 onClick={() =>
-                                                    updateUser(status)
+                                                    updateInstructor(status)
                                                 }
                                             >
                                                 unblock
@@ -203,4 +205,4 @@ function AllUsers() {
   )
 }
 
-export default AllUsers
+export default AllInstructors

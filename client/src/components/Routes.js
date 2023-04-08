@@ -1,4 +1,4 @@
-import { Navigate, Route,Routes,useLocation} from 'react-router-dom'
+import { Route,Routes,useLocation} from 'react-router-dom'
 import Login from './users/Login'
 import Register from './users/Register'
 import {AnimatePresence} from 'framer-motion'
@@ -19,6 +19,7 @@ import Instrcutors from '../pages/admin/Instructors'
 import ForgetPassword from './users/ForgotPassword'
 import ResetPassword from './users/ResetPassword'
 import CategoryManagement from '../pages/admin/CategoryManagement'
+import SubcategoryManagement from '../pages/admin/SubcategoryManagement'
 
 
 
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
           <Route path='students' element={<Students/>}/>
           <Route path='instructors' element={<Instrcutors/>}/>
           <Route path='category' element={<CategoryManagement/>}/>
+          <Route path='subcategory' element={<SubcategoryManagement/>}/>
         </Route>
 
 

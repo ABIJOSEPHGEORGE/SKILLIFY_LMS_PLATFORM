@@ -1,10 +1,10 @@
 import React from 'react'
 import SideBar from '../../components/admin/SideBar'
-import AllInstructors from '../../components/admin/AllInstructors'
+import AllInstructors from '../../components/admin/users/AllInstructors'
 
 function Instrcutors() {
   return (
-    <div className='flex'>
+    <div className='flex h-full'>
       <SideBar/>
       <AllInstructors/>
     </div>

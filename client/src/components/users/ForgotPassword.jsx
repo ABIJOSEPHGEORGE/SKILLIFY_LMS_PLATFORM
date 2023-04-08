@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import {toast,ToastContainer} from 'react-toastify'
 import { useNavigate,Link } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { ForgotPasswordSchema } from '../../validations/AuthValidations';
+import { ForgotPasswordSchema } from '../../validations/FormValidations';
 import axios from 'axios';
 import { resendEmail } from '../../helpers/user/AuthHelpers';
 

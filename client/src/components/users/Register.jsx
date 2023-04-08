@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import { Link } from 'react-router-dom'
 import { useFormik} from 'formik'
-import { registerSchema } from '../../validations/AuthValidations';
+import { registerSchema } from '../../validations/FormValidations';
 import { ToastContainer,toast} from 'react-toastify';
 import { motion } from 'framer-motion';
 import { resendEmail, userRegister } from '../../helpers/user/AuthHelpers';

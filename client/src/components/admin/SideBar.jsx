@@ -15,7 +15,7 @@ function SideBar() {
         navigate('/admin',{replace:true})
     }
   return (
-    <div className='bg-white w-1/6 h-full shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
+    <div className='bg-white z-50 absolute xl:relative left-0 h-auto md:h-auto lg:h-auto w-2/4 md:w-2/6 lg:w-1/5 shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
         <div className="flex py-3">
             <img src="/avatar.png" alt="admin_profile_image" className='rounded-xl w-30 h-30' />
             <div className="flex flex-col place-content-center place-items-start">
@@ -56,12 +56,12 @@ function SideBar() {
                 <BiCategoryAlt size={50} className='px-3'></BiCategoryAlt>
                 <h3 className='font-semibold'>Categories</h3>
             </NavLink>
+            <NavLink to="/admin/subcategory" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
+                <BiCategory size={50} className='px-3'></BiCategory>
+                <h3 className='font-semibold'>Sub Categories</h3>
+            </NavLink>
             <div className="flex place-items-center h-10 my-2">
-                <BiCategory size={50} className='px-3 text-primaryBlue'></BiCategory>
-                <h3 className='font-semibold text-primaryBlue'>Sub Categories</h3>
-            </div>
-            <div className="flex place-items-center h-10 my-2">
-                <HiOutlineDocumentText size={50} className='px-3 text-primaryBlue'></HiOutlineDocumentText>
+                <HiOutlineDocumentText size={50} className='px-3'></HiOutlineDocumentText>
                 <h3 className='font-semibold text-primaryBlue'>Sales Report</h3>
             </div>
             <div className="flex place-items-center h-10 my-2 cursor-pointer" onClick={()=>{adminLogout()}}>

@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const sub_category = {
     sub_category_name:{
         type:String,
-        unique:true
     },
     sub_category_description:{
         type:String
@@ -17,14 +16,10 @@ const Category = mongoose.model('Category',new mongoose.Schema({
         unique:true,
     },
     category_image:{
-       image:{
-        type:String,
-       },
-       cloudinary_id:{
-        type:String
-       }
+       type:String,
+       required:true,
     },
-    description:{
+    category_description:{
         type:String
     },
     sub_category:[

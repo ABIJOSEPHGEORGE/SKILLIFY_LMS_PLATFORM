@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useLocation, useNavigate, } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useFormik } from 'formik'
-import { resetPassword } from '../../validations/AuthValidations'
+import { resetPassword } from '../../validations/FormValidations'
 import { ToastContainer,toast} from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios'
