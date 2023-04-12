@@ -38,13 +38,10 @@ function CreateCourse() {
             values.course_image = course_image
             values.promotional_video = promo_video
             values.curriculum = JSON.stringify(section);
-            console.log(values)
             const form = new FormData()
             for (const key in values) {
                 form.append(key, values[key]);
               }
-            
-            function createCourse(form){
                 axios.post('/instructor/course/create-course',form)
                 .then((res)=>{
                     if(res.status===200){
@@ -55,20 +52,15 @@ function CreateCourse() {
                 .catch((err)=>{
                     toast.error(err.response.data.message)
                 })
-            }
-            createCourse(form)
         }
     })
     function handleBack(){
         setActiveStep((prev)=>prev-1)
     }
     function handleNext(){
-        if(Object.keys(formik.errors).length!==0){
-            console.log(formik.errors)
-            toast.error('Please fill all required fields')
-        }else{
+       
             setActiveStep((prev)=>prev+1)
-        }
+        
     }
     const formContent = (step)=>{
         switch(step){
@@ -87,9 +79,9 @@ function CreateCourse() {
   return (
     <div className='flex w-full h-auto'>
         <SideMenu/>
-        <div className="w-full h-auto flex flex-col place-content-center">
+        <div className="w-full h-auto flex flex-col place-content-center shadow-xl rounded-md m-5">
             <ToastContainer position='top-center' limit={3}></ToastContainer>
-            <form className='w-full h-auto flex flex-col place-content-start place-items-start px-20'>
+            <form className='w-full h-auto flex flex-col place-content-start place-items-start px-20' onSubmit={formik.handleSubmit}>
                 {formContent(activeStep)}
             </form>
             <div className='w-full py-4 flex place-content-center px-20'>

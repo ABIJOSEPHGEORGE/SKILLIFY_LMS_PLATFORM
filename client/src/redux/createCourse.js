@@ -1,19 +1,36 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
-    totalSection : 0,
     section:[],
     course_image:'',
     promo_video:'',
-    section_content:{title:'',description:'',content_type:'',video:'',content_title:'',content_description:'',id:''}
+    section_title:'',
+    section_description:'',
+
+    formData:{
+        course_title:'',
+        course_subtitle:'',
+        course_description:'',
+        category:'',
+        sub_category:'',
+        course_image:'',
+        promotional_video:'',
+        curriculum:'',
+        course_price:'',
+        course_sale_price:'',
+        course_welcome_message:'',
+        course_completion_message:'',
+    }
 }
 
 const createCourseSlice = createSlice({
     name:'createCourse',
     initialState,
     reducers:{
-        updateTotalSection:(state,action)=>{
-            state.totalSection++;
+
+        updateFormData:(state,action)=>{
+            state.formData = action.payload;
         },
+        
         updateSection:(state,action)=>{
             state.section.push(
                 action.payload
@@ -29,9 +46,12 @@ const createCourseSlice = createSlice({
             state.promo_video =action.payload;
         },
         resetState:(state)=>initialState,
-        updateSectionContent:(state,action)=>{
-            state.section_content = action.payload;
-        }
+        updateSectionTitle:(state,action)=>{
+            state.section_title = action.payload;
+        },
+        updateSectionDesc:(state,action)=>{
+            state.section_description =action.payload;
+        },
     }
 })
 
@@ -40,8 +60,10 @@ export const {
     updateSection,
     deleteSection,
     updateCourseImage,
-    updateSectionContent,
+    updateSectionTitle,
+    updateSectionDesc,
     updatePromotionalVideo,
     resetState,
+    updateFormData,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;
