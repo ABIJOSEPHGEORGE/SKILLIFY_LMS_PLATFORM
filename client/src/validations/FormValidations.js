@@ -33,6 +33,15 @@ export const subcategorySchema = Yup.object({
     parent_category:Yup.string().required('Please select a category')
 })
 
+export const courseSchema = Yup.object({
+    course_title:Yup.string().required("Course title is required"),
+    course_subtitle:Yup.string().required('Course sub title is required'),
+    course_description:Yup.string().required('Course description is required'),
+    category:Yup.string().required('Course category is required'),
+    sub_category:Yup.string().required('Course sub category is required'),
+    
+})
+
 export const imageValidation = (image)=>{
     //checking image extension type
     if(!image){
@@ -52,6 +61,27 @@ export const imageValidation = (image)=>{
         return {
             valid:false,
             reason:'Image size should be less than 2MB'
+        }
+    }else{
+        return {
+            valid:true
+        }
+    }
+}
+
+
+export const videoValidation = (video)=>{
+    if(!video){
+        return {
+            valid: false,
+            reason:'Please upload a video'
+        }
+    }
+    const allowedExt = ['video/mov','video/mkv','video/mp4'];
+    if(!allowedExt.includes(video.type)){
+        return {
+            valid:false,
+            reason : '  Only mov, mkv and mp4 files supported'
         }
     }else{
         return {

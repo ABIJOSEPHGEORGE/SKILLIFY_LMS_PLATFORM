@@ -2,15 +2,19 @@ import React from 'react'
 import NavBar from '../components/users/NavBar'
 import { userToken } from '../helpers/user/AuthHelpers'
 import UserNav from '../components/users/UserNav';
-
+import jwt_decode from 'jwt-decode'
 
 function HomePage() {
   const token = userToken();
+  let decode;
+  if(token){
+    decode = jwt_decode(token)
+  }
   return (
     <div className="w-full h-screen">
         <div className='absolute top-0 w-full'>
         {
-          token ? <UserNav role={token?.role}/> : <NavBar/>
+          token ? <UserNav role={decode?.role}/> : <NavBar/>
         }
         </div>
         <div className=' bg-bgPink w-full h-4/5 flex font-poppins' >

@@ -1,5 +1,6 @@
 import React from 'react'
 import SideBar from '../../components/admin/SideBar'
+import SideMenu from '../../components/instructors/SideMenu'
 
 
 function Dashboard() {

@@ -1,19 +1,35 @@
 import { Navigate, Outlet,redirect} from "react-router-dom";
-import { adminToken, userToken } from "../helpers/user/AuthHelpers";
+import { adminToken, tokenAuthentication, userToken } from "../helpers/user/AuthHelpers";
 import jwt_decode from 'jwt-decode'
+import { useEffect } from "react";
+import Login from "./users/Login";
+import axios from "axios";
 
 const PrivateRoutes = ()=>{
-   const user = userToken();
-    return(
-        <>
-            {
-                user?.token ? <Outlet/> : <Navigate to='/login'/>
-            }
-        </>
-    )
+    async function decode(){
+        const token = JSON.parse(localStorage.getItem('authKey'));
+        const decode = await jwt_decode(token);
+        return decode.role;
+    }
+    decode().then((res)=>{
+        return(
+            <>
+                {
+                     res==="user" ? <Outlet/> : <Navigate to='/login'/>
+                }
+            </>
+        )
+    })
+    
 }
 
 export const AuthRoutes =()=>{
+    const token = JSON.parse(localStorage.getItem('authKey'));
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+        } else {
+            axios.defaults.headers.common['Authorization'] = null;
+        }
     const user = userToken()
     return(
         <>
@@ -25,18 +41,24 @@ export const AuthRoutes =()=>{
 }
 
 export const InstructorRoutes = ()=>{
-    const user = userToken(); 
+   const decode = tokenAuthentication()
    
     return(
         <>
             {
-                user?.token && user?.role==="instructor" ? <Outlet/> : <Navigate to="/login"/>
+                decode.role==="instructor" ? <Outlet/> : <Navigate to="/login"/>
             }
         </>
     )
 }
 
 export const AdminRoutes = ()=>{
+    const token = JSON.parse(localStorage.getItem('authKey'));
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+        } else {
+            axios.defaults.headers.common['Authorization'] = null;
+        }
     const user = userToken()
     return(
         <>
@@ -49,17 +71,24 @@ export const AdminRoutes = ()=>{
 
 
 export const PrivateRoute=({role})=>{
-    const token = JSON.parse(localStorage.getItem('authKey'));
-    const decode = jwt_decode(token)
-    console.log(role)
-    console.log(decode.role)
-    if(role===decode.role){
-        <Outlet/>
-    }else if(role!==decode.role && role==='admin'){
-        redirect('/admin')
-    }else{
-        <Navigate to='/login'/>
-    }
+   try{
+        const token = JSON.parse(localStorage.getItem('authKey'));
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+        } else {
+            axios.defaults.headers.common['Authorization'] = null;
+        }
+        const decode = jwt_decode(token)
+        if(role===decode.role){
+            return <Outlet/>
+        }else if(role!==decode.role && role==='admin'){
+            redirect('/admin')
+        }else{
+            <Navigate to='/login'/>
+        }
+   }catch(err){
+        return <Login/>
+   }
 }
 
 

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Navigate} from 'react-router-dom'
+import jwtDecode from 'jwt-decode'
 axios.defaults.baseURL = 'http://localhost:3001'
 
 
@@ -36,6 +36,8 @@ export const userToken = () =>{
         return user;
 }
 
+
+
 //admin token
 export const adminToken = ()=>{
     //getting the token from localstorage
@@ -43,18 +45,18 @@ export const adminToken = ()=>{
     return admin;
 }
 
-//updating the user role
-export const updateRole =(role)=>{
-    const user = JSON.parse(localStorage.getItem('authKey'));
-    user.role = role;
-    const updated = JSON.stringify(user)
-    localStorage.setItem('authKey',updated);
-}
 
 //instructor signup
 
 export const instructorSignup = async(values)=>{
-    const response = await axios.post('http://localhost:3001/instructor/signup',values);
+    const response = await axios.post('/instructor/signup',values);
     return response;
 }
 
+
+export const tokenAuthentication = async(values)=>{
+    const token = JSON.parse(localStorage.getItem('authKey'));
+    const decode = await jwtDecode(token);
+    console.log(decode)
+    return decode;
+}

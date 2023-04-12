@@ -76,6 +76,7 @@ module.exports = {
             }else{
                 category_image = req.body.category_image;
             }
+            
             category_name = category_name.split(" ").join("-").toLowerCase()
             // checking whether the category name already exist
             const previousCategory = await Category.findById(req.params.id);
@@ -144,6 +145,17 @@ module.exports = {
             const subcategory = await Category.findOne({_id:parId,sub_category:{$elemMatch:{_id:subId}}},{ "sub_category.$": 1, category_name: 1, _id: 0 });
             return res.status(200).json(success("OK",{subcategory:subcategory}))
         }catch(err){
+            return res.status(500).json(error("Something went wrong, Try after sometime"));
+        }
+    },
+    parentSubCategories:async(req,res)=>{
+        try{
+            const category = req.params.id;
+            //getting all subcategories
+            const subcategories = await Category.findOne({_id:category})
+            return res.status(200).json(success("OK",subcategories))
+        }catch(err){
+            console.log(err)
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },

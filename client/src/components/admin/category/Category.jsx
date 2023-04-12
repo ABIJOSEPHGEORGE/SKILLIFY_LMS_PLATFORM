@@ -26,7 +26,7 @@ function Category() {
         })
     }
     function updateStatus(id,status){
-        axios.put(`/admin/category/status${id}?status=${status}`)
+        axios.put(`/admin/category/status/${id}?status=${status}`)
         .then((res)=>{
             allCategory()
         })

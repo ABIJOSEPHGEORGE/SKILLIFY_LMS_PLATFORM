@@ -5,7 +5,7 @@ import {AnimatePresence} from 'framer-motion'
 import VerifyEmail from './users/VerifyEmail'
 import VerifyResetPassword from './users/VerifyResetPassword'
 import HomePage from '../pages/HomePage'
-import PrivateRoutes, { AuthRoutes, InstructorRoutes, AdminRoutes } from './PrivateRoutes'
+import PrivateRoutes, { AuthRoutes, InstructorRoutes, AdminRoutes, PrivateRoute } from './PrivateRoutes'
 import { userToken } from '../helpers/user/AuthHelpers'
 import axios from 'axios'
 import OnboardingForm from './instructors/OnboardingForm,'
@@ -20,19 +20,21 @@ import ForgetPassword from './users/ForgotPassword'
 import ResetPassword from './users/ResetPassword'
 import CategoryManagement from '../pages/admin/CategoryManagement'
 import SubcategoryManagement from '../pages/admin/SubcategoryManagement'
+import InstructorDashboard from '../pages/instructor/Dashboard'
 
 
 
 function AnimatedRoutes() {
-  //Assigning token into axios headers
-    (function() {
-        const user = userToken();
-        if (user?.token) {
-            axios.defaults.headers.common['Authorization'] = user.token;
-        } else {
-            axios.defaults.headers.common['Authorization'] = null;
-        }
-    })();
+  // //Assigning token into axios headers
+  //   (function() {
+  //       const user = userToken();
+  //       if (user?.token) {
+  //           axios.defaults.headers.common['Authorization'] = user.token;
+  //           console.log("hello")
+  //       } else {
+  //           axios.defaults.headers.common['Authorization'] = null;
+  //       }
+  //   })();
     const location = useLocation();
   return (
     <AnimatePresence>
@@ -46,20 +48,20 @@ function AnimatedRoutes() {
           <Route path='/admin' element={<AdminLogin/>}/>
           <Route path="/forgot-password" element={<ForgetPassword/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/>
+          <Route path="instructor/onboarding" element={<OnboardingForm/>}/>
       </Route>
       
-        <Route path='/user' element={<PrivateRoutes/>}>
+        <Route path='/user' element={<PrivateRoute role="user"/>}>
             <Route path='home' exact element={<HomePage/>}/>
-            <Route path="instructor/onboarding" element={<OnboardingForm/>}/>
         </Route>
 
-        <Route path="/instructor" element={<InstructorRoutes/>}>
-          <Route path="dashboard" element={<SideMenu/>}/>
+        <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>
+          <Route path="dashboard" element={<InstructorDashboard/>}/>
           <Route path="courses" element={<Courses/>}/>
           <Route path='create-course' element={<CreateCourse/>}/>
         </Route>
 
-        <Route path='/admin' element={<AdminRoutes/>}>
+        <Route path='/admin' element={<PrivateRoute role="admin"/>}>
           <Route path='dashboard' element={<Dashboard/>}/>
           <Route path='students' element={<Students/>}/>
           <Route path='instructors' element={<Instrcutors/>}/>

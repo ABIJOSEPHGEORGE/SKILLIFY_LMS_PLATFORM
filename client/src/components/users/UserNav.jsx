@@ -26,7 +26,7 @@ function UserNav({role}) {
             role === 'instructor' ? 
             <Link to="/instructor/dashboard"><li className='px-1 list-none'>Instructor</li></Link>
             :
-            <Link to="/user/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
+            <Link to="/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
           }
           
           

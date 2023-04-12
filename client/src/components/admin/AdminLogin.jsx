@@ -16,7 +16,7 @@ function AdminLogin() {
             .then((res)=>{
                 console.log(res)
                 if(res.status===200){
-                    const token = JSON.stringify({token:res.data.results.token,role:res.data.results.role});
+                    const token = JSON.stringify(res.data.results.token);
                     localStorage.setItem('authKey',token);
                     navigate('/admin/dashboard',{replace:true})
                 }

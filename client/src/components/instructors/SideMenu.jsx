@@ -11,12 +11,12 @@ import {TbStars} from 'react-icons/tb'
 
 function SideMenu() {
   return (
-    <div className='bg-white w-1/6 h-full shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
+    <div className='bg-white w-1/6 h-auto shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
         <div className="flex py-3">
             <img src="/avatar.png" alt="admin_profile_image" className='rounded-xl w-30 h-30' />
             <div className="flex flex-col place-content-center place-items-start">
                 <h2 className='font-semibold'>Abin George</h2>
-                <p className='text-gray-400 font-semibold'>Admin</p>
+                <p className='text-gray-400 font-semibold'>Instructor</p>
             </div>
         </div>
         <div className="flex flex-col py-5 mt-5">

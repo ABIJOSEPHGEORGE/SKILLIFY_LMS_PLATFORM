@@ -4,17 +4,21 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import OnboardingFormOne from './OnboardingFormOne';
 import OnboardingFormTwo from './OnboardingFormTwo';
-import { instructorSignup, updateRole, userToken } from '../../helpers/user/AuthHelpers';
+import axios from 'axios';
+import {tokenAuthentication,userToken } from '../../helpers/user/AuthHelpers';
 
 
 function OnboardingForm() {
     const [activeStep,setActiveStep] = useState(1);
     const navigate = useNavigate();
+    const token = userToken()
     useEffect(()=>{
-      const {role} = userToken()
-      if(role==='instructor'){
-        navigate('/instructor/dashboard',{replace:true})
-      }
+        (async function() {
+            const res = await tokenAuthentication()
+            if(res.role==='instructor'){
+                navigate('/instructor/dashboard',{replace:true})
+            }
+        })(); 
     })
     const formik = useFormik({
         initialValues:{
@@ -22,10 +26,11 @@ function OnboardingForm() {
             experience_years :''
         },
         onSubmit:values=>{
-                instructorSignup()
+            axios.post('/instructor/signup',{headers:token},values)
                 .then(({data})=>{
                     if(data.code===200){
-                        updateRole(data.results.role);
+                        const token = JSON.stringify(data.results.token)
+                        localStorage.setItem('authKey',token);
                         navigate('/instructor/dashboard',{replace:true})
                     }else if(data.code===403){
                         navigate('/login',{replace:true})
