@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { updateSection,deleteSection,updateSectionDesc,updateSectionTitle, updateLecture, createSection, createContent, updateAssignment } from '../../../redux/createCourse';
+import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz } from '../../../redux/createCourse';
 import { Input,Textarea } from '@material-tailwind/react';
-import {AiFillPlayCircle, AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
-import { MdDelete, MdHdrPlus, MdModeEdit, MdPlusOne } from 'react-icons/md';
+import {AiFillPlayCircle, AiFillQuestionCircle, AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
+import { MdDelete, MdModeEdit} from 'react-icons/md';
 import {HiDocument} from 'react-icons/hi'
 import axios from 'axios';
 import { GrClose, GrSave } from 'react-icons/gr';
@@ -12,10 +12,10 @@ import { ToastContainer, toast } from 'react-toastify';
 
 
 function CourseFormThree({formik}) {
-  const {section,formData,lecture,assignment} = useSelector(state=>state.createCourse);
+  const {section,formData,lecture,assignment,quiz,questions} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
   const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false});
-  
+  const [options,setOptions] = useState([]);
   const [video,setVideo] = useState(null);
   const [path,setPath] = useState(null)
 
@@ -37,10 +37,25 @@ function CourseFormThree({formik}) {
         content:{title:assignment.title,description:assignment.description,file_name:assignment.file_name,content_type:content_type}}));
         dispatch(updateAssignment({title:'',description:'',file_name:''}));
         setToggle({...toggle,assignment:!toggle.assignment})
+    }else if(content_type==="quiz"){
+      dispatch(createContent({index:index,
+        content:{title:quiz.title,description:quiz.description,content_type:content_type}}));
+        dispatch(createQuiz({title:'',description:'',questions:[]}));
+        setToggle({...toggle,quiz:!toggle.quiz})
     }
 
   }
 
+  const addOption=()=>{
+    const option = {answer:'',isCorrect:false}
+    setOptions([...options,option])
+  }
+
+  const deleteOption=(opIndex)=>{
+    setOptions(options.filter((item,index)=>(
+        opIndex!==index
+    )))
+  }
 
   function handleDelete(index){
     dispatch(deleteSection(index));
@@ -109,7 +124,31 @@ function CourseFormThree({formik}) {
                                     <p className='font-light text-sm'>{item.file_name}</p>
                                     <button className='text-md font-normal flex gap-2 place-items-center'><HiDocument size={20}></HiDocument> Preview</button>
                                 </div>
-                               :null
+                               :
+                                <div className="w-full place-content-center flex flex-col gap-3 place-items-start">
+                                  <div className="w-full flex gap-3 place-items-center">
+                                    <h3 className='text-md font-semibold'>Questions</h3>
+                                    <button className="text-sm  font-normal flex gap-2 place-items-center border-2 border-gray-600 py-1 px-2  my-2">New Question</button>
+                                  </div>
+                                    
+                                    {
+                                      <div className="w-full h-auto flex flex-col gap-6 p-3">
+                                          <Input variant='static' label='Question' placeholder='Enter the question' type='text' />
+                                          {
+                                            options.map((option,opIndex)=>(
+                                                <div className='w-full flex gap-2 py-2 place-items-center'>
+                                                  <Input label={'option '+(opIndex+1)} variant="static" type='text' />
+                                                  <MdDelete size={20} className=' cursor-pointer' onClick={()=>{deleteOption(opIndex)}}></MdDelete>
+                                                </div>
+                                            ))
+                                          }
+                                          <div className="w-full flex place-content-between gap-3">
+                                            <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm' onClick={()=>{addOption()}}>Option <AiOutlinePlus size={20}></AiOutlinePlus></button>
+                                            <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm bg-black text-white'>Save</button>
+                                          </div>
+                                      </div>
+                                    }
+                                </div>
                               }
                               
                           </div>
@@ -162,14 +201,10 @@ function CourseFormThree({formik}) {
                             toggle.quiz &&
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
-                              <Input variant='static' label='Assignment Title' placeholder='Enter the title for the assignment' type='text' value={assignment.title} onChange={(e)=>{dispatch(updateAssignment({...assignment,title:e.target.value}))}}/>
-                              <Textarea variant='static' label='Assignment Description' placeholder='Enter the description for the assignment' type="text" value={assignment.description} onChange={(e)=>{dispatch(updateAssignment({...assignment,description:e.target.value}))}}/>
-                              <div className="w-full flex gap-3 flex-col">
-                                <label htmlFor="video" className='text-sm text-gray-700'>Assignment Document</label>
-                                <input type="file" onChange={(e)=>{dispatch(updateLecture({...assignment,file_name:e.target.files[0]}))}}/>
-                              </div>
+                              <Input variant='static' label='Quiz Title' placeholder='Enter the title for the Quiz' type='text' value={quiz.title} onChange={(e)=>{dispatch(createQuiz({...quiz,title:e.target.value}))}}/>
+                              <Textarea variant='static' label='Assignment Description' placeholder='Enter the description for the assignment' type="text" value={quiz.description} onChange={(e)=>{dispatch(createQuiz({...quiz,description:e.target.value}))}}/>
                               <div className="w-full flex place-content-start">
-                                <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'assignment')}}>Create Quiz <GrSave size={20}></GrSave></button>
+                                <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'quiz')}}>Create Quiz <GrSave size={20}></GrSave></button>
                               </div>
                             </motion.div>
                           }
