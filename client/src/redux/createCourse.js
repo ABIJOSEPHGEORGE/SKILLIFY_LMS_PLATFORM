@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
-    section:[],
     course_image:'',
     promo_video:'',
     section_title:'',
@@ -14,12 +13,16 @@ const initialState = {
         sub_category:'',
         course_image:'',
         promotional_video:'',
-        curriculum:'',
+        curriculum:[],
         course_price:'',
         course_sale_price:'',
         course_welcome_message:'',
         course_completion_message:'',
-    }
+    },
+    section:{title:'',description:'',content:[]},
+    lecture:{title:'',description:'',video_path:'',video_name:''},
+    assignment:{title:'',description:'',file_path:'',file_name:''},
+    quiz:{question:'',options1:{answer:'',}}
 }
 
 const createCourseSlice = createSlice({
@@ -30,15 +33,29 @@ const createCourseSlice = createSlice({
         updateFormData:(state,action)=>{
             state.formData = action.payload;
         },
-        
-        updateSection:(state,action)=>{
-            state.section.push(
+        updateLecture:(state,action)=>{
+            state.lecture = action.payload;
+        },
+        updateAssignment:(state,action)=>{
+            state.assignment = action.payload;
+        },
+        createSection:(state,action)=>{
+            state.formData.curriculum.push(
                 action.payload
             )
         },
-        deleteSection:(state,action)=>{
-            state.section = action.payload;
+        updateSection:(state,action)=>{
+           state.section = action.payload;
         },
+        deleteSection:(state,action)=>{
+            state.formData.curriculum.splice(action.payload,1)
+        },
+        createContent:(state,action)=>{
+            state.formData.curriculum[action.payload.index].content.push(
+                action.payload.content
+            )
+        },
+
         updateCourseImage:(state,action)=>{
             state.course_image = action.payload;
         },
@@ -65,5 +82,9 @@ export const {
     updatePromotionalVideo,
     resetState,
     updateFormData,
+    updateLecture,
+    createSection,
+    createContent,
+    updateAssignment,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;

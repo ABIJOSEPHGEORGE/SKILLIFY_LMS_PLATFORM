@@ -16,8 +16,8 @@ export const emailVerification = async (data)=>{
 }
 
 // Handling the resend email 
-export const resendEmail = async (user) =>{
-    const response = await axios.get(`/resend-email/${user}`);
+export const resendEmail = async (user,action) =>{
+    const response = await axios.get(`/resend-email/${user}?action=${action}`);
     return response;
 }
 
