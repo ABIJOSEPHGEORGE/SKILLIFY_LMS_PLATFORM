@@ -9,12 +9,13 @@ import axios from 'axios';
 import { GrClose, GrSave } from 'react-icons/gr';
 import {motion} from 'framer-motion'
 import { ToastContainer, toast } from 'react-toastify';
+import courseModals from './courseModals';
 
 
 function CourseFormThree({formik}) {
   const {section,formData,lecture,assignment,quiz} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
-  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false});
+  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false});
   const [options,setOptions] = useState([]);
   const [questions,setQuestions] = useState([]);
   //{question:'',options:[]}
@@ -134,7 +135,7 @@ function CourseFormThree({formik}) {
                     </div>
                     <div className="flex gap-3 place-items-center">
                       <MdDelete size={20} className="cursor-pointer" onClick={()=>{handleDelete(index)}}></MdDelete>
-                      <MdModeEdit size={20} className='cursor-pointer'></MdModeEdit>
+                      <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true})}}></MdModeEdit>
                     </div>
                     
                   </div>
@@ -314,6 +315,15 @@ function CourseFormThree({formik}) {
              
           </motion.div>
         }
+        {
+           toggle.toggleEdit &&
+          <div className="w-full absolute top-0 bg-black">
+           
+            <courseModals.EditSection index={toggle.toggleEdit}/>
+          </div>
+          
+        }
+        
     </div>
   )
 }

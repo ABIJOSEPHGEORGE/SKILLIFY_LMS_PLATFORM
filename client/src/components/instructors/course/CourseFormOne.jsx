@@ -5,7 +5,6 @@ import axios from 'axios'
 import { updateFormData } from '../../../redux/createCourse';
 import { Form } from 'react-router-dom';
 
-
 function CourseFormOne({formik}) {
     const {categories} = useSelector((state)=>state.category);
     const {formData} = useSelector((state)=>state.createCourse);

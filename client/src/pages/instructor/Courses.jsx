@@ -37,10 +37,10 @@ function Courses() {
 
     console.log(courses)
   return (
-    <div className='flex font-poppins'>
+    <div className='flex font-poppins bg-white shadow-xl rounded-md'>
         <SideMenu/>
-        <div className='w-full px-5  h-screen mt-10 flex flex-col place-items-center'>
-            <div className=" h-20 w-4/5 flex place-content-around place-items-center px-5">
+        <div className='px-5 w-full h-full mx-5  py-10 font-poppins flex flex-col place-content-start place-items-center bg-white shadow-xl rounded-xl'>
+            <div className=" h-20 w-4/5 flex place-content-between place-items-center px-5">
                 <h3 className='font-semibold text-primaryViolet text-2xl '>Have a new skill to share ?</h3>
                 <Link to="/instructor/create-course" className='bg-primaryBlue px-3 py-3 text-white font-semibold text-center rounded-sm'>Create Course</Link>
             </div>
@@ -85,16 +85,21 @@ function Courses() {
                         </td>
                         <td class="px-6 py-4">
                             {
-                                course.status ?
+                                course.isApproved==="approved" ?
                                 <span class="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
                                 <span class="h-1.5 w-1.5 rounded-full bg-green-600"></span>
                                     Active
                                 </span>
-                                :
+                                : course.isApproved ==="pending" ?
                                 <span class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
                                 <span class="h-1.5 w-1.5 rounded-full bg-orange-500"></span>
                                     Pending
                                  </span>
+                                 : 
+                                 <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
+                                 <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                     Rejected
+                                  </span>
                             }  
                         </td>
                         <td class="px-6 py-4">

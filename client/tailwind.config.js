@@ -12,7 +12,8 @@ module.exports = withMT({
         primaryBlue : '#172B4C',
         lightPink : '#F2EDED',
         darkPink : '#F66863',
-        bgPink : '#FEF0EF'
+        bgPink : '#FEF0EF',
+        lightblue:'#EFEFF6',
       },
       fontFamily:{
         poppins:['Poppins', 'sans-serif']

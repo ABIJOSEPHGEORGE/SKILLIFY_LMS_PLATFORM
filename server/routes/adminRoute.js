@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/users',tokenVerification,getAllUsers);
 router.get('/instructors',tokenVerification,getAllInstructors);
-router.get('/categories',tokenVerification,getAllCategory);
+router.get('/categories',getAllCategory);
 router.get('/category/:id',tokenVerification,getCategory);
 router.get('/subcategories',allSubCategory);
 router.get('/subcategory/:id/:sub',getSubCategory)

@@ -18,12 +18,10 @@ module.exports ={
         try{
             req.body.course_image = req.files['course_image'][0].path;
             req.body.promotional_video = req.files['promotional_video'][0].path;
-            req.body.curriculum = JSON.parse(req.body.curriculum);
+            req.body.curriculum = JSON.parse(req.body.curriculum)
             req.body.tutor = req.user;
-            const course = await Course.create(req.body)
-            
+            await Course.create(req.body)
             return res.status(200).json(success("Course created successfully"));
-            
         }catch(err){
             console.log(err)
             return res.status(500).json(error("Something went wrong, Try after sometimes"))

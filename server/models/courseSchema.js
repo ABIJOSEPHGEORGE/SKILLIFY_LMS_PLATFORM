@@ -16,6 +16,10 @@ const Course = mongoose.model('Course',new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    isApproved:{
+        type:String,
+        default:"pending",
+    },
     course_image:{
         type:String,
         required:true

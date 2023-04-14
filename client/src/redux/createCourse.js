@@ -14,6 +14,7 @@ const initialState = {
         course_image:'',
         promotional_video:'',
         curriculum:[],
+        course_type:'',
         course_price:'',
         course_sale_price:'',
         course_welcome_message:'',
@@ -70,6 +71,15 @@ const createCourseSlice = createSlice({
             .content[payload.con_index]
             .questions.push(payload.question);
         },
+        editSectionDetails:(state,{payload})=>{
+            state.formData.curriculum[payload.sec_index].title = payload.title;
+            state.formData.curriculum[payload.sec_index].description = payload.description;
+        },
+
+
+
+
+
 
         createSingleQuestion:(state,action)=>{
             state.questions = action.payload;
@@ -108,5 +118,6 @@ export const {
     createQuestion,
     createQuiz,
     createNewQuestion,
+    editSectionDetails,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;

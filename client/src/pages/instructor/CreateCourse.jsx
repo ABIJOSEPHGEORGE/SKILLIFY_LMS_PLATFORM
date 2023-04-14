@@ -15,45 +15,9 @@ import { resetState } from '../../redux/createCourse';
 function CreateCourse() {
     const [activeStep,setActiveStep] = useState(0);
     const dispatch = useDispatch()
-    const {course_image,section,promo_video} = useSelector((state)=>state.createCourse)
+    const {formData} = useSelector((state)=>state.createCourse)
     const navigate = useNavigate()
-    const formik = useFormik({
-        initialValues:{
-            course_title:'',
-            course_subtitle:'',
-            course_description:'',
-            category:'',
-            sub_category:'',
-            course_image:'',
-            promotional_video:'',
-            curriculum:'',
-            course_price:'',
-            course_type:'',
-            course_sale_price:'',
-            course_welcome_message:'',
-            course_completion_message:''
-        },
-        validationSchema:courseSchema,
-        onSubmit:(values)=>{
-            values.course_image = course_image
-            values.promotional_video = promo_video
-            values.curriculum = JSON.stringify(section);
-            const form = new FormData()
-            for (const key in values) {
-                form.append(key, values[key]);
-              }
-                axios.post('/instructor/course/create-course',form)
-                .then((res)=>{
-                    if(res.status===200){
-                        dispatch(resetState())
-                        navigate('/instructor/courses');
-                    }
-                })
-                .catch((err)=>{
-                    toast.error(err.response.data.message)
-                })
-        }
-    })
+   
     function handleBack(){
         setActiveStep((prev)=>prev-1)
     }
@@ -62,16 +26,37 @@ function CreateCourse() {
             setActiveStep((prev)=>prev+1)
         
     }
+    function handleSubmit(){
+        const form = new FormData()
+        for (const key in formData) {
+            if(key==='curriculum'){
+                form.append(key,JSON.stringify(formData[key]))
+            }else{
+                form.append(key, formData[key]);
+            }
+            
+        }
+        axios.post('/instructor/course/create-course',form)
+        .then((res)=>{
+            if(res.status===200){
+                dispatch(resetState())
+                navigate('/instructor/courses');
+            }
+        })
+        .catch((err)=>{
+            toast.error(err.response.data.message)
+        })
+    }
     const formContent = (step)=>{
         switch(step){
             case 0:
-                return <CourseFormOne formik={formik}/>
+                return <CourseFormOne />
             case 1:
-                return <CourseFormTwo formik={formik}/>
+                return <CourseFormTwo />
             case 2:
-                return <CourseFormThree formik={formik}/>
+                return <CourseFormThree />
             case 3:
-                return <CourseFormFour formik={formik}/>
+                return <CourseFormFour />
             default:
                 return <Navigate to="/instructor/dashboard"/>
         }
@@ -81,9 +66,9 @@ function CreateCourse() {
         <SideMenu/>
         <div className="w-full h-auto flex flex-col place-content-center shadow-xl rounded-md m-5">
             <ToastContainer position='top-center' limit={3}></ToastContainer>
-            <form className='w-full h-auto flex flex-col place-content-start place-items-start px-20' onSubmit={formik.handleSubmit}>
+            <div className='w-full h-auto flex flex-col place-content-start place-items-start px-20'>
                 {formContent(activeStep)}
-            </form>
+            </div>
             <div className='w-full py-4 flex place-content-center px-20'>
                     <div className={activeStep>0 ? "flex place-content-between w-full" : "flex place-content-end w-full"}>
                         {activeStep>0 ? 
@@ -94,7 +79,7 @@ function CreateCourse() {
                         {activeStep!==3 ? <button className='bg-primaryBlue px-4 py-3 text-center text-white font-semibold w-[25%]' onClick={handleNext}>Next</button>
                        
                         :
-                        <button type='button' className='bg-primaryBlue px-4 py-3 text-center text-white font-semibold w-[25%]' onClick={formik.handleSubmit}>Submit</button>
+                        <button type='button' className='bg-primaryBlue px-4 py-3 text-center text-white font-semibold w-[25%]' onClick={()=>{handleSubmit()}}>Submit</button>
                         }
                         
                     </div>
