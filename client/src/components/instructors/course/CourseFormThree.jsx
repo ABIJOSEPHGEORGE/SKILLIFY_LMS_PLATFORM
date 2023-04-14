@@ -1,6 +1,6 @@
 import React, {  useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz } from '../../../redux/createCourse';
+import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz, createNewQuestion } from '../../../redux/createCourse';
 import { Input,Textarea } from '@material-tailwind/react';
 import {AiFillPlayCircle, AiFillQuestionCircle, AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 import { MdDelete, MdModeEdit} from 'react-icons/md';
@@ -12,10 +12,12 @@ import { ToastContainer, toast } from 'react-toastify';
 
 
 function CourseFormThree({formik}) {
-  const {section,formData,lecture,assignment,quiz,questions} = useSelector(state=>state.createCourse);
+  const {section,formData,lecture,assignment,quiz} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
-  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false});
+  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false});
   const [options,setOptions] = useState([]);
+  const [questions,setQuestions] = useState([]);
+  //{question:'',options:[]}
   const [video,setVideo] = useState(null);
   const [path,setPath] = useState(null)
 
@@ -39,16 +41,20 @@ function CourseFormThree({formik}) {
         setToggle({...toggle,assignment:!toggle.assignment})
     }else if(content_type==="quiz"){
       dispatch(createContent({index:index,
-        content:{title:quiz.title,description:quiz.description,content_type:content_type}}));
-        dispatch(createQuiz({title:'',description:'',questions:[]}));
+        content:{title:quiz.title,description:quiz.description,content_type:content_type,questions:[]}}));
+        // dispatch(createQuiz({title:'',description:'',questions:[]}));
         setToggle({...toggle,quiz:!toggle.quiz})
     }
 
   }
 
-  const addOption=()=>{
+  const addOption=(index)=>{
+    const newQuestions = [...questions];
+    const updatedOptions = newQuestions[index].options
     const option = {answer:'',isCorrect:false}
-    setOptions([...options,option])
+    updatedOptions.push(option);
+    newQuestions[index].options =updatedOptions;
+    setQuestions(newQuestions);
   }
 
   const deleteOption=(opIndex)=>{
@@ -59,6 +65,40 @@ function CourseFormThree({formik}) {
 
   function handleDelete(index){
     dispatch(deleteSection(index));
+  }
+
+  const newQuestion=()=>{
+    const singleQuestion = {question:'',options:[]}
+    setQuestions([...questions,singleQuestion])
+  }
+
+  const updateQuestion=(e,index)=>{
+      const newQuestion = [...questions];
+     newQuestion[index].question = e.target.value;
+     setQuestions(newQuestion);
+  }
+
+  const updateOption=(e,qindex,oindex)=>{
+      const newQuestion = [...questions];
+      newQuestion[qindex].options[oindex].answer = e.target.value;
+      setQuestions(newQuestion)
+  }
+
+  const updateCorrectAnswer=(e,index)=>{
+      const newQuestion = [...questions];
+      newQuestion[index].options.map((ele)=>(
+        ele.isCorrect = false
+      ))
+      newQuestion[index].options[e.target.value].isCorrect = true;
+      setQuestions(newQuestion)
+  }
+
+  const addQuestion =(qindex,con_index,sec_index)=>{
+      const newQuestion = [...questions];
+      dispatch(createNewQuestion({sec_index,con_index,question:newQuestion[qindex]}));
+      newQuestion.splice(qindex,1);
+      setQuestions(newQuestion);
+      console.log(formData)
   }
 
   async function uploadVideo(){
@@ -75,7 +115,7 @@ function CourseFormThree({formik}) {
     })
   }
   
-  
+  console.log(questions)
   return (
     <div className="font-poppins w-full h-auto flex flex-col place-content-evenly py-4">
       <ToastContainer position='top-center' limit={3}></ToastContainer>
@@ -128,26 +168,62 @@ function CourseFormThree({formik}) {
                                 <div className="w-full place-content-center flex flex-col gap-3 place-items-start">
                                   <div className="w-full flex gap-3 place-items-center">
                                     <h3 className='text-md font-semibold'>Questions</h3>
-                                    <button className="text-sm  font-normal flex gap-2 place-items-center border-2 border-gray-600 py-1 px-2  my-2">New Question</button>
+                                    <button className="text-sm  font-normal flex gap-2 place-items-center border-2 border-gray-600 py-1 px-2  my-2" onClick={()=>{newQuestion()}}>New Question</button>
                                   </div>
-                                    
-                                    {
-                                      <div className="w-full h-auto flex flex-col gap-6 p-3">
-                                          <Input variant='static' label='Question' placeholder='Enter the question' type='text' />
-                                          {
-                                            options.map((option,opIndex)=>(
-                                                <div className='w-full flex gap-2 py-2 place-items-center'>
-                                                  <Input label={'option '+(opIndex+1)} variant="static" type='text' />
-                                                  <MdDelete size={20} className=' cursor-pointer' onClick={()=>{deleteOption(opIndex)}}></MdDelete>
-                                                </div>
-                                            ))
-                                          }
-                                          <div className="w-full flex place-content-between gap-3">
-                                            <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm' onClick={()=>{addOption()}}>Option <AiOutlinePlus size={20}></AiOutlinePlus></button>
-                                            <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm bg-black text-white'>Save</button>
+                                   <div className="w-full">
+                                      {
+                                        item?.questions.map((ele,index)=>(
+                                          <div className='w-full'>
+                                              <ul>
+                                                <li className='list-none'>{index+1}. {ele.question}</li>
+                                              </ul>
                                           </div>
+                                        ))
+                                      }
+                                    </div> 
+                                    
+                                    
+                                      <div className="w-full h-auto flex flex-col gap-6 p-3">
+                                        {
+                                          questions.map((ele,qindex)=>(
+                                            <div className='flex flex-col gap-4'>
+                                                <Input variant='static' label={`Question ${qindex+1}`} placeholder='Enter the question' type='text' value={ele.question} onChange={(e)=>{updateQuestion(e,qindex)}}/> 
+                                                {
+                                                  ele?.options.map((option,oindex)=>(
+                                                    <div className="w-full flex flex-col gap-4">
+                                                         <Input variant='static' label={`Option ${oindex+1}`} value={option.answer} placeholder='Enter the Option' type='text' onChange={(e)=>{updateOption(e,qindex,oindex)}} /> 
+                                                    </div>
+                                                   
+                                                  ))
+                                                }
+                                                {
+                                                  ele.options.length > 0 &&
+                                                  <div className='w-full'>
+                                                        <label className='text-md text-gray-600 focus:text-blue-500'>Select the correct answer</label>
+                                                       <select name="correct_answer" className='w-full focus:outline-none cursor-pointer' onChange={(e)=>{updateCorrectAnswer(e,qindex)}} id="correct_answer">
+                                                          <option>select</option>
+                                                          {
+                                                    
+                                                            ele.options.map((option,index)=>(
+                                                                <option value={index}>{option.answer}</option>
+                                                            ))
+                                                          }
+                                                      </select> 
+                                                  </div>
+                                                }
+                                                <div className="w-full flex place-content-between gap-3">
+                                                  <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm' type="button" onClick={()=>{addOption(qindex)}}>Option <AiOutlinePlus size={20}></AiOutlinePlus></button>
+                                                  <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm bg-black text-white' type='button' onClick={()=>{addQuestion(qindex,cindex,index)}}>Add</button>
+                                                </div>
+                                            </div>
+                                          ))
+                                          
+                                        }
+                                         
+                                         
+                                          
                                       </div>
-                                    }
+                                    
                                 </div>
                               }
                               
@@ -202,7 +278,7 @@ function CourseFormThree({formik}) {
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
                               <Input variant='static' label='Quiz Title' placeholder='Enter the title for the Quiz' type='text' value={quiz.title} onChange={(e)=>{dispatch(createQuiz({...quiz,title:e.target.value}))}}/>
-                              <Textarea variant='static' label='Assignment Description' placeholder='Enter the description for the assignment' type="text" value={quiz.description} onChange={(e)=>{dispatch(createQuiz({...quiz,description:e.target.value}))}}/>
+                              <Textarea variant='static' label='Quiz Description' placeholder='Enter the description for the assignment' type="text" value={quiz.description} onChange={(e)=>{dispatch(createQuiz({...quiz,description:e.target.value}))}}/>
                               <div className="w-full flex place-content-start">
                                 <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'quiz')}}>Create Quiz <GrSave size={20}></GrSave></button>
                               </div>

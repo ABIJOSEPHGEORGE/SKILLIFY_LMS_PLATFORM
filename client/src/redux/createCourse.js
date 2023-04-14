@@ -65,6 +65,15 @@ const createCourseSlice = createSlice({
                 action.payload
             )
         },
+        createNewQuestion:(state,{payload})=>{
+            state.formData.curriculum[payload.sec_index]
+            .content[payload.con_index]
+            .questions.push(payload.question);
+        },
+
+        createSingleQuestion:(state,action)=>{
+            state.questions = action.payload;
+        },
 
         updateCourseImage:(state,action)=>{
             state.course_image = action.payload;
@@ -98,5 +107,6 @@ export const {
     updateAssignment,
     createQuestion,
     createQuiz,
+    createNewQuestion,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;
