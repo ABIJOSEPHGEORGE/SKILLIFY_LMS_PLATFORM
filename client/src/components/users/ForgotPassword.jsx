@@ -58,7 +58,7 @@ function ForgotPassword() {
                 <div className="absolute flex justify-end items-center top-4 right-3">
                     <p className='px-3 text-primaryViolet'>Don't have an account ?</p>
                     
-                    <Link to="/register"><button className='px-3 py-2 text-white bg-secondary'>Register</button></Link>
+                    <Link to="/register"><button className='px-3 py-2 text-white bg-primary'>Register</button></Link>
                 </div>
                 {
                     !status ? 
@@ -79,7 +79,7 @@ function ForgotPassword() {
                                }
                         </div>
                         
-                        <button className='w-full bg-secondary py-3 px-5 text-white font-semibold' type='submit'>Verify Email</button>
+                        <button className='w-full bg-primary py-3 px-5 text-white font-semibold' type='submit'>Verify Email</button>
                     </form>
                 </div>
                 : 

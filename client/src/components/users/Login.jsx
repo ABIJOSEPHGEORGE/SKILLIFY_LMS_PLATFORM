@@ -58,7 +58,7 @@ function Login() {
                 <div className="absolute flex justify-end items-center top-4 right-3">
                     <p className='px-3 text-primaryViolet'>Don't have an account ?</p>
                     
-                    <Link to="/register"><button className='px-3 py-2 text-white bg-secondary'>Register</button></Link>
+                    <Link to="/register"><button className='px-3 py-2 text-white bg-primary'>Register</button></Link>
                 </div>
                 <div className='w-full lg:w-3/6'>
                     <h2 className='text-black font-medium text-2xl md:text-3xl py-5'>Hello ! Welcome back.</h2>
@@ -87,7 +87,7 @@ function Login() {
                                }
                            <Link to="/forgot-password"><p className='text-end pt-2 text-primary cursor-pointer'>Forgot Password ?</p></Link>
                         </div>
-                        <button className='w-full bg-secondary py-3 px-5 text-white font-semibold' type='submit'>Log In</button>
+                        <button className='w-full bg-primary py-3 px-5 text-white font-semibold' type='submit'>Log In</button>
                     </form>
                 </div>
                 

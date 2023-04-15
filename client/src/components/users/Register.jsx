@@ -66,7 +66,7 @@ function Register() {
             <div className="flex flex-col justify-center items-center h-full">
                 <div className="absolute flex justify-end items-center top-4 right-3">
                     <p className='px-3 text-primaryViolet'>Already have an account?</p>
-                    <Link to="/login"><button className='px-3 py-2 text-white bg-secondary'>Login</button></Link>
+                    <Link to="/login"><button className='px-3 py-2 text-white bg-primary'>Login</button></Link>
                 </div>
                 {
                     !status ? 
@@ -130,7 +130,7 @@ function Register() {
                                 : null
                                }
                         </div>
-                        <button className='w-full bg-secondary py-3 px-5 text-white font-semibold' type='submit'>Register</button>
+                        <button className='w-full bg-primary py-3 px-5 text-white font-semibold' type='submit'>Register</button>
                     </form>
                 </div>
                 : 

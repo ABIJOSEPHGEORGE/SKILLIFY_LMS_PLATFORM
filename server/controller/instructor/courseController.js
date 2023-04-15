@@ -1,4 +1,5 @@
 const Course = require("../../models/courseSchema");
+const User = require('../../models/userSchema')
 const { error, success } = require("../../responseApi")
 
 
@@ -19,7 +20,9 @@ module.exports ={
             req.body.course_image = req.files['course_image'][0].path;
             req.body.promotional_video = req.files['promotional_video'][0].path;
             req.body.curriculum = JSON.parse(req.body.curriculum)
-            req.body.tutor = req.user;
+            //fetching the tutor details
+            const tutor = await User.findOne({email:req.user});
+            req.body.tutor = {first_name:tutor.first_name,last_name:tutor.last_name,profile_image:tutor.profile_image,description:tutor.description,email:tutor.email}
             await Course.create(req.body)
             return res.status(200).json(success("Course created successfully"));
         }catch(err){
@@ -31,7 +34,7 @@ module.exports ={
         try{
             
             const tutor = req.user;
-            const courses = await Course.find({tutor:tutor});
+            const courses = await Course.find({"tutor.email":req.user});
             return res.status(200).json(success("OK",courses));
         }catch(err){
             console.log(err)

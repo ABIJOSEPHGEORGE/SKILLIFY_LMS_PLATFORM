@@ -22,6 +22,7 @@ import CategoryManagement from '../pages/admin/CategoryManagement'
 import SubcategoryManagement from '../pages/admin/SubcategoryManagement'
 import InstructorDashboard from '../pages/instructor/Dashboard'
 import CourseListingPage from '../pages/users/CourseListingPage'
+import CourseDetailPage from '../pages/users/CourseDetailPage'
 
 
 
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
           <Route path="/reset-password" element={<ResetPassword/>}/>
           <Route path="instructor/onboarding" element={<OnboardingForm/>}/>
           <Route path='courses' element={<CourseListingPage/>}/>
+          <Route path='course/:id' element={<CourseDetailPage/>}/>
       </Route>
       
         <Route path='/user' element={<PrivateRoute role="user"/>}>

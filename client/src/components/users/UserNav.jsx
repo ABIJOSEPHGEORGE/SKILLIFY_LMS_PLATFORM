@@ -20,8 +20,8 @@ function UserNav({role}) {
     </div>
     <div className="flex flex-1 px-3 place-content-evenly place-items-center ">
         
-          <li className='px-1 list-none'>Home</li>
-          <li className='px-1 list-none'>Categories</li>
+          <Link to="/"><li className='px-1 list-none'>Home</li></Link>
+          <Link to="/courses"><li className='px-1 list-none'>Courses</li></Link>
           {
             role === 'instructor' ? 
             <Link to="/instructor/dashboard"><li className='px-1 list-none'>Instructor</li></Link>

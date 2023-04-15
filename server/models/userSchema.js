@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 
+
+
+const cart = {
+    courseId:{
+        type:mongoose.Types.ObjectId,
+        ref:'Course'
+    }
+}
 const User = mongoose.model('User',new mongoose.Schema({
     first_name:{
         type:String,
@@ -27,9 +35,9 @@ const User = mongoose.model('User',new mongoose.Schema({
         type:String,
         required:true,
     },
-    cart:{
-        type:Array,
-    },
+    cart:[
+        cart
+    ],
     enrolled_course:{
         type:Array,
     },
@@ -64,6 +72,9 @@ const User = mongoose.model('User',new mongoose.Schema({
         type:Array,
     },
     confirmationToken:{
+        type:String,
+    },
+    profile_image:{
         type:String,
     }
     

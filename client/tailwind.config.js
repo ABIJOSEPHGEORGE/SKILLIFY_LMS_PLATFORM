@@ -7,13 +7,14 @@ module.exports = withMT({
     extend: {
       colors:{
         primary : '#FD9697',
-        secondary:'#F56962',
+        secondary:'#FEF0EF',
         primaryViolet : '#5F5982',
         primaryBlue : '#172B4C',
         lightPink : '#F2EDED',
         darkPink : '#F66863',
         bgPink : '#FEF0EF',
         lightblue:'#EFEFF6',
+        bgcart:"#F56962"
       },
       fontFamily:{
         poppins:['Poppins', 'sans-serif']

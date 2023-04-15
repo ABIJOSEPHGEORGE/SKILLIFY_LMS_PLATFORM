@@ -56,7 +56,7 @@ const Course = mongoose.model('Course',new mongoose.Schema({
         type:String,
     },
     tutor:{
-        type:String,
+        type:Object,
         required:true,
     }
 
