@@ -2,23 +2,13 @@ import React,{useEffect, useState} from 'react'
 import {AiOutlineSearch} from 'react-icons/ai'
 import {BsCart3} from 'react-icons/bs'
 import { Link, useNavigate } from 'react-router-dom'
-import {useSelector,useDispatch} from 'react-redux'
-import {
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
-} from "@material-tailwind/react";
+
 import {BsChevronDown} from 'react-icons/bs'
 import { allCategories } from '../../redux/categorySlice'
 
 function NavBar() {
   const navigate = useNavigate()
-  const {categories} = useSelector((state)=>state.category)
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(allCategories())
-  },[dispatch])
+  
 
   return (
     <div className='w-100 h-20 flex font-poppins px-5 p-4 place-items-center place-content-center gap-5'>
@@ -30,18 +20,7 @@ function NavBar() {
           </div>
       </div>
       
-          <Menu>
-            <MenuHandler>
-              <li className='font-normal list-none cursor-pointer flex gap-3 place-items-center'>Categories </li>
-            </MenuHandler>
-            <MenuList>
-              {
-                categories.map((category)=>(
-                  <MenuItem className='first-letter:capitalize letter-spacing: 0.025em;'>{category.category_name.split("-").join(" ")}</MenuItem>
-                ))
-              }
-            </MenuList>
-        </Menu>
+          
 
 
             <Link to="/user/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
