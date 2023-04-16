@@ -19,15 +19,20 @@ import { updateFilter } from '../../redux/courseListing';
 function CourseListingPage() {
     const {categories} = useSelector((state)=>state.category)
     const {courses} = useSelector((state)=>state.courses)
-    // const {filter} = useSelector((state)=>state.courseList)
+    const {filter} = useSelector((state)=>state.courseList)
     const dispatch = useDispatch()
     useEffect(()=>{
         dispatch(allCategories())
         fetchCourses()
     },[dispatch])
 
-    function fetchCourses(){
-        axios.get(`/courses/?category=${""}`)
+    function filterCourse(category){
+        dispatch(updateFilter({...filter,category:category.category_name}));
+        fetchCourses(filter)
+    }
+
+    function fetchCourses(filter){
+        axios.get(`/courses/?category=${filter?.category}`)
         .then((res)=>{
             dispatch(updateCourses(res.data.results));
         })
@@ -35,7 +40,6 @@ function CourseListingPage() {
             toast.error(err.response.data.message)
         })
     }
-
     
 
   return (
@@ -90,7 +94,7 @@ function CourseListingPage() {
                 <div className="w-full flex gap-2">
                     {
                         categories?.map((category)=>(
-                            <button type='button' className='border-2 border-gray-600 px-3 py-2 hover:bg-gray-800 hover:text-white first-letter:capitalize'>{category.category_name.split("-").join(" ")}</button>
+                            <button type='button' onClick={()=>{ filterCourse(category)}} className={filter.category!==category.category_name ? "border-2 border-gray-600 px-3 py-2 hover:bg-gray-800 hover:text-white first-letter:capitalize" : "border-2 bg-gray-600 text-white px-3 py-2 first-letter:capitalize"}>{category.category_name.split("-").join(" ")}</button>
                         ))
                     }
                     

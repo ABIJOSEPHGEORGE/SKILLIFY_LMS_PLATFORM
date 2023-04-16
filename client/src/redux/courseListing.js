@@ -6,7 +6,7 @@ const initialState = {
 }
 
 const courseListSlice = createSlice({
-    name:'CourseList',
+    name:'courseList',
     initialState,
     reducers:{
         updateFilter:(state,action)=>{
@@ -16,4 +16,4 @@ const courseListSlice = createSlice({
 })
 
 export const {updateFilter} = courseListSlice.actions;
-export default courseListSlice.reducer()
+export default courseListSlice.reducer;

@@ -63,7 +63,7 @@ function AdminLogin() {
                                 : null
                                }
                         </div>
-                        <button className='w-full bg-secondary py-3 px-5 text-white font-semibold' type='submit'>Log In</button>
+                        <button className='w-full bg-darkPink py-3 px-5 text-white font-semibold' type='submit'>Log In</button>
                     </form>
                 </div>
                 
