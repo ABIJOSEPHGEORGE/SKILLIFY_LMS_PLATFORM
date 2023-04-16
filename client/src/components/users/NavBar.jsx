@@ -22,7 +22,7 @@ function NavBar() {
       
           
             <Link to="/"><li className='px-1 list-none'>Home</li></Link>
-            <Link to="/"><li className='px-1 list-none'>Courses</li></Link>
+            <Link to="/courses"><li className='px-1 list-none'>Courses</li></Link>
             <Link to="/user/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
             
             <BsCart3></BsCart3>

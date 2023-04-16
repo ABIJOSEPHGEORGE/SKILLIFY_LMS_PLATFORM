@@ -4,6 +4,8 @@ import authSlice from './authSlice'
 import categorySlice from './categorySlice'
 import createCourseSlice from './createCourse'
 import courseSlice from './course'
+import cartSlice from './cartSlice'
+import courseListSlice from './courseListing'
 export default configureStore({
   reducer: {
     admin: adminReducer,
@@ -11,5 +13,7 @@ export default configureStore({
     category:categorySlice,
     createCourse:createCourseSlice,
     courses:courseSlice,
+    cart:cartSlice,
+    courseList:courseListSlice,
   },
 })

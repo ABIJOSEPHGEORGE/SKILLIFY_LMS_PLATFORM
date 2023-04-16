@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import NavBar from '../../components/users/NavBar'
-import { useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import { details } from '../../config'
@@ -26,8 +26,10 @@ import { HiDocumentDuplicate } from 'react-icons/hi'
 
 function CourseDetailPage() {
     const dispatch= useDispatch()
+    const navigate = useNavigate()
     const cartRef = useRef()
     const {id} = useParams()
+    const [state,setState]= useState(false)
     const {course} = useSelector((state)=>state.courses)
     useEffect(()=>{
        fetchCourse(id);
@@ -43,19 +45,27 @@ function CourseDetailPage() {
     }
     
     function addTocart(id){
+        !state ? 
         axios.post(`/user/add-to-cart/${id}`)
         .then((res)=>{
             cartRef.current.textContent = 'Go to cart'
+            setState(!state)
         })
         .catch((err)=>{
             console.log(err)
         })
+        :
+        navigate("/user/cart")
     }
 
     function ExistInCart(id){
         axios.get(`/user/cart/${id}`)
         .then((res)=>{
-            cartRef.current.textContent = 'Go to cart'
+            if(res.data.results){
+                cartRef.current.textContent = 'Go to cart';
+                setState(!state)
+            }
+           
         })
         .catch((err)=>{
             console.log(err)

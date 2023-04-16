@@ -13,19 +13,21 @@ import {
 } from "@material-tailwind/react";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import course, { updateCourses } from '../../redux/course';
+import { updateCourses } from '../../redux/course';
+import { updateFilter } from '../../redux/courseListing';
 
 function CourseListingPage() {
     const {categories} = useSelector((state)=>state.category)
     const {courses} = useSelector((state)=>state.courses)
+    // const {filter} = useSelector((state)=>state.courseList)
     const dispatch = useDispatch()
     useEffect(()=>{
         dispatch(allCategories())
         fetchCourses()
-    },[])
+    },[dispatch])
 
     function fetchCourses(){
-        axios.get(`/courses`)
+        axios.get(`/courses/?category=${""}`)
         .then((res)=>{
             dispatch(updateCourses(res.data.results));
         })
@@ -34,14 +36,13 @@ function CourseListingPage() {
         })
     }
 
+    
 
   return (
     <div className='w-full h-full font-poppins'>
         <ToastContainer position='top-center' limit={3}></ToastContainer>
         <div className="w-full h-20  flex flex-col gap-3 place-content-between ">
             <NavBar/>
-            
-            
         </div>
         <div className='p-5 w-full h-full flex'>
             <div className="shadow-xl w-1/5 h-full px-5 bg-white flex flex-col gap-5 py-5">
@@ -59,8 +60,8 @@ function CourseListingPage() {
             </MenuHandler>
             <MenuList>
               {
-                categories.map((category)=>(
-                  <MenuItem className='first-letter:capitalize letter-spacing: 0.025em;'>{category.category_name.split("-").join(" ")}</MenuItem>
+                categories?.map((category)=>(
+                  <MenuItem className="first-letter:capitalize letter-spacing: 0.025em">{category.category_name.split("-").join(" ")}</MenuItem>
                 ))
               }
             </MenuList>
@@ -88,8 +89,8 @@ function CourseListingPage() {
                 </div>
                 <div className="w-full flex gap-2">
                     {
-                        categories.map((category)=>(
-                            <button className='border-2 border-gray-600 px-3 py-2 hover:bg-gray-800 hover:text-white first-letter:capitalize'>{category.category_name.split("-").join(" ")}</button>
+                        categories?.map((category)=>(
+                            <button type='button' className='border-2 border-gray-600 px-3 py-2 hover:bg-gray-800 hover:text-white first-letter:capitalize'>{category.category_name.split("-").join(" ")}</button>
                         ))
                     }
                     
@@ -100,19 +101,19 @@ function CourseListingPage() {
                         courses.map((course,index)=>(
                             <Link to={'/course/'+course._id} className="w-full px-3 py-5 shadow-xl bg-white flex gap-5 cursor-pointer">
                                 <div className='w-1/5 h-40'>
-                                    <img className='w-full h-full rounded-md' src={details.base_url+course.course_image} alt="course_image" />
+                                    <img className='w-full h-full rounded-md' src={details.base_url+course?.course_image} alt="course_image" />
                                 </div>
                             <div className='flex flex-col place-content-start gap-3'>
-                                <h1 className='text-2xl font-semibold'>{course.course_title}</h1>
-                                <p className='text-gray-600 font-normal'>{course.course_description}</p>
+                                <h1 className='text-2xl font-semibold'>{course?.course_title}</h1>
+                                <p className='text-gray-600 font-normal'>{course?.course_description}</p>
                                 <div className="w-full flex gap-4 place-items-center">
                                     <div className="w-2/5 flex gap-3 place-items-center font-semibold text-gray-700">
-                                        <img className='w-10 h-10' src={course.profile_image ? details.base_url+course.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
-                                        <p>{course.tutor.first_name} {course.tutor.last_name}</p>
+                                        <img className='w-10 h-10' src={course?.profile_image ? details.base_url+course?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
+                                        <p>{course?.tutor?.first_name} {course?.tutor?.last_name}</p>
                                     </div>
                                    <div className="flex gap-3">
-                                        <p className='text-lg font-normal line-through text-gray-600'>{'₹ '+course.course_price}</p>
-                                        <p className='text-lg font-semibold text-darkPink'>{'₹ '+course.course_sale_price}</p>
+                                        <p className='text-lg font-normal line-through text-gray-600'>{'₹ '+course?.course_price}</p>
+                                        <p className='text-lg font-semibold text-darkPink'>{'₹ '+course?.course_sale_price}</p>
                                    </div>
                                 </div>
                             </div>

@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 
 
 const cart = {
-    courseId:{
+    
         type:mongoose.Types.ObjectId,
         ref:'Course'
-    }
+    
 }
 const User = mongoose.model('User',new mongoose.Schema({
     first_name:{

@@ -23,6 +23,7 @@ import SubcategoryManagement from '../pages/admin/SubcategoryManagement'
 import InstructorDashboard from '../pages/instructor/Dashboard'
 import CourseListingPage from '../pages/users/CourseListingPage'
 import CourseDetailPage from '../pages/users/CourseDetailPage'
+import Cart from '../pages/users/Cart'
 
 
 
@@ -56,7 +57,7 @@ function AnimatedRoutes() {
       </Route>
       
         <Route path='/user' element={<PrivateRoute role="user"/>}>
-            <Route path='home' exact element={<HomePage/>}/>
+            <Route path='cart' element={<Cart/>}/>
         </Route>
 
         <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>

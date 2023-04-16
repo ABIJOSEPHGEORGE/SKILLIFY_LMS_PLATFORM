@@ -83,6 +83,8 @@ export const PrivateRoute=({role})=>{
             return <Outlet/>
         }else if(role!==decode.role && role==='admin'){
             redirect('/admin')
+        }else if(role!==decode.role && role==="user" && decode.role==="instructor"){
+            return <Outlet/>
         }else{
             <Navigate to='/login'/>
         }
