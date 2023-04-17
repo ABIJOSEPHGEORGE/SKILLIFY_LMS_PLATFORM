@@ -22,9 +22,10 @@ const initialState = {
     },
     section:{title:'',description:'',content:[]},
     lecture:{title:'',description:'',video_path:'',video_name:''},
-    assignment:{title:'',description:'',file_path:'',file_name:''},
+    assignment:{title:'',description:''},
     quiz:{title:'',description:'',questions:[]},
     questions:{question:'',options:[]},
+    error:null,
     //{answer:'',isCorrect:false}
 }
 
@@ -75,6 +76,12 @@ const createCourseSlice = createSlice({
             state.formData.curriculum[payload.sec_index].title = payload.title;
             state.formData.curriculum[payload.sec_index].description = payload.description;
         },
+        updateError:(state,{payload})=>{
+            state.error = payload;
+        },
+        deleteContent:(state,{payload})=>{
+            state.formData.curriculum[payload.sec_index].content.splice(payload.cindex,1)
+        },
 
 
 
@@ -119,5 +126,7 @@ export const {
     createQuiz,
     createNewQuestion,
     editSectionDetails,
+    updateError,
+    deleteContent,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;

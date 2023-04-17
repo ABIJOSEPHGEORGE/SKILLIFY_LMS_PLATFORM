@@ -1,14 +1,37 @@
 import React,{useEffect, useState} from 'react'
 import {AiOutlineSearch} from 'react-icons/ai'
 import {BsCart3} from 'react-icons/bs'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate,useSearchParams } from 'react-router-dom'
 
 import {BsChevronDown} from 'react-icons/bs'
 import { allCategories } from '../../redux/categorySlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateSearchKey } from '../../redux/courseListing'
+
 
 function NavBar() {
   const navigate = useNavigate()
-  
+  const [key,setKey] = useState("")
+  const dispatch = useDispatch()
+  const {searchKey} = useSelector((state)=>state.courseList)
+  const [searchParams,setSearchParams] = useSearchParams()
+  const searchInput = searchParams.get("key")
+  const [search,setSearch] = useState("")
+
+
+  useEffect(()=>{
+    if(search===""&&searchInput){
+      setSearch(searchInput)
+    }
+  },[]) 
+
+  function searchCourse(e){
+    if(e.key === "Enter"){
+      navigate(`/courses?key=${search}`)
+    }
+  }
+
+
 
   return (
     <div className='w-100 h-20 flex font-poppins px-5 p-4 place-items-center place-content-center gap-5'>
@@ -16,7 +39,7 @@ function NavBar() {
           <h1 className='font-semibold text-2xl text-black'>Skillify</h1>
           <div className="flex px-10 rounded-3xl border-2 border-gray-600 py-2 place-items-center ms-3">
             <AiOutlineSearch size={20}></AiOutlineSearch>
-            <input type="text" className='focus:outline-none ms-2 bg-transparent' placeholder='search for courses'/>
+            <input type="text" className='focus:outline-none ms-2 bg-transparent' value={search} placeholder='search for courses' onChange={(e)=>setSearch(e.target.value)} onKeyPress={(e)=>{searchCourse(e)}}/>
           </div>
       </div>
       

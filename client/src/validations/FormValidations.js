@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { useSelector } from 'react-redux';
 
 export const registerSchema = Yup.object({
     first_name : Yup.string().trim().required('First name is required'),
@@ -87,5 +88,26 @@ export const videoValidation = (video)=>{
         return {
             valid:true
         }
+    }
+}
+
+
+export const CourseCreationValidation=(formData,step)=>{
+    if(step===0 && formData.course_title.trim()===""){
+        return {course_title:'Course title is required'}
+    }else if(step===0 && formData.course_subtitle.trim()===""){
+        return {course_subtitle:'Sub Title is required'}
+    }else if(step===0 && formData.course_description.trim()===""){
+        return {course_description:'Course description is required'}
+    }else if(step===0 && formData.category===""){
+        return {category:'Category is required'}
+    }else if(step===0 && formData.sub_category===""){
+        return {sub_category:"Subcategory is required"}
+    }else if(step===1 && formData.course_image===""){
+        return {course_image:"Course image is required"}
+    }else if(step===1 && formData.promotional_video===""){
+        return {promotional_video:"Promotional video is required"}
+    }else{
+        return false;
     }
 }

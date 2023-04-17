@@ -24,6 +24,7 @@ import InstructorDashboard from '../pages/instructor/Dashboard'
 import CourseListingPage from '../pages/users/CourseListingPage'
 import CourseDetailPage from '../pages/users/CourseDetailPage'
 import Cart from '../pages/users/Cart'
+import Checkout from '../pages/users/Checkout'
 
 
 
@@ -58,6 +59,7 @@ function AnimatedRoutes() {
       
         <Route path='/user' element={<PrivateRoute role="user"/>}>
             <Route path='cart' element={<Cart/>}/>
+            <Route path='checkout' element={<Checkout/>}/>
         </Route>
 
         <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>

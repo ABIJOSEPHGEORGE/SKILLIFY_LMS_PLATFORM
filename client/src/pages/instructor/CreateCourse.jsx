@@ -5,27 +5,32 @@ import CourseFormOne from '../../components/instructors/course/CourseFormOne';
 import { useNavigate,Navigate } from 'react-router-dom';
 import CourseFormTwo from '../../components/instructors/course/CourseFormTwo';
 import CourseFormThree from '../../components/instructors/course/CourseFormThree';
-import { courseSchema } from '../../validations/FormValidations';
+import { CourseCreationValidation, courseSchema } from '../../validations/FormValidations';
 import { ToastContainer, toast } from 'react-toastify';
 import  {useDispatch, useSelector} from 'react-redux'
 import CourseFormFour from '../../components/instructors/course/CourseFormFour';
 import axios from 'axios';
-import { resetState } from '../../redux/createCourse';
+import { resetState, updateError } from '../../redux/createCourse';
 
 function CreateCourse() {
     const [activeStep,setActiveStep] = useState(0);
     const dispatch = useDispatch()
-    const {formData} = useSelector((state)=>state.createCourse)
+    const {formData,error} = useSelector((state)=>state.createCourse)
     const navigate = useNavigate()
-   
+    
+
     function handleBack(){
         setActiveStep((prev)=>prev-1)
     }
-    function handleNext(){
-       
+   function handleNext(){
+        const response = CourseCreationValidation(formData,activeStep)
+        if(response){
+            dispatch(updateError({...response}))
+        }else{
             setActiveStep((prev)=>prev+1)
-        
+        }
     }
+    
     function handleSubmit(){
         const form = new FormData()
         for (const key in formData) {

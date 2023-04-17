@@ -79,6 +79,7 @@ export const PrivateRoute=({role})=>{
             axios.defaults.headers.common['Authorization'] = null;
         }
         const decode = jwt_decode(token)
+        console.log(decode)
         if(role===decode.role){
             return <Outlet/>
         }else if(role!==decode.role && role==='admin'){
@@ -86,9 +87,11 @@ export const PrivateRoute=({role})=>{
         }else if(role!==decode.role && role==="user" && decode.role==="instructor"){
             return <Outlet/>
         }else{
-            <Navigate to='/login'/>
+            localStorage.removeItem('authKey')
+            return <Login/>
         }
    }catch(err){
+        localStorage.removeItem('authKey')
         return <Login/>
    }
 }

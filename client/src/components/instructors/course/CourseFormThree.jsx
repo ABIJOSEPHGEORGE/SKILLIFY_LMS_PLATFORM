@@ -1,7 +1,7 @@
-import React, {  useState } from 'react'
+import React, {  useRef, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz, createNewQuestion } from '../../../redux/createCourse';
-import { Input,Textarea } from '@material-tailwind/react';
+import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz, createNewQuestion, deleteContent } from '../../../redux/createCourse';
+import { Input,Textarea, button } from '@material-tailwind/react';
 import {AiFillPlayCircle, AiFillQuestionCircle, AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 import { MdDelete, MdModeEdit} from 'react-icons/md';
 import {HiDocument} from 'react-icons/hi'
@@ -10,20 +10,23 @@ import { GrClose, GrSave } from 'react-icons/gr';
 import {motion} from 'framer-motion'
 import { ToastContainer, toast } from 'react-toastify';
 import courseModals from './courseModals';
+import { Link } from 'react-router-dom';
+import { details } from '../../../config';
 
 
 function CourseFormThree({formik}) {
   const {section,formData,lecture,assignment,quiz} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
-  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false});
+  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null});
   const [options,setOptions] = useState([]);
   const [questions,setQuestions] = useState([]);
-  //{question:'',options:[]}
   const [video,setVideo] = useState(null);
   const [path,setPath] = useState(null)
+  const videoRef = useRef()
 
   function newSection(e){
     e.preventDefault()
+    
     dispatch(createSection(section));
     setToggle({...toggle,section:!toggle.section});
     dispatch(updateSection({title:'',description:'',content:[]}))
@@ -32,18 +35,18 @@ function CourseFormThree({formik}) {
   const saveContent =(index,content_type)=>{
     if(content_type==="lecture"){
         dispatch(createContent({index:index,
-        content:{title:lecture.title,description:lecture.description,video:lecture.video,content_type:content_type}}));
+        content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_path:lecture.video_path,content_type:content_type}}));
         dispatch(updateLecture({title:'',description:'',video:''}));
         setToggle({...toggle,lecture:!toggle.lecture})
+        setVideo(null)
     }else if(content_type==="assignment"){
       dispatch(createContent({index:index,
-        content:{title:assignment.title,description:assignment.description,file_name:assignment.file_name,content_type:content_type}}));
+        content:{title:assignment.title,description:assignment.description,content_type:content_type}}));
         dispatch(updateAssignment({title:'',description:'',file_name:''}));
         setToggle({...toggle,assignment:!toggle.assignment})
     }else if(content_type==="quiz"){
       dispatch(createContent({index:index,
         content:{title:quiz.title,description:quiz.description,content_type:content_type,questions:[]}}));
-        // dispatch(createQuiz({title:'',description:'',questions:[]}));
         setToggle({...toggle,quiz:!toggle.quiz})
     }
 
@@ -58,10 +61,13 @@ function CourseFormThree({formik}) {
     setQuestions(newQuestions);
   }
 
-  const deleteOption=(opIndex)=>{
-    setOptions(options.filter((item,index)=>(
-        opIndex!==index
-    )))
+  const deleteOption=(qindex,opIndex)=>{
+      const newQuestion = [...questions]
+      const newOptions = questions[qindex].options;
+      newQuestion[qindex].options = newOptions.filter((item,index)=>(
+          opIndex!==index
+      ))
+      setQuestions(newQuestion)
   }
 
   function handleDelete(index){
@@ -102,21 +108,25 @@ function CourseFormThree({formik}) {
       console.log(formData)
   }
 
+
+
   async function uploadVideo(){
-    // setVideo(e.target.files[0])
     const form = new FormData()
     form.append('section_video',video);
+    
     axios.post('/instructor/course/upload-video',form)
     .then((res)=>{
-      console.log(res)
-        setPath(res.data.results.path)
+        dispatch(updateLecture({...lecture,video_name:video.name,video_path:res.data.results.path}))
+        videoRef.current.textContent = "Uploaded"
+        setVideo(null)
     })
     .catch((err)=>{
       console.log(err)
     })
   }
   
-  console.log(questions)
+  console.log(formData)
+ 
   return (
     <div className="font-poppins w-full h-auto flex flex-col place-content-evenly py-4">
       <ToastContainer position='top-center' limit={3}></ToastContainer>
@@ -135,7 +145,7 @@ function CourseFormThree({formik}) {
                     </div>
                     <div className="flex gap-3 place-items-center">
                       <MdDelete size={20} className="cursor-pointer" onClick={()=>{handleDelete(index)}}></MdDelete>
-                      <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true})}}></MdModeEdit>
+                      <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
                     </div>
                     
                   </div>
@@ -144,9 +154,16 @@ function CourseFormThree({formik}) {
                       {
                         item.content.map((item,cindex)=>(
                           <div className='w-full m-2 p-2 bg-white border-gray-500 border-2 gap-6'>
-                              <div className="flex gap-3 place-items-center">
-                                <h1 className='font-semibold text-sm first-letter:capitalize'>{item.content_type} : </h1>
-                                <h2 className='font-semibold text-sm first-letter:capitalize'>{item.title}</h2>
+                           
+                              <div className="flex gap-3 place-items-center place-content-between">
+                                <div className='flex gap-3'>
+                                    <h1 className='font-semibold text-sm first-letter:capitalize'>{item.content_type} : </h1>
+                                    <h2 className='font-semibold text-sm first-letter:capitalize'>{item.title}</h2>
+                                </div>
+                                <div className="flex gap-3 place-items-center">
+                                  <MdDelete size={20} className="cursor-pointer" onClick={()=>{dispatch(deleteContent({sec_index:index,cindex:cindex}))}}></MdDelete>
+                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
+                                </div>
                               </div>
                               <div className='flex gap-3 place-items-center'>
                                   <h1 className='font-semibold text-sm first-letter:capitalize'>description : </h1>
@@ -157,15 +174,9 @@ function CourseFormThree({formik}) {
                                 <div className="flex gap-3 place-items-center">
                                     <h1 className='font-semibold text-sm first-letter:capitalize'>video : </h1>'
                                     <p className='font-light text-sm'>{item.video_name}</p>
-                                    <button className='text-md font-normal flex gap-2 place-items-center'><AiFillPlayCircle size={20}></AiFillPlayCircle>Preview</button>
+                                    <Link to={details.base_url+item.video_path} target="_blank" rel="noopener noreferrer" className='text-md font-normal flex gap-2 place-items-center'><AiFillPlayCircle size={20}></AiFillPlayCircle>Preview</Link>
                                 </div>
-                                : item.content_type==="assignment" ? 
-                                <div className="flex gap-3 place-items-center">
-                                    <h1 className='font-semibold text-sm first-letter:capitalize'>Document : </h1>'
-                                    <p className='font-light text-sm'>{item.file_name}</p>
-                                    <button className='text-md font-normal flex gap-2 place-items-center'><HiDocument size={20}></HiDocument> Preview</button>
-                                </div>
-                               :
+                               : item.content_type==="quiz" ?
                                 <div className="w-full place-content-center flex flex-col gap-3 place-items-start">
                                   <div className="w-full flex gap-3 place-items-center">
                                     <h3 className='text-md font-semibold'>Questions</h3>
@@ -191,8 +202,9 @@ function CourseFormThree({formik}) {
                                                 <Input variant='static' label={`Question ${qindex+1}`} placeholder='Enter the question' type='text' value={ele.question} onChange={(e)=>{updateQuestion(e,qindex)}}/> 
                                                 {
                                                   ele?.options.map((option,oindex)=>(
-                                                    <div className="w-full flex flex-col gap-4">
+                                                    <div className="w-full flex place-items-center gap-4">
                                                          <Input variant='static' label={`Option ${oindex+1}`} value={option.answer} placeholder='Enter the Option' type='text' onChange={(e)=>{updateOption(e,qindex,oindex)}} /> 
+                                                         <MdDelete size={20} className=' cursor-pointer' onClick={()=>deleteOption(qindex,oindex)}></MdDelete>
                                                     </div>
                                                    
                                                   ))
@@ -226,6 +238,7 @@ function CourseFormThree({formik}) {
                                       </div>
                                     
                                 </div>
+                                : null
                               }
                               
                           </div>
@@ -252,7 +265,14 @@ function CourseFormThree({formik}) {
                               <Textarea variant='static' label='Lecture Description' placeholder='Enter the description for the lecture' type="text" value={lecture.description} onChange={(e)=>{dispatch(updateLecture({...lecture,description:e.target.value}))}}/>
                               <div className="w-full flex gap-3 flex-col">
                                 <label htmlFor="video" className='text-sm text-gray-700'>Lecture Video</label>
-                                <input type="file"  accept='video/*' onChange={(e)=>{dispatch(updateLecture({...lecture,video_name:e.target.files[0]}))}}/>
+                                <input type="file"  accept='video/*' onChange={(e)=>{setVideo(e.target.files[0])}}/>
+                                {
+                                  video &&
+                                  <div className='w-full'>
+                                      <button className='border-2 border-gray-200 px-2 py-1' onClick={uploadVideo} ref={videoRef}>Upload Video</button>
+                                  </div>
+                                  
+                                }
                               </div>
                               <div className="w-full flex place-content-start">
                                 <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'lecture')}}>Save Lecture <GrSave size={20}></GrSave></button>
@@ -263,12 +283,9 @@ function CourseFormThree({formik}) {
                             toggle.assignment &&
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
-                              <Input variant='static' label='Assignment Title' placeholder='Enter the title for the assignment' type='text' value={assignment.title} onChange={(e)=>{dispatch(updateAssignment({...assignment,title:e.target.value}))}}/>
+                              <Input variant='static' label='Assignment Question' placeholder='Enter the question for assignment' type='text' value={assignment.title} onChange={(e)=>{dispatch(updateAssignment({...assignment,title:e.target.value}))}}/>
                               <Textarea variant='static' label='Assignment Description' placeholder='Enter the description for the assignment' type="text" value={assignment.description} onChange={(e)=>{dispatch(updateAssignment({...assignment,description:e.target.value}))}}/>
-                              <div className="w-full flex gap-3 flex-col">
-                                <label htmlFor="video" className='text-sm text-gray-700'>Assignment Document</label>
-                                <input type="file" onChange={(e)=>{dispatch(updateLecture({...assignment,file_name:e.target.files[0]}))}}/>
-                              </div>
+                              
                               <div className="w-full flex place-content-start">
                                 <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'assignment')}}>Save Assignment <GrSave size={20}></GrSave></button>
                               </div>
@@ -317,9 +334,8 @@ function CourseFormThree({formik}) {
         }
         {
            toggle.toggleEdit &&
-          <div className="w-full absolute top-0 bg-black">
-           
-            <courseModals.EditSection index={toggle.toggleEdit}/>
+          <div className="w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-full">
+            <courseModals.EditSection setToggle={setToggle} toggle={toggle}/>
           </div>
           
         }

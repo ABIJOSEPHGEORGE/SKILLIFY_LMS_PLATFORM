@@ -1,35 +1,33 @@
 import React,{useState} from 'react'
 import { useSelector,useDispatch } from 'react-redux'
-import { updateCourseImage,updateFormData,updatePromotionalVideo } from '../../../redux/createCourse'
+import { updateCourseImage, updateError, updateFormData } from '../../../redux/createCourse'
 import { imageValidation,videoValidation} from '../../../validations/FormValidations';
 
 function CourseFormTwo({formik}) { 
-  const {course_image,promo_video,formData} = useSelector((state)=>state.createCourse);
-  const [error,setError] = useState(null)
+  const {formData,error} = useSelector((state)=>state.createCourse);
   const dispatch =  useDispatch()
+
+
   function handleImageUpload(e){
-    console.log(e.target.files[0])
-    console.log('hello')
       const imageValid = imageValidation(e.target.files[0]);
-      setError(null)
+      dispatch(updateError({...error,course_image:''}))
       if(!imageValid.valid){
-          setError({type:'image',msg:imageValid.reason})
+        dispatch(updateError({course_image:imageValid.reason}))
       }else{
         dispatch(updateFormData({...formData,course_image:e.target.files[0]}))
-        setError(null)
       }
   }
+
   function handleVideoUpload(e){
       const videoValid = videoValidation(e.target.files[0]);
-      setError(null)
-      console.log(e.target.files[0])
+      dispatch(updateError({...error,promotional_video:''}))
       if(!videoValid.valid){
-        setError({type:'video',msg:videoValid.reason})
+        dispatch(updateError({promotional_video:videoValid.reason}))
       }else{
         dispatch(updateFormData({...formData,promotional_video:e.target.files[0]}))
-        setError(null)
       }
   }
+  console.log(error)
   return ( 
     <div className="font-poppins w-full h-full flex  place-content-start place-items-center ">
         <div  className='w-3/5 flex flex-col place-items-start place-content-center px-3'>
@@ -42,20 +40,19 @@ function CourseFormTwo({formik}) {
             onChange={(e)=>{handleImageUpload(e)}}
             />
             {
-              error && error.type==="image" ?
-              <p className='text-red-600 font-extralight text-md'>{error.msg}</p>
-              :null
+              error?.course_image && 
+              <p className='text-red-600 font-extralight text-md'>{error.course_image}</p>
             }
         </div>
         <div  className='w-3/5 flex flex-col place-items-start place-content-center px-3'>
             <label htmlFor="course_title" className="text-primaryBlue font-semibold text-xl py-2">Promotional Video</label>
             {
-              !promo_video ?
+              !formData.promotional_video ?
 
               <img src="/instructor/image-placeholder.png" alt="image_preview" className="border-2 border-gray-100 p-5 my-5"/>
               :
             
-              <video src={URL.createObjectURL(promo_video)} alt="video_preview" className="border-2 border-gray-100 p-5 my-5" controls/>
+              <video src={URL.createObjectURL(formData.promotional_video)} alt="video_preview" className="border-2 border-gray-100 p-5 my-5" controls/>
             
             }
             
@@ -67,9 +64,8 @@ function CourseFormTwo({formik}) {
             onChange={(e)=>{handleVideoUpload(e)}}
             />
             {
-              error && error.type==="video" ?
-              <p className='text-red-600 font-extralight text-md'>{error.msg}</p>
-              :null
+              error?.promotional_video &&
+              <p className='text-red-600 font-extralight text-md'>{error.promotional_video}</p>
             }
         </div>
     </div>

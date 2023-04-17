@@ -7,7 +7,7 @@ import { Form } from 'react-router-dom';
 
 function CourseFormOne({formik}) {
     const {categories} = useSelector((state)=>state.category);
-    const {formData} = useSelector((state)=>state.createCourse);
+    const {formData,error} = useSelector((state)=>state.createCourse);
     const [subcategories,setSubcategories] = useState([])
     const dispatch = useDispatch()
     useEffect(()=>{
@@ -15,12 +15,11 @@ function CourseFormOne({formik}) {
     },[dispatch])
 
    
-    const getSubcategories =async(event)=>{
+    async function getSubcategories(event){
         dispatch(updateFormData({...formData,category:event.target.value}))
         if(formData.category!=='select'){
-            await axios.get(`/instructor/subcategories/${formData.category}`)
+            await axios.get(`/instructor/subcategories/${event.target.value}`)
             .then((res)=>{
-                console.log(res)
                 setSubcategories(res.data.results.sub_category)
             })
             .catch((err)=>{
@@ -29,20 +28,31 @@ function CourseFormOne({formik}) {
         }
         
     }
+
+ 
+
   return (
     <div className="font-poppins w-full h-full flex flex-col place-content-evenly gap-3">
         <div className='w-full flex flex-col place-items-start place-content-center'>
             <label htmlFor="course_title" className="text-primaryBlue font-semibold text-xl ppy-2">Course Title</label>
             <input type="text" name="course_title" value={formData.course_title} onChange={(e)=>{dispatch(updateFormData({...formData,course_title:e.target.value}))}}  placeholder="Enter the course title" className="text-black px-5 py-1 border-b-2 focus:outline-none focus:border-primaryBlue w-full"/>
-            
+            {
+                error?.course_title && <p className='text-red-500 font-light'>{error.course_title}</p>
+            }
          </div>
         <div className='w-full flex flex-col place-items-start place-content-center'>
             <label htmlFor="course_subtitle" className="text-primaryBlue font-semibold text-xl py-2">Course Subtitle</label>
             <input type="text" name="course_subtitle" value={formData.course_subtitle} onChange={(e)=>{dispatch(updateFormData({...formData,course_subtitle:e.target.value}))}}  placeholder="Enter the course subtitle" className="text-black px-5 py-1 border-b-2 focus:outline-none focus:border-primaryBlue w-full"/>
+            {
+                error?.course_subtitle && <p className='text-red-500 font-light'>{error.course_subtitle}</p>
+            }
          </div>
         <div className='w-full flex flex-col place-items-start place-content-center'>
             <label htmlFor="course_description" className="text-primaryBlue font-semibold text-xl py-2">Course Description</label>
             <textarea name="course_description" value={formData.course_description} onChange={(e)=>{dispatch(updateFormData({...formData,course_description:e.target.value}))}}  placeholder="Enter the course description" className="text-black px-5 py-1 border-b-2 focus:outline-none focus:border-primaryBlue w-full"/>
+            {
+                error?.course_description && <p className='text-red-500 font-light'>{error.course_description}</p>
+            }
          </div>
          <div className="flex w-full place-content-around">
             <div className='flex-1 flex flex-col place-items-start place-content-center px-1'>
@@ -62,6 +72,9 @@ function CourseFormOne({formik}) {
                         
                     
                 </select>
+                {
+                     error?.category && <p className='text-red-500 font-light'>{error.category}</p>
+                }
             </div>
             <div className='flex-1 flex flex-col place-items-start place-content-center px-1'>
                 <label htmlFor="sub_category" className="text-primaryBlue font-semibold text-xl py-2">Choose Sub Category</label>
@@ -75,7 +88,9 @@ function CourseFormOne({formik}) {
                         }
                     </>
                 </select>
-              
+                {
+                    error?.sub_category && <p className='text-red-500 font-light'>{error.sub_category}</p>
+                }
             </div>
          </div>
     </div>

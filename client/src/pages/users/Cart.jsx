@@ -29,6 +29,7 @@ function Cart() {
 
   return (
     <div className='w-full font-poppins'>
+        <ToastContainer position='top-center' limit={3}></ToastContainer>
         <div className="w-full bg-lightblue h-60">
             <NavBar/>
         <div className="w-full py-5 px-2 flex flex-col place-content-center place-items-center">
@@ -74,7 +75,19 @@ function Cart() {
             </div>
             <div className="w-1/5 p-5 bg-secondary flex flex-col gap-3 shadow-md">
                 <h1 className='text-md font-semibold font-poppins'>Cart Total</h1>
-                <p className='font-semibold'>₹ {cart.subTotal}</p>
+                {
+                    cart?.cartItems?.map((item)=>(
+                        <div className='w-full flex place-content-between border-b-2 border-gray-200 gap-3 py-1'>
+                            <p className='w-3/5 text-sm'>{item.course_title}</p>
+                            <p>₹ {item.course_sale_price}</p>
+                        </div>
+                    ))
+                }
+                <div className='w-full flex gap-2 place-content-between'>
+                    <p className='text-xl font-semibold '>Sub Total : </p>
+                    <p className='font-semibold'>₹ {cart.subTotal}</p>
+                </div>
+               
                 <button className='bg-darkPink px-3 py-2 text-white font-semibold'>Checkout</button>
             </div>
             
