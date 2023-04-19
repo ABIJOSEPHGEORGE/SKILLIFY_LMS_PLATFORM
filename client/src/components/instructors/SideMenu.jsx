@@ -7,9 +7,16 @@ import { NavLink} from 'react-router-dom'
 import {MdOutlineAssignment}  from 'react-icons/md'
 import {GrAnnounce} from 'react-icons/gr';
 import {TbStars} from 'react-icons/tb'
+import { useNavigate } from 'react-router-dom'
 
 
 function SideMenu() {
+    const navigate = useNavigate()
+    const handleLogout = ()=>{
+        localStorage.removeItem('authKey');
+        navigate('/login',{replace:true})
+    }
+
   return (
     <div className='bg-white w-1/6 h-auto shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
         <div className="flex py-3">
@@ -56,7 +63,7 @@ function SideMenu() {
                 <TbStars size={50} className='px-3'></TbStars>
                 <h3 className=' font-semibold '>Reviews</h3>
             </NavLink>
-            <NavLink to="/instructor/logout"  className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
+            <NavLink onClick={handleLogout} className= 'flex place-items-center bg-white-10 my-2'>
                 <CiLogout size={50} className='px-3'></CiLogout>
                 <h3 className=' font-semibold '>Logout</h3>
             </NavLink>

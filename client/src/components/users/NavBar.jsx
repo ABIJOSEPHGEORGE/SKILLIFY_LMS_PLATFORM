@@ -7,10 +7,11 @@ import {BsChevronDown} from 'react-icons/bs'
 import { allCategories } from '../../redux/categorySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateSearchKey } from '../../redux/courseListing'
+import { userToken } from '../../helpers/user/AuthHelpers'
+import jwt_decode from 'jwt-decode'
 
 
 function NavBar() {
-  const navigate = useNavigate()
   const [key,setKey] = useState("")
   const dispatch = useDispatch()
   const {searchKey} = useSelector((state)=>state.courseList)
@@ -31,6 +32,17 @@ function NavBar() {
     }
   }
 
+  const token = userToken()
+  let decode;
+  if(token){
+    decode = jwt_decode(token)
+  }
+
+  const navigate = useNavigate()
+    const handleLogout = (e)=>{
+        localStorage.removeItem('authKey');
+        navigate('/login',{replace:true})
+    }
 
 
   return (
@@ -43,18 +55,42 @@ function NavBar() {
           </div>
       </div>
       
-          
+          <div className='flex gap-3 place-items-center'>
+        
             <Link to="/"><li className='px-1 list-none'>Home</li></Link>
             <Link to="/courses"><li className='px-1 list-none'>Courses</li></Link>
-            <Link to="/user/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
-            
-            <BsCart3></BsCart3>
+            <Link to="/user/cart"><BsCart3 className=" cursor-pointer"></BsCart3></Link>
+            {
+              decode ?
+              <div className="flex flex-1 px-3 place-content-evenly place-items-center gap-3">
         
+                {
+                  decode?.role === 'instructor' ? 
+                  <Link to="/instructor/dashboard"><li className='px-1 list-none'>Instructor</li></Link>
+                  :
+                  <Link to="/instructor/onboarding"><li className='px-1 list-none'>Become an Instructor</li></Link>
+                }
+                
           
-          <div className='flex gap-2'>
-            <button className='px-4 py-2 bg-darkPink mx-2 text-white' onClick={()=>{navigate('/login')}}>Login</button>
-            <button className='px-4 py-2 bg-primaryBlue text-white mx-2' onClick={()=>{navigate('/register')}}>Sign up</button>
-          </div>
+              
+              <li className='px-1 list-none'>My Learning</li>
+              <li className='px-1 list-none cursor-pointer' onClick={(e)=>{handleLogout(e)}}>Logout</li>
+              <div className='w-12 h-12 px-3 py-3 rounded-3xl bg-lightPink flex place-content-center place-items-center'>
+                  <h2 className='text-black font-bold text-2xl uppercase'>A</h2>
+              </div>
+            </div>  
+              :
+              <div className='flex gap-2'>
+              <button className='px-4 py-2 bg-darkPink mx-2 text-white' onClick={()=>{navigate('/login')}}>Login</button>
+              <button className='px-4 py-2 bg-primaryBlue text-white mx-2' onClick={()=>{navigate('/register')}}>Sign up</button>
+            </div>
+            }
+        
+              
+        </div>
+          
+
+          
       </div>
   )
 }

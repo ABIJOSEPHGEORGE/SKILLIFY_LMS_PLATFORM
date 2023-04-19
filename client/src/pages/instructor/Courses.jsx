@@ -104,10 +104,10 @@ function Courses() {
                         </td>
                         <td class="px-6 py-4">
                             <div className="flex place-content-around gap-5">
-                                <div className="flex flex-col place-items-center cursor-pointer">
+                                <Link to={`/instructor/edit-course?id=${course._id}`} className="flex flex-col place-items-center cursor-pointer">
                                 <AiOutlineEdit size={25}></AiOutlineEdit>
                                 <p className="font-semibold ">Edit</p>
-                                </div>
+                                </Link>
                                 <div className="flex flex-col place-items-center cursor-pointer" onClick={()=>{setToggle(course._id)}}>
                                 <AiOutlineDelete size={25} className="text-red-300"></AiOutlineDelete>
                                 <p className="font-semibold text-red-500">Delete</p>

@@ -5,34 +5,34 @@ import UserNav from '../components/users/UserNav';
 import jwt_decode from 'jwt-decode'
 
 function HomePage() {
-  const token = userToken();
-  let decode;
-  if(token){
-    decode = jwt_decode(token)
-  }
   return (
     <div className="w-full h-screen">
         <div className='absolute top-0 w-full'>
-        {
-          token ? <UserNav role={decode?.role}/> : <NavBar/>
-        }
+        <NavBar/>
         </div>
-        <div className=' bg-bgPink w-full h-4/5 flex font-poppins' >
-            <div className="flex-1 flex-col flex place-content-center place-items-center">
-              <h3 className='text-3xl text-black font-semibold w-3/5 leading-10 py-3'>
+        <div className=' bg-bgPink w-full h-4/5 flex font-poppins'  >
+            <div className="flex-1 flex-col flex place-content-center place-items-center gap-5">
+              <h3 className='text-4xl text-black font-semibold w-3/5 leading-snug py-3'>
                 Learn more and make success the result of perfection.
               </h3>
               <p className='text-black text-lg w-3/5'>Pick from over 100,000 online video courses with new additions published every month.</p>
               <div className="w-3/5 flex py-2">
-                <button className='bg-darkPink text-white font-semibold px-4 py-2 '>Course</button>
+                <button className='bg-darkPink text-white font-semibold px-5 py-2 '>Courses</button>
               </div>
             </div>
             <div className="flex-1 flex place-content-center place-items-center">
-              <div className="w-3/5 h-4/5 p-5 mt-10">
+              <div className="w-3/6 h-4/5 p-5 mt-10">
                  <img src="/girl-img.png" className='w-full h-full' alt="home_image" />
               </div>
                 
             </div>
+        </div>
+
+        <div className="w-full flex place-content-center py-10">
+          <div className="px-5 flex gap-20 place-items-center">
+            <h1 className='font-normal text-4xl font-poppins'>Choose favourite course from top category</h1>
+            <button className="px-5 py-4 text-center text-white font-semibold bg-darkPink font-poppins">See All Categories</button>
+          </div>
         </div>
     </div>
     

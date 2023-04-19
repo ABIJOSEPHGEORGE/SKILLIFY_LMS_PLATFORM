@@ -15,7 +15,7 @@ function CourseFormFour() {
     <div className="font-poppins w-full h-auto flex flex-col place-content-evenly py-4 gap-4">
         <div className='w-full flex flex-col place-items-start place-content-center'>
             <label htmlFor="course_type" className="text-primaryBlue font-semibold text-xl py-2">Course Type</label>
-            <select name="course_type" id="course_type" value={formData.course_type} onChange={(e)=>{handleCourseType(e)}} className='w-full border-b-2 border-gray-400 focus:border-blue-500 focus:outline-none'>
+            <select name="course_type" id="course_type" value={ formData.course_type} onChange={(e)=>{handleCourseType(e)}} className='w-full border-b-2 border-gray-400 focus:border-blue-500 focus:outline-none'>
                 <option>Select</option>
                 <option value="free">Free</option>
                 <option value="premium">Premium</option>

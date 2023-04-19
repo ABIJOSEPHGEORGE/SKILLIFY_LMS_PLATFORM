@@ -6,6 +6,7 @@ import { fetchCartItems } from '../../redux/cartSlice';
 import { details } from '../../config';
 import { AiOutlineCloseSquare } from 'react-icons/ai';
 import {toast,ToastContainer} from 'react-toastify'
+import { Link } from 'react-router-dom';
 
 function Cart() {
     const dispatch = useDispatch();
@@ -88,7 +89,7 @@ function Cart() {
                     <p className='font-semibold'>₹ {cart.subTotal}</p>
                 </div>
                
-                <button className='bg-darkPink px-3 py-2 text-white font-semibold'>Checkout</button>
+                <Link to="/user/checkout" className='w-full bg-darkPink text-center text-white font-semibold'><button className='bg-darkPink px-3 py-2 text-white font-semibold'>Checkout</button></Link>
             </div>
             
              

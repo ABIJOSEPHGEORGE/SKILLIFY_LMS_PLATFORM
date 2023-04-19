@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    filter : {category:"All",sub_category:"All",price:"All"},
+    filter : {category:"All",sub_category:"All",price:"All",page:1,sort:1},
     searchKey:"",
 
 }

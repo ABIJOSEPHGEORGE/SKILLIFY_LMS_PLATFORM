@@ -79,7 +79,7 @@ export const PrivateRoute=({role})=>{
             axios.defaults.headers.common['Authorization'] = null;
         }
         const decode = jwt_decode(token)
-        console.log(decode)
+        
         if(role===decode.role){
             return <Outlet/>
         }else if(role!==decode.role && role==='admin'){

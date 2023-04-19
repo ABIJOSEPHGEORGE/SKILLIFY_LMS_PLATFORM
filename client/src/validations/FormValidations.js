@@ -111,3 +111,33 @@ export const CourseCreationValidation=(formData,step)=>{
         return false;
     }
 }
+
+export const sectionValidation=({title,description})=>{
+    if(title===""||title.trim().length===0){
+        return {section_title:'Section title is required'}
+    }else if(description===""||description.trim().length===0){
+        return {section_description:"Section description is required"}
+    }else{
+        return false;
+    }
+}
+
+export const lectureValidation=({title,description,video_path})=>{
+    if(title==="" || title.trim().length===0){
+        return {lecture_title:'Lecture title is required'}
+    }else if(description==="" || description.trim().lenght===0){
+        return {lecture_description:'Lecture description is required'}
+    }else if(!video_path || video_path===""){
+        return {video_path:'Please upload a lecture video'}
+    }else{
+        return false;
+    }
+}
+
+export const checkoutSchema = Yup.object({
+    first_name:Yup.string().trim().required("First name is required"),
+    last_name:Yup.string().trim().required('Last name title is required'),
+    state:Yup.string().trim().required('State description is required'),
+    country:Yup.string().required('Country is required'),
+})
+

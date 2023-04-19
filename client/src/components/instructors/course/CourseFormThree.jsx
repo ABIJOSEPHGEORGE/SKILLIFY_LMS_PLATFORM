@@ -1,6 +1,6 @@
-import React, {  useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz, createNewQuestion, deleteContent } from '../../../redux/createCourse';
+import { updateSection,deleteSection, updateLecture, createSection, createContent, updateAssignment,createQuestion,createQuiz, createNewQuestion, deleteContent, updateError } from '../../../redux/createCourse';
 import { Input,Textarea, button } from '@material-tailwind/react';
 import {AiFillPlayCircle, AiFillQuestionCircle, AiOutlineClose, AiOutlinePlus} from 'react-icons/ai'
 import { MdDelete, MdModeEdit} from 'react-icons/md';
@@ -9,13 +9,14 @@ import axios from 'axios';
 import { GrClose, GrSave } from 'react-icons/gr';
 import {motion} from 'framer-motion'
 import { ToastContainer, toast } from 'react-toastify';
-import courseModals from './courseModals';
+import courseModals from '../../modals/courseModals';
 import { Link } from 'react-router-dom';
 import { details } from '../../../config';
+import { lectureValidation, sectionValidation } from '../../../validations/FormValidations';
 
 
 function CourseFormThree({formik}) {
-  const {section,formData,lecture,assignment,quiz} = useSelector(state=>state.createCourse);
+  const {section,formData,lecture,assignment,quiz,error} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
   const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null});
   const [options,setOptions] = useState([]);
@@ -24,30 +25,48 @@ function CourseFormThree({formik}) {
   const [path,setPath] = useState(null)
   const videoRef = useRef()
 
+  
+
   function newSection(e){
     e.preventDefault()
+    const isValid = sectionValidation(section)
+    if(!isValid){
+      dispatch(createSection(section));
+      setToggle({...toggle,section:!toggle.section});
+      dispatch(updateSection({title:'',description:'',content:[]}))
+      dispatch(updateError(null))
+    }else{
+      dispatch(updateError(isValid))
+    }
     
-    dispatch(createSection(section));
-    setToggle({...toggle,section:!toggle.section});
-    dispatch(updateSection({title:'',description:'',content:[]}))
   }
 
   const saveContent =(index,content_type)=>{
     if(content_type==="lecture"){
-        dispatch(createContent({index:index,
-        content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_path:lecture.video_path,content_type:content_type}}));
-        dispatch(updateLecture({title:'',description:'',video:''}));
-        setToggle({...toggle,lecture:!toggle.lecture})
-        setVideo(null)
+      console.log(lecture)
+        const isValid = lectureValidation(lecture);
+        console.log(isValid)
+        if(!isValid){
+              dispatch(createContent({index:index,
+              content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_path:lecture.video_path,content_type:content_type}}));
+              dispatch(updateLecture({title:'',description:'',video:''}));
+              setToggle({...toggle,lecture:!toggle.lecture})
+              setVideo(null);
+              dispatch(updateError(null))
+        }else{
+            dispatch(updateError(isValid));
+        }
     }else if(content_type==="assignment"){
       dispatch(createContent({index:index,
         content:{title:assignment.title,description:assignment.description,content_type:content_type}}));
         dispatch(updateAssignment({title:'',description:'',file_name:''}));
         setToggle({...toggle,assignment:!toggle.assignment})
+        dispatch(updateError(null))
     }else if(content_type==="quiz"){
       dispatch(createContent({index:index,
         content:{title:quiz.title,description:quiz.description,content_type:content_type,questions:[]}}));
         setToggle({...toggle,quiz:!toggle.quiz})
+        dispatch(updateError(null))
     }
 
   }
@@ -258,11 +277,26 @@ function CourseFormThree({formik}) {
                           <button type='button' className='text-primaryBlue flex gap-2 font-semibold' onClick={()=>{setToggle({...toggle,assignment:!toggle.assignment})}}>Assignment {!toggle.assignment ? <AiOutlinePlus size={20}></AiOutlinePlus> : <AiOutlineClose size={20}></AiOutlineClose>}</button>
                         </div>
                           {
+                            //creating new lecture session
+
                             toggle.lecture.status && toggle.lecture.index===index &&
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
-                              <Input variant='static' label='Lecture Title' placeholder='Enter the title for the lecture' type='text' value={lecture.title} onChange={(e)=>{dispatch(updateLecture({...lecture,title:e.target.value}))}}/>
-                              <Textarea variant='static' label='Lecture Description' placeholder='Enter the description for the lecture' type="text" value={lecture.description} onChange={(e)=>{dispatch(updateLecture({...lecture,description:e.target.value}))}}/>
+                              <div>
+                                  <Input variant='static' label='Lecture Title' placeholder='Enter the title for the lecture' type='text' value={lecture.title} onChange={(e)=>{dispatch(updateLecture({...lecture,title:e.target.value}))}}/>
+                                  {
+                                    error?.lecture_title &&
+                                    <p className='text-red-500 font-normal text-sm font-poppins'>{error?.lecture_title}</p>
+                                  }
+                              </div>
+                              <div>
+                                  <Textarea variant='static' label='Lecture Description' placeholder='Enter the description for the lecture' type="text" value={lecture.description} onChange={(e)=>{dispatch(updateLecture({...lecture,description:e.target.value}))}}/>
+                                  {
+                                    error?.lecture_description &&
+                                    <p className='text-red-500 font-normal text-sm font-poppins'>{error?.lecture_description}</p>
+                                  }
+                              </div>
+                              
                               <div className="w-full flex gap-3 flex-col">
                                 <label htmlFor="video" className='text-sm text-gray-700'>Lecture Video</label>
                                 <input type="file"  accept='video/*' onChange={(e)=>{setVideo(e.target.files[0])}}/>
@@ -273,6 +307,10 @@ function CourseFormThree({formik}) {
                                   </div>
                                   
                                 }
+                                {
+                                   error?.video_path &&
+                                   <p className='text-red-500 font-normal text-sm font-poppins'>{error?.video_path}</p>
+                                }
                               </div>
                               <div className="w-full flex place-content-start">
                                 <button className='text-md border-2 border-gray-600  p-2 flex gap-3' onClick={()=>{saveContent(index,'lecture')}}>Save Lecture <GrSave size={20}></GrSave></button>
@@ -280,6 +318,8 @@ function CourseFormThree({formik}) {
                             </motion.div>
                           }   
                           {
+                              //creating new assignment
+
                             toggle.assignment &&
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
@@ -292,6 +332,8 @@ function CourseFormThree({formik}) {
                             </motion.div>
                           }
                           {
+                            //creating new quiz
+
                             toggle.quiz &&
                             <motion.div initial={{opacity:0}} animate={{opacity:1}}
                             transition={{ ease: "easeOut", duration: 1 }}  className='w-full flex flex-col gap-6'>
@@ -316,13 +358,23 @@ function CourseFormThree({formik}) {
         </div>
 
         {
+          //creating new section
+
           toggle.section &&
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{ ease: "easeOut", duration: 1 }} className="bg-white w-full p-5 gap-6 flex flex-col place-content-around border-gray-600 border-2 my-3" >
               <div className='w-full flex flex-col place-items-start place-content-center py-2'>
                 <Input label='Enter Section Title' variant='static' type='text' name="section_title" value={section.title} onChange={(e)=>{dispatch(updateSection({...section,title:e.target.value}))}}  placeholder="Enter the section title"></Input>
+                {
+                  error?.section_title &&
+                  <p className='text-red-500 font-normal text-sm font-poppins'>{error.section_title}</p>
+                }
               </div>
               <div className='w-full flex flex-col place-items-start place-content-center'>
                 <Textarea label='Enter Section description' variant='static' type='text' name="section_description" value={section.description} onChange={(e)=>dispatch(updateSection({...section,description:e.target.value}))} placeholder="Enter the section description"/>
+                {
+                  error?.section_description &&
+                  <p className='text-red-500 font-normal text-sm font-poppins'>{error.section_description}</p>
+                }
               </div>
               
               

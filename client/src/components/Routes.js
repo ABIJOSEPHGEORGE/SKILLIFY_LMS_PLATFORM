@@ -25,6 +25,7 @@ import CourseListingPage from '../pages/users/CourseListingPage'
 import CourseDetailPage from '../pages/users/CourseDetailPage'
 import Cart from '../pages/users/Cart'
 import Checkout from '../pages/users/Checkout'
+import EditCourse from '../pages/instructor/EditCourse'
 
 
 
@@ -66,6 +67,7 @@ function AnimatedRoutes() {
           <Route path="dashboard" element={<InstructorDashboard/>}/>
           <Route path="courses" element={<Courses/>}/>
           <Route path='create-course' element={<CreateCourse/>}/>
+          <Route path='edit-course' element={<EditCourse/>}/>
         </Route>
 
         <Route path='/admin' element={<PrivateRoute role="admin"/>}>
