@@ -2,6 +2,7 @@ const express = require('express');
 const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
+const { stripeCheckout } = require('../controller/user/OrderController');
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.get('/cart',cartItems);
 router.get('/subcategories/:id',parentSubCategories)
 
 router.post('/add-to-cart/:id',addToCart);
+router.post('/checkout/stripe',stripeCheckout);
 
 router.delete('/cart/:id',deleteCartItem);
 
