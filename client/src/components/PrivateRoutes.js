@@ -1,9 +1,10 @@
-import { Navigate, Outlet,redirect} from "react-router-dom";
+import { Navigate, Outlet,redirect, useLocation, useNavigate} from "react-router-dom";
 import { adminToken, tokenAuthentication, userToken } from "../helpers/user/AuthHelpers";
 import jwt_decode from 'jwt-decode'
 import { useEffect } from "react";
 import Login from "./users/Login";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const PrivateRoutes = ()=>{
     async function decode(){
@@ -71,24 +72,33 @@ export const AdminRoutes = ()=>{
 
 
 export const PrivateRoute=({role})=>{
+    const navigate = useNavigate();
+    const location =  useLocation();
+
    try{
+        //Getting the token
         const token = JSON.parse(localStorage.getItem('authKey'));
+        //Attachng the token to axios headers
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
         } else {
             axios.defaults.headers.common['Authorization'] = null;
         }
+        //Decoding the token
         const decode = jwt_decode(token)
-        
-        if(role===decode.role){
+        //Handling token expiration
+        if(decode.exp * 1000 < Date.now()){
+            sessionStorage.setItem('redirectURL',location.pathname)
+            localStorage.removeItem('authKey');
+            return navigate('/login',{state:{error:'Session Expired, Please login again'}})
+        }else if(role===decode.role){
             return <Outlet/>
         }else if(role!==decode.role && role==='admin'){
             redirect('/admin')
         }else if(role!==decode.role && role==="user" && decode.role==="instructor"){
             return <Outlet/>
         }else{
-            localStorage.removeItem('authKey')
-            return <Login/>
+            return  localStorage.removeItem('authKey')
         }
    }catch(err){
         localStorage.removeItem('authKey')

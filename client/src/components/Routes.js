@@ -26,21 +26,13 @@ import CourseDetailPage from '../pages/users/CourseDetailPage'
 import Cart from '../pages/users/Cart'
 import Checkout from '../pages/users/Checkout'
 import EditCourse from '../pages/instructor/EditCourse'
+import { useEffect } from 'react'
 
 
 
 function AnimatedRoutes() {
-  // //Assigning token into axios headers
-  //   (function() {
-  //       const user = userToken();
-  //       if (user?.token) {
-  //           axios.defaults.headers.common['Authorization'] = user.token;
-  //           console.log("hello")
-  //       } else {
-  //           axios.defaults.headers.common['Authorization'] = null;
-  //       }
-  //   })();
-    const location = useLocation();
+
+  const location = useLocation();
   return (
     <AnimatePresence>
     <Routes location={location} key={location.pathname}>

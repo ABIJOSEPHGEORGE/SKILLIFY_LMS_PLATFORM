@@ -13,6 +13,9 @@ import courseModals from '../../modals/courseModals';
 import { Link } from 'react-router-dom';
 import { details } from '../../../config';
 import { lectureValidation, sectionValidation } from '../../../validations/FormValidations';
+import DeleteModal from '../../modals/DeleteModal';
+import { BsCheckCircleFill } from 'react-icons/bs';
+import {ImCross} from 'react-icons/im'
 
 
 function CourseFormThree({formik}) {
@@ -23,6 +26,7 @@ function CourseFormThree({formik}) {
   const [questions,setQuestions] = useState([]);
   const [video,setVideo] = useState(null);
   const [path,setPath] = useState(null)
+  const [popup,setPopup] = useState({toggle:false,params:null,action:null})
   const videoRef = useRef()
 
   
@@ -89,9 +93,7 @@ function CourseFormThree({formik}) {
       setQuestions(newQuestion)
   }
 
-  function handleDelete(index){
-    dispatch(deleteSection(index));
-  }
+  
 
   const newQuestion=()=>{
     const singleQuestion = {question:'',options:[]}
@@ -163,7 +165,7 @@ function CourseFormThree({formik}) {
                       <h2 className='text-black font-semibold text-md' > {item.title}</h2>
                     </div>
                     <div className="flex gap-3 place-items-center">
-                      <MdDelete size={20} className="cursor-pointer" onClick={()=>{handleDelete(index)}}></MdDelete>
+                      <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>(dispatch(deleteSection(index)))})}}></MdDelete>
                       <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
                     </div>
                     
@@ -180,7 +182,7 @@ function CourseFormThree({formik}) {
                                     <h2 className='font-semibold text-sm first-letter:capitalize'>{item.title}</h2>
                                 </div>
                                 <div className="flex gap-3 place-items-center">
-                                  <MdDelete size={20} className="cursor-pointer" onClick={()=>{dispatch(deleteContent({sec_index:index,cindex:cindex}))}}></MdDelete>
+                                  <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>dispatch(deleteContent({sec_index:index,cindex:cindex}))})}}></MdDelete>
                                   <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
                                 </div>
                               </div>
@@ -208,6 +210,19 @@ function CourseFormThree({formik}) {
                                               <ul>
                                                 <li className='list-none'>{index+1}. {ele.question}</li>
                                               </ul>
+                                              
+                                              <div className='flex gap-4 place-items-center'>
+                                                  
+                                                    <>
+                                                    <p className='font-semibold text-md'>Options : </p>
+                                                        {
+                                                        ele?.options?.map((option,oindex)=>(
+                                                          <li className='list-none flex gap-2 place-items-center'>{option?.isCorrect ? <BsCheckCircleFill size={10}></BsCheckCircleFill> : <ImCross size={10}></ImCross>} {option.answer}</li>
+                                                        ))
+                                                        }
+                                                    </>
+                                                  
+                                              </div>
                                           </div>
                                         ))
                                       }
@@ -391,6 +406,13 @@ function CourseFormThree({formik}) {
           </div>
           
         }
+        
+         {
+          popup.toggle &&
+          <DeleteModal setPopup={setPopup}  popup={popup}></DeleteModal>
+         }
+          
+        
         
     </div>
   )

@@ -9,13 +9,17 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
     const navigate = useNavigate();
-    const location = useLocation()
+    const location = useLocation();
+    const redirectURL = sessionStorage.getItem('redirectURL');
     useEffect(()=>{
         if(location.state?.msg){
             toast.success(location.state?.msg)
             location.state.msg = ""
+        }else if(location.state?.error){
+            toast.error(location.state?.error);
+            location.state.error = ""
         }
-    },[location.state])
+    },[])
     const {values,errors,touched,handleSubmit,handleBlur,handleChange} = useFormik({
         initialValues:{
             email:'',
@@ -31,7 +35,13 @@ function Login() {
                     const token = res.data.results.token;
                     const user = JSON.stringify(token)
                     localStorage.setItem('authKey',user);
-                    navigate('/',{replace:true})
+                    if(redirectURL){
+                        sessionStorage.removeItem('redirectURL')
+                        navigate(redirectURL)
+                    }else{
+                        navigate('/',{replace:true})
+                    }
+                   
                 }
             })
             .catch((err)=>{
@@ -45,7 +55,7 @@ function Login() {
     initial={{opacity:0}} 
     animate={{opacity:1}} 
     exit={{opacity:0,transition:{duration:0.5}}}  className='flex flex-col md:flex md:flex-row w-100 h-screen font-poppins lg:overflow-y-hidden'>
-    <ToastContainer limit={3} position={'top-center'} autoClose={1000}/>
+    <ToastContainer limit={1} position={'top-center'} autoClose={5000}/>
         <div className=' w-100  md:w-3/6 lg:w-2/5 bg-primary flex justify-center items-center py-3 md:py-0'>
            <div className="flex-col w-100">
                 <img src="/login/login-banner.png" alt="login-banner"  className='w-100 p-5'/>
