@@ -27,7 +27,7 @@ function StripePayment({billing_address}){
         .catch((err)=>{
             console.log(err)
         })
-    },[])
+    },[billing_address])
     const appearance = {
         // If you are planning to extensively customize rules, use the "none"
         // theme. This theme provides a minimal number of rules by default to avoid

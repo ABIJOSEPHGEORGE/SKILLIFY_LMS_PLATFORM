@@ -8,6 +8,18 @@ const cart = {
         ref:'Course'
     
 }
+const enrolled_course = {
+    course_id:{
+        type:mongoose.Types.ObjectId,
+        ref:'Course'
+    },
+    progress:{
+        type:Number,
+        default:0,
+    },
+
+    
+}
 const User = mongoose.model('User',new mongoose.Schema({
     first_name:{
         type:String,
@@ -38,9 +50,9 @@ const User = mongoose.model('User',new mongoose.Schema({
     cart:[
         cart
     ],
-    enrolled_course:{
-        type:Array,
-    },
+    enrolled_course:[
+        enrolled_course
+    ],
     status:{
         type:Boolean,
         default:false,

@@ -139,6 +139,6 @@ export const checkoutSchema = Yup.object({
     last_name:Yup.string().trim().required('Last name is required'),
     state:Yup.string().trim().required('State description is required'),
     country:Yup.string().required('Country is required'),
-    email:Yup.string().required('Email is required'),
+    email:Yup.string().email().required('Email is required'),
 })
 

@@ -3,6 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET)
 const User = require('../../models/userSchema');
 const short = require('short-uuid');
 const Order = require('../../models/orderSchema');
+const { default: mongoose } = require('mongoose');
 
 
 module.exports = {
@@ -40,8 +41,14 @@ module.exports = {
     orderConfirmation:async(req,res)=>{
         try{
             const response = await Order.findOneAndUpdate({_id:req.body.orderId},{status:'success'},{new:true});
-            //clearing user cart
-            await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}})
+            //clearing the user cart
+            await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}});
+            //adding the purchased courses to user enrolled list
+            
+            response.courses.forEach(async(ele)=>{
+                await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id}}})
+            })
+            
             res.status(201).json(success("OK",response))
         }catch(err){
             console.log(err)
