@@ -136,8 +136,9 @@ export const lectureValidation=({title,description,video_path})=>{
 
 export const checkoutSchema = Yup.object({
     first_name:Yup.string().trim().required("First name is required"),
-    last_name:Yup.string().trim().required('Last name title is required'),
+    last_name:Yup.string().trim().required('Last name is required'),
     state:Yup.string().trim().required('State description is required'),
     country:Yup.string().required('Country is required'),
+    email:Yup.string().required('Email is required'),
 })
 

@@ -49,9 +49,9 @@ function NavBar() {
     <div className='w-100 h-20 flex font-poppins px-5 p-4 place-items-center place-content-center gap-5'>
       <div className="flex flex-1 place-items-center place-content-start gap-12">
           <h1 className='font-semibold text-2xl text-black'>Skillify</h1>
-          <div className="flex px-10 rounded-3xl border-2 border-gray-600 py-2 place-items-center ms-3">
+          <div className="flex px-10 rounded-3xl border-2 border-gray-800 py-2 place-items-center ms-3">
             <AiOutlineSearch size={20}></AiOutlineSearch>
-            <input type="text" className='focus:outline-none ms-2 bg-transparent' value={search} placeholder='search for courses' onChange={(e)=>setSearch(e.target.value)} onKeyPress={(e)=>{searchCourse(e)}}/>
+            <input type="text" className='focus:outline-none ms-2 bg-transparent placeholder:text-black' value={search} placeholder='search for courses' onChange={(e)=>setSearch(e.target.value)} onKeyPress={(e)=>{searchCourse(e)}}/>
           </div>
       </div>
       

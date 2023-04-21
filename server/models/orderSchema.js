@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const Order = mongoose.model('Order',new mongoose.Schema({
+    order_id:{
+        type:String,
+        required:true,
+    },
     bill_amount:{
         type:Number,
         required:true
@@ -29,6 +33,15 @@ const Order = mongoose.model('Order',new mongoose.Schema({
     courses:{
         type:Array,
         required:true
+    },
+    user:{
+        type:mongoose.Types.ObjectId,
+        ref:'User'
+    },
+    status:{
+        type:String,
+        enum:['pending','success','failed'],
+        default:'pending'
     }
 }))
 

@@ -26,12 +26,13 @@ import CourseDetailPage from '../pages/users/CourseDetailPage'
 import Cart from '../pages/users/Cart'
 import Checkout from '../pages/users/Checkout'
 import EditCourse from '../pages/instructor/EditCourse'
-import { useEffect } from 'react'
+import ConfirmOrder from './payments/ConfirmOrder'
 
 
 
 function AnimatedRoutes() {
 
+ 
   const location = useLocation();
   return (
     <AnimatePresence>
@@ -53,6 +54,7 @@ function AnimatedRoutes() {
         <Route path='/user' element={<PrivateRoute role="user"/>}>
             <Route path='cart' element={<Cart/>}/>
             <Route path='checkout' element={<Checkout/>}/>
+            <Route path='confirm-order' element={<ConfirmOrder/>}/>
         </Route>
 
         <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>

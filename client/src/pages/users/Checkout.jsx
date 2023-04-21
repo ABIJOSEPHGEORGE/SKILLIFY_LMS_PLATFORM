@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect,useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import { fetchCartItems } from '../../redux/cartSlice'
 import { useNavigate } from 'react-router-dom';
@@ -8,14 +8,22 @@ import {Input} from '@material-tailwind/react'
 import {useFormik} from 'formik'
 import { checkoutSchema } from '../../validations/FormValidations';
 
+import StripePayment from '../../components/payments/StripPayment';
+
+
+
 function Checkout() {
+
   const {cart} = useSelector((state)=>state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const [payment,setPayment]= useState(false);
+  const [billingAdd,setBillingAdd] = useState('')
   useEffect(()=>{
     dispatch(fetchCartItems())
   },[])
 
+ 
 
   function cartCheck(){
     if(cart?.cartItems?.length===0){
@@ -31,13 +39,15 @@ function Checkout() {
       last_name:"",
       state:"",
       country:"",
+      email:'',
     },
     validationSchema:checkoutSchema,
     onSubmit:(values)=>{
-        console.log(values)
+        setBillingAdd(values)
+        setPayment(true);
     }
   })
-
+  
   return (
     <div className='w-full font-poppins'>
         <ToastContainer position='top-center' limit={3}></ToastContainer>
@@ -75,6 +85,13 @@ function Checkout() {
                         <p className='text-red-600 font-extralight text-md'>{formik.errors.state}</p>
                       }
                  </div>
+                 <div className="w-full">
+                      <Input type='text' variant='static' label='Email' name='email' value={formik.email} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
+                      {
+                        formik.errors.email && formik.touched.email &&
+                        <p className='text-red-600 font-extralight text-md'>{formik.errors.email}</p>
+                      }
+                 </div>
                 <div className='w-full'>
                     <Input type='text' variant='static' label='county' name='country' value={formik.country} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                     {
@@ -100,10 +117,13 @@ function Checkout() {
                     <p className='font-semibold'>₹ {cart.subTotal}</p>
                 </div>
                
-                <button className='bg-darkPink px-3 py-2 text-white font-semibold' type='submit' onClick={formik.handleSubmit}>Proceed to pay</button>
+                <button className='bg-darkPink px-3 py-2 text-white font-semibold focus:outline-none' type='submit' onClick={formik.handleSubmit}>Proceed to pay</button>
             </div>
-            
         </div>
+         {
+          payment &&
+          <StripePayment billing_address={billingAdd}/>
+         }
     </div>
   )
 }
