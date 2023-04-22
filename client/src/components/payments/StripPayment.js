@@ -3,6 +3,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import {Elements} from '@stripe/react-stripe-js'
 import StripeForm from "./StripeForm";
+import { toast } from "react-toastify";
+import { Navigate } from "react-router-dom";
+import Cart from "../../pages/users/Cart";
 
 function StripePayment({billing_address}){
     const [stripePromise,setStripPromise] = useState(null);
@@ -26,6 +29,9 @@ function StripePayment({billing_address}){
         })
         .catch((err)=>{
             console.log(err)
+            if(err?.response.status===409){
+                toast.error(err.response.data.message);
+            }
         })
     },[billing_address])
     const appearance = {

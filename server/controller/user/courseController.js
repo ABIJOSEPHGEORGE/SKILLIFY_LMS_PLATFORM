@@ -1,4 +1,6 @@
+const { default: mongoose } = require("mongoose");
 const Course = require("../../models/courseSchema");
+const User = require("../../models/userSchema");
 const { error, success } = require("../../responseApi");
 module.exports = {
     getCourses:async(req,res)=>{
@@ -40,6 +42,32 @@ module.exports = {
             return res.status(200).json(success("OK",course))
         }catch(err){
             res.status(500).json(error("Something went wrong, Try after sometimes"))
+        }
+    },
+    isEnrolled:async(req,res)=>{
+        try{
+            //finding the user
+            const user = await User.findOne({email:req.user});
+            //finding the course is enrolled or not
+            req.params.id = new mongoose.Types.ObjectId(req.params.id).toString()
+            const isEnrolled = user.enrolled_course.find(course=>course.course_id.toString()===req.params.id)
+            if(isEnrolled){
+                return res.status(200).json(success("OK",true))
+            }else{
+                return res.status(200).json(success("OK",false))
+            }
+        }catch(err){
+            console.log(err)
+            return res.status(500).json(error("Something went wrong"));
+        }
+    },
+    enrolledCourses:async(req,res)=>{
+        try{
+            //fetching all courses enrolled by user
+            const courses = await User.findOne({email:req.user}).populate({path:"enrolled_course.course_id"});
+            res.status(200).json(success("OK",courses.enrolled_course))
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
     }
 }

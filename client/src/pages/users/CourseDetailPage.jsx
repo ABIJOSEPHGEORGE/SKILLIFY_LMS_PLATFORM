@@ -29,11 +29,11 @@ function CourseDetailPage() {
     const navigate = useNavigate()
     const cartRef = useRef()
     const {id} = useParams()
-    const [state,setState]= useState(false)
+    const [state,setState]= useState({cart:false,enrolled:false})
     const {course} = useSelector((state)=>state.courses)
     useEffect(()=>{
        fetchCourse(id);
-       
+       alreadyEnrolled(id)
     },[id])
    
     function fetchCourse(id){
@@ -45,15 +45,17 @@ function CourseDetailPage() {
     }
     
     function addTocart(id){
-        !state ? 
+        !state.cart && !state.enrolled ? 
         axios.post(`/user/add-to-cart/${id}`)
         .then((res)=>{
             cartRef.current.textContent = 'Go to cart'
-            setState(!state)
+            setState({...state,cart:!state.cart})
         })
         .catch((err)=>{
             console.log(err)
         })
+        : state.enrolled ?
+        navigate("/user/my-learning")
         :
         navigate("/user/cart")
     }
@@ -63,9 +65,24 @@ function CourseDetailPage() {
         .then((res)=>{
             if(res.data.results){
                 cartRef.current.textContent = 'Go to cart';
-                setState(!state)
+                setState({...state,cart:!state.cart})
             }
            
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
+
+    function alreadyEnrolled(id){
+        axios.get(`/user/enrolled-courses/${id}`)
+        .then((res)=>{
+            if(res.data.results){
+                cartRef.current.textContent = "Continue Learning";
+                setState({...state,enrolled:true})
+            }
+            
         })
         .catch((err)=>{
             console.log(err)

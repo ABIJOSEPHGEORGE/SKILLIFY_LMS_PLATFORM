@@ -3,6 +3,7 @@ const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
 const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
+const { isEnrolled, enrolledCourses } = require('../controller/user/courseController');
 
 const router = express.Router();
 
@@ -11,7 +12,9 @@ router.use(tokenVerification)
 router.get('/cart/:id',existInCart);
 router.get('/cart',cartItems);
 router.get('/subcategories/:id',parentSubCategories);
-router.get('/stripe/publish-key',stripPublishKey)
+router.get('/stripe/publish-key',stripPublishKey);
+router.get('/enrolled-courses/:id',isEnrolled);
+router.get('/enrolled-courses',enrolledCourses)
 
 router.post('/add-to-cart/:id',addToCart);
 router.post('/checkout/stripe',stripeCheckout);

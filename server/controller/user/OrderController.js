@@ -31,8 +31,10 @@ module.exports = {
                 enabled:true,
             },
            })
-           console.log(order)
-           res.status(200).json(success("OK",{client_secret:paymentIntent.client_secret,order_id:order._id}))
+           
+            res.status(200).json(success("OK",{client_secret:paymentIntent.client_secret,order_id:order._id}))
+           
+          
         }catch(err){
             console.log(err)
             res.status(500).json(error("Something wen't wrong,Try after sometimes"));
@@ -59,19 +61,21 @@ module.exports = {
 
 async function createOrder(billing_address,cartTotal,user){
     try{
-        //generating unique order id
-        const orderId = short.generate();
-        
-        const newOrder = {
-            order_id: orderId,
-            bill_amount:cartTotal,
-            billing_address:billing_address,
-            order_date:new Date(),
-            courses : user.cart,
-        }
 
-        const order = await Order.create(newOrder);
-        return order;
+                //generating unique order id
+                const orderId = short.generate();
+                
+                const newOrder = {
+                    order_id: orderId,
+                    bill_amount:cartTotal,
+                    billing_address:billing_address,
+                    order_date:new Date(),
+                    courses : user.cart,
+                }
+                
+                const order = await Order.create(newOrder);
+                return order;
+        
     }catch(err){
         return err;
     }

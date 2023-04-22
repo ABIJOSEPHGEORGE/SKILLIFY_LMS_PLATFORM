@@ -27,6 +27,7 @@ import Cart from '../pages/users/Cart'
 import Checkout from '../pages/users/Checkout'
 import EditCourse from '../pages/instructor/EditCourse'
 import ConfirmOrder from './payments/ConfirmOrder'
+import MyLearning from '../pages/users/MyLearning'
 
 
 
@@ -55,6 +56,7 @@ function AnimatedRoutes() {
             <Route path='cart' element={<Cart/>}/>
             <Route path='checkout' element={<Checkout/>}/>
             <Route path='confirm-order' element={<ConfirmOrder/>}/>
+            <Route path='my-learning' element={<MyLearning/>}/>
         </Route>
 
         <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>
