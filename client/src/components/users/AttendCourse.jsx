@@ -8,6 +8,7 @@ import {ImFileVideo} from 'react-icons/im'
 import { details } from '../../config';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateToggle } from '../../redux/attendCourseSlice';
+import Discussion from './Discussion';
 
 
 
@@ -129,7 +130,7 @@ function AttendCourse() {
                             <h3>{course?.course_id?.course_welcome_message}</h3>
                         </div>
                     }
-                    <div className="w-3/5 px-5 py-10 flex flex-col place-items-center">
+                    <div className="w-full px-5 py-10 flex gap-3">
 
                         <Tabs value="overview" className="w-full px-10">
                             <TabsHeader
@@ -144,7 +145,13 @@ function AttendCourse() {
                                     Overview
                                 </Tab>
                                 <Tab key="curriculum" value="curriculum" className='font-normal font-poppins py-3'>
-                                    Curriculum
+                                    Discussion
+                                </Tab>
+                                <Tab key="notes" value="notes" className='font-normal font-poppins py-3'>
+                                    Notes
+                                </Tab>
+                                <Tab key="announcements" value="announcements" className='font-normal font-poppins py-3'>
+                                    Announcements
                                 </Tab>
                                 <Tab key="instructor" value="instructor" className='font-normal font-poppins py-3'>
                                     Instructor
@@ -164,38 +171,8 @@ function AttendCourse() {
                                 </TabPanel>
 
                                 <TabPanel key="curriculum" value="curriculum">
-                                    <div className="w-full flex flex-col gap-3">
-                                        {
-                                            
-                                            course?.course_id?.curriculum?.map((section, index) => (
-                                                <Accordion open={open === index} icon={<Icon id={index} open={open} />} className='bg-gray-100 px-5'>
-                                                    <AccordionHeader onClick={() => handleOpen(index)} className='text-lg font-semibold font-poppins capitalize tracking-wider'>
-                                                        {section.title}
-                                                    </AccordionHeader>
-                                                    <AccordionBody>
-                                                        <div className='flex flex-col gap-4'>
-                                                            <p className='text-gray-600 font-light text-md font-poppins'>{section.description}</p>
-
-                                                            {
-                                                                section?.content?.map((content, index) => (
-                                                                    <Accordion open={contOpen === index}>
-                                                                        <AccordionHeader onClick={() => handleContOpen(index)} className='text-md font-semibold  capitalize font-poppins'>
-                                                                            <h2 className='flex gap-3 place-items-center'>{content.content_type === "lecture" ? <MdOndemandVideo size={20}></MdOndemandVideo> : content.content_type === "quiz" ? <AiOutlineBulb size={20}></AiOutlineBulb> : <HiDocumentDuplicate size={20}></HiDocumentDuplicate>} {content.title} | {content.content_type}</h2>
-
-                                                                        </AccordionHeader>
-                                                                        <AccordionBody className="font-poppins">
-                                                                            {content.description}
-                                                                        </AccordionBody>
-                                                                    </Accordion>
-                                                                ))
-                                                            }
-                                                        </div>
-                                                    </AccordionBody>
-                                                </Accordion>
-                                            ))
-                                        }
-
-
+                                    <div className="w-4/5 flex flex-col place-items-center gap-3">
+                                         <Discussion courseId={course?.course_id?._id}/>
                                     </div>
                                 </TabPanel>
                                 <TabPanel key="instructor" value="instructor">
@@ -217,7 +194,8 @@ function AttendCourse() {
 
                             </TabsBody>
                         </Tabs>
-
+                                
+                        
                     </div>
                 </div>
             </div>
