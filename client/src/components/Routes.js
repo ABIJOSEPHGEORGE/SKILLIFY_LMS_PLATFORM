@@ -28,6 +28,7 @@ import Checkout from '../pages/users/Checkout'
 import EditCourse from '../pages/instructor/EditCourse'
 import ConfirmOrder from './payments/ConfirmOrder'
 import MyLearning from '../pages/users/MyLearning'
+import CourseAttendingPage from './users/AttendCourse'
 
 
 
@@ -57,6 +58,7 @@ function AnimatedRoutes() {
             <Route path='checkout' element={<Checkout/>}/>
             <Route path='confirm-order' element={<ConfirmOrder/>}/>
             <Route path='my-learning' element={<MyLearning/>}/>
+            <Route path='course/attend/:id' element={<CourseAttendingPage/>}/>
         </Route>
 
         <Route path="/instructor" element={<PrivateRoute role="instructor"/>}>

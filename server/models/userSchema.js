@@ -17,6 +17,7 @@ const enrolled_course = {
         type:Number,
         default:0,
     },
+    
 
     
 }
