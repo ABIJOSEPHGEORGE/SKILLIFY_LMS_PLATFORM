@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { Tabs, TabsHeader, Accordion, AccordionBody, AccordionHeader, Tab, TabPanel, TabsBody } from '@material-tailwind/react'
 import { AiOutlineBulb } from 'react-icons/ai'
@@ -7,14 +7,15 @@ import { HiDocumentDuplicate } from 'react-icons/hi';
 import {ImFileVideo} from 'react-icons/im'
 import { details } from '../../config';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateToggle } from '../../redux/attendCourseSlice';
+import { updateCourseProgress, updateToggle } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
+import axios from 'axios';
 
 
 
 function AttendCourse() {
 
-    const { toggle, course } = useSelector((state) => state.attendCourse)
+    const { toggle, course,course_progress } = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
 
     const [open, setOpen] = useState(0);
@@ -26,6 +27,20 @@ function AttendCourse() {
 
     const handleContOpen = (value) => {
         setContOpen(contOpen === value ? 0 : value);
+    }
+
+    useEffect(()=>{
+        fetchCourseProgress()
+    },[])
+
+    function fetchCourseProgress(){
+        axios.get(`/user/course/progress/${course?.course_id?._id}`)
+        .then((res)=>{
+            dispatch(updateCourseProgress(res.data.results.enrolled_course[0].completion_status));
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
     }
 
     function Icon({ id, open }) {
@@ -43,7 +58,7 @@ function AttendCourse() {
             </svg>
         );
     }
-    console.log(course)
+    console.log(course_progress)
     return (
         <div className='absolute top-0 left-0 z-50 w-full h-full font-poppins'>
             <div className="w-full bg-secondary flex flex-col place-items-center p-5 h-full">
@@ -69,7 +84,7 @@ function AttendCourse() {
                         <div className="w-full flex flex-col gap-3">
                             {
                                 course?.course_id?.curriculum?.map((section, index) => (
-                                    <Accordion open={open === index} icon={<Icon id={index} open={open} />} className='bg-white px-5'>
+                                    <Accordion key={index} open={open === index} icon={<Icon id={index} open={open} />} className='bg-white px-5'>
                                         <AccordionHeader onClick={() => handleOpen(index)} className='text-lg font-semibold font-poppins capitalize tracking-wider'>
                                             {section.title}
                                         </AccordionHeader>
@@ -79,7 +94,7 @@ function AttendCourse() {
 
                                                 {
                                                     section?.content?.map((content, index) => (
-                                                        <Accordion open={contOpen === index}>
+                                                        <Accordion key={index} open={contOpen === index}>
                                                             {/* <AccordionHeader onClick={() => handleContOpen(index)} className='text-md font-semibold  capitalize font-poppins'>
                                                                 <h2 className='flex gap-3 place-items-center'>{content.content_type === "lecture" ? <MdOndemandVideo size={20}></MdOndemandVideo> : content.content_type === "quiz" ? <AiOutlineBulb size={20}></AiOutlineBulb> : <HiDocumentDuplicate size={20}></HiDocumentDuplicate>} {content.title} | {content.content_type}</h2>
 

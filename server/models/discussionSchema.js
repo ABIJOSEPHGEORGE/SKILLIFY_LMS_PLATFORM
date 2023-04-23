@@ -5,9 +5,13 @@ const message = {
     message:{
         type:String,
     },
-    student_id:{
-        type:mongoose.Types.ObjectId,
-        ref:'User'
+    first_name:{
+        type:String,
+        required:true,
+    },
+    email:{
+        type:String,
+        required:true,
     },
     createdAt:{
         type:Date,

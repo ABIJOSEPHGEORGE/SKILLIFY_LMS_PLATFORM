@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     toggle:false,
     course:null,
+    course_progress:[],
 }
 
 const attendCourseSlice = createSlice({
@@ -14,9 +15,12 @@ const attendCourseSlice = createSlice({
         },
         updateCourse:(state,action)=>{
             state.course = action.payload;
+        },
+        updateCourseProgress:(state,action)=>{
+            state.course_progress = action.payload;
         }
     }
 })
 
-export const {updateToggle,updateCourse} = attendCourseSlice.actions;
+export const {updateToggle,updateCourse,updateCourseProgress} = attendCourseSlice.actions;
 export default attendCourseSlice.reducer;

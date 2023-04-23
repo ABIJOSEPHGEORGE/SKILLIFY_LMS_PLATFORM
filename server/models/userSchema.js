@@ -17,9 +17,10 @@ const enrolled_course = {
         type:Number,
         default:0,
     },
-    
+    completion_status:{
+        type:Array,
+    }
 
-    
 }
 const User = mongoose.model('User',new mongoose.Schema({
     first_name:{

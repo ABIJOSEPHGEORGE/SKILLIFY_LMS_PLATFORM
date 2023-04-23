@@ -69,5 +69,14 @@ module.exports = {
         }catch(err){
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
+    },
+    courseProgress:async(req,res)=>{
+        try{
+            const completion_status = await User.findOne({email:req.user,enrolled_course:{$elemMatch:{course_id:req.params.id}}})
+            .select('enrolled_course.$')
+            res.status(200).json(success('OK',completion_status));
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
     }
 }

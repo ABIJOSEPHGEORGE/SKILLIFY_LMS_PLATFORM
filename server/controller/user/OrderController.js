@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const short = require('short-uuid');
 const Order = require('../../models/orderSchema');
 const { default: mongoose } = require('mongoose');
+const Course = require('../../models/courseSchema');
 
 
 module.exports = {
@@ -46,9 +47,17 @@ module.exports = {
             //clearing the user cart
             await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}});
             //adding the purchased courses to user enrolled list
-            
+            console.log(response)
             response.courses.forEach(async(ele)=>{
-                await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id}}})
+                //total session and total content in the active session
+                const eachCourse = await Course.findOne({_id:ele});
+                const completion_status = [];
+                eachCourse.curriculum.forEach((item,index)=>{
+                    completion_status.push(
+                        {section:index+1,active_content:1,total_content:item.content.length,completed:false}
+                    )
+                })
+                await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id,completion_status:completion_status}}});
             })
             
             res.status(201).json(success("OK",response))

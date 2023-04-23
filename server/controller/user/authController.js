@@ -226,8 +226,7 @@ async function generateEmailLink({_id,email},action){
 
         transporter.sendMail(mailOptions,(error,info)=>{
             if(error){
-                console.log(error)
-                throw new Error('Something went wrong');
+                return error;
             }
             return info.response;
         })
