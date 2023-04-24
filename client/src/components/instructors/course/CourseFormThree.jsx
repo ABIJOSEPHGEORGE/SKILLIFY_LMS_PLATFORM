@@ -22,6 +22,7 @@ function CourseFormThree({formik}) {
   const {section,formData,lecture,assignment,quiz,error} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
   const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null});
+  const [editToggle,setEditToggle] = useState({lecture_edit:false,index:null,lecture_content:null});
   const [options,setOptions] = useState([]);
   const [questions,setQuestions] = useState([]);
   const [video,setVideo] = useState(null);
@@ -205,7 +206,7 @@ function CourseFormThree({formik}) {
                                 </div>
                                 <div className="flex gap-3 place-items-center">
                                   <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>dispatch(deleteContent({sec_index:index,cindex:cindex}))})}}></MdDelete>
-                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
+                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setEditToggle({...editToggle,lecture_edit:true,index:index,lecture_content:item})}}></MdModeEdit>
                                 </div>
                               </div>
                               <div className='flex gap-3 place-items-start'>
@@ -466,8 +467,13 @@ function CourseFormThree({formik}) {
           <div className="w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-full">
             <courseModals.EditSection setToggle={setToggle} toggle={toggle}/>
           </div>
-          
         }
+          {editToggle.lecture_edit&&
+          <div className="w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-full">
+            <courseModals.EditLecture setEditToggle={setEditToggle} editToggle={editToggle}/>
+          </div>
+          }
+          
         
          {
           popup.toggle &&

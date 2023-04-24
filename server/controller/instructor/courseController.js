@@ -50,5 +50,14 @@ module.exports ={
         }catch(err){
             return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
         }
+    },
+    editCourse:async(req,res)=>{
+        try{
+            
+            await Course.findOneAndUpdate({_id:req.params.id},req.body,{new:true});
+            res.status(200).json(success("OK"));
+        }catch(err){
+            return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
+        }
     }
 }

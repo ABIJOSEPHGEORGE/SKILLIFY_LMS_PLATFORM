@@ -9,7 +9,8 @@ import TimeAgo from 'react-timeago'
 function Reviews({courseId}) {
     const [write,setWrite] = useState(false);
     const [review,setReview]= useState({desc:"",rating:1});
-    const [userDone,setUserDone] = useState(false)
+    const [userDone,setUserDone] = useState(false);
+    const [error,setError] = useState(null);
     const dispatch = useDispatch();
     const {reviews} = useSelector((state)=>state.courses);
 
@@ -31,27 +32,37 @@ function Reviews({courseId}) {
     
     function newReview(e){
         e.preventDefault()
-        axios.post(`/user/review/create/${courseId}`,review)
-        .then((res)=>{
-            console.log(res)
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
+        setError(null)
+        if(review.desc.trim().length===0){
+            setError({desc:'Review is required'});
+        }else{
+            axios.post(`/user/review/create/${courseId}`,review)
+            .then((res)=>{
+                setWrite(false);
+                fetchAllReviews()
+            })
+            .catch((err)=>{
+                console.log(err)
+            })
+        }
     }   
   return (
     <div className='w-full h-full font-poppins mt-5'>
         <div className="w-full px-5 bg-white p-4 flex gap-3 place-items-center place-content-between">
             <div className='flex gap-2 '>
                 <h1 className='text-md font-semibold'>Reviews</h1>
-                <div className="rating">
-                    <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" />
-                    <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" checked />
-                    <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" />
-                    <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" />
-                    <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" />
-                </div>
+                {
+                    [...Array(reviews?.average)].map((_,index)=>(
+                        <div key={index} className="inline-block mr-1">
+                            <svg width="20" height="20" viewbox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 7.91677H12.4167L10 0.416763L7.58333 7.91677H0L6.18335 12.3168L3.81668 19.5834L10 15.0834L16.1834 19.5834L13.8167 12.3168L20 7.91677Z" fill="#FFCB00"></path>
+                            </svg>
+                        </div>
+                    ))
+                }
+                <h2>{reviews?.average}</h2>
             </div>
+            <h3 className='flex gap-3 font-semibold'>Total Reviews : <span className='font-normal'>{reviews?.reviews?.length}</span></h3>
             <div>
                 {
                     !userDone &&
@@ -62,11 +73,13 @@ function Reviews({courseId}) {
         </div>
 
 
-
+        <>
+        {
+            reviews?.reviews?.length>0 ?
         <div className="mb-2 shadow-lg rounded-t-8xl rounded-b-5xl overflow-hidden rounded-xl">
             {
-                reviews?.reviews.map((review)=>(
-                <div>
+                reviews?.reviews.map((review,rindex)=>(
+                <div className='w-full h-auto' key={rindex}>
                     <div className="pt-3 pb-3 md:pb-1 px-4 md:px-16 bg-gray-200">
                     <div className="flex flex-wrap items-center ">
                     <div className="avatar mr-20">
@@ -76,11 +89,11 @@ function Reviews({courseId}) {
                     </div>
                       <h4 className="w-full md:w-auto text-xl font-heading font-medium">{review.user_name}</h4>
                       <div className="w-full md:w-px h-2 md:h-8 mx-8 bg-gray-200"></div>
-                      <span clasNames="mr-4 text-xl font-heading font-medium">{review.rating}</span>
-                      <div className="inline-flex ml-3">
-                        {
-                            [...Array(review.rating)].map((_,index)=>(
-                                <div key={index} className="inline-block mr-1">
+                      <span clasNames="mr-4 text-xl font-heading font-medium">{review.rating}/5</span>
+                      <div className="flex gap-1 ml-3">
+                      {
+                            [...Array(parseInt(review?.rating))].map((_,index)=>(
+                                <div key={index} className="flex mr-1">
                                     <svg width="20" height="20" viewbox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M20 7.91677H12.4167L10 0.416763L7.58333 7.91677H0L6.18335 12.3168L3.81668 19.5834L10 15.0834L16.1834 19.5834L13.8167 12.3168L20 7.91677Z" fill="#FFCB00"></path>
                                     </svg>
@@ -108,6 +121,13 @@ function Reviews({courseId}) {
                ))
             }
     </div>
+    :
+    <div className='w-full flex flex-col place-content-start place-items-center'>
+        <img src="/no-reviews.gif" alt="no-reviews" className='w-1/5' />
+        <h1 className="text-md font-semibold ">Be the first one to write a review</h1>
+    </div>
+    }
+    </>
     {
         write &&
         <div className='w-full h-full absolute top-0 bg-black bg-opacity-5 flex flex-col place-content-center place-items-center'> 
@@ -126,7 +146,14 @@ function Reviews({courseId}) {
                         <input type="radio" name="rating-2" value="4" onChange={(e)=>setReview({...review,rating:e.target.value})} className="mask mask-star-2 bg-orange-400" />
                         <input type="radio" name="rating-2" value="5" onChange={(e)=>setReview({...review,rating:e.target.value})} className="mask mask-star-2 bg-orange-400" />
                     </div>
-                    <Textarea value={review.desc} onChange={(e)=>setReview({...review,desc:e.target.value})} label='Write your review' name='review' color='gray' placeholder='Enter your review about this course' variant="static"/>
+                    <div className="flex flex-col">
+                        <Textarea value={reviews?.desc} onChange={(e)=>setReview({...review,desc:e.target.value})} label='Write your review' name='review' color='gray' placeholder='Enter your review about this course' variant="static"/>
+                        {
+                            error?.desc &&
+                            <p className='text-red-500 text-sm text-start'>{error?.desc}</p>
+                        }
+                    </div>
+                    
                     <button className='bg-black text-white px-5 py-2' type='submit'>Submit</button>
                 </form>
             </div>

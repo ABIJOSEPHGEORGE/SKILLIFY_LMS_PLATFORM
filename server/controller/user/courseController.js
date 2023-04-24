@@ -94,7 +94,7 @@ module.exports = {
         try{
             const {_id,first_name,last_name} = await User.findOne({email:req.user});
             const {desc,rating} = req.body;
-            const user_name = `$${first_name} ${last_name}`
+            const user_name = `${first_name} ${last_name}`
             const createdAt = new Date();
             await Course.findOneAndUpdate({_id:req.params.id},{$push:{reviews:{userId:_id,user_name:user_name,rating:rating,review:desc,createdAt:createdAt}}});
             res.status(201).json(success("OK"));
@@ -104,17 +104,24 @@ module.exports = {
     },
     allReviews:async(req,res)=>{
         try{
-            const {_id} = await User.findOne({email:req.user});
+            const {_id,enrolled_course} = await User.findOne({email:req.user});
             const course = await Course.findOne({_id:req.params.id}).select('reviews');
             const totalReviews = course.reviews.length;
             //checking the current user alreay wrote a review
-            const isDone = course.reviews.reduce((acc,curr)=>{
-                if(curr.userId.toString()===_id.toString()){
+            let isDone = course.reviews.reduce((acc, courseCurr) => {
+                const response = enrolled_course.reduce((acc2, userCurr) => {
+                  if (userCurr.course_id.toString() === course._id.toString() && courseCurr.userId.toString() === _id.toString()) {
                     return true;
-                }else{
-                    false;
-                }
-            },null);
+                  }
+                  return acc2;
+                }, false);
+              
+                return acc || response;
+              }, false) || (enrolled_course.length === 0);
+              const isEnrolled = enrolled_course.find(course=>course.course_id.toString()===req.params.id)
+              if(!isEnrolled){
+                isDone = true;
+              }
 
             const average = course.reviews.reduce((acc,curr)=>{
                 acc = acc+curr.rating;

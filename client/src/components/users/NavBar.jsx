@@ -73,7 +73,7 @@ function NavBar() {
                 
           
               
-              <li className='px-1 list-none'>My Learning</li>
+              <Link to="/user/my-learning" className='px-1 list-none'>My Learning</Link>
               <li className='px-1 list-none cursor-pointer' onClick={(e)=>{handleLogout(e)}}>Logout</li>
               <div className='w-12 h-12 px-3 py-3 rounded-3xl bg-lightPink flex place-content-center place-items-center'>
                   <h2 className='text-black font-bold text-2xl uppercase'>A</h2>

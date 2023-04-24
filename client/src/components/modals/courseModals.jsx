@@ -109,9 +109,19 @@ return(
     )
 }
 
+const EditLecture=({editToggle,setEditToggle})=>{
+    console.log(editToggle)
+    return(
+        <div>
+            <Input label="Title" variant="static"/>
+        </div>
+    )
+}
+
 const courseModalse = {
     EditSection,
     EditQuestion,
+    EditLecture,
 }
 
 export default courseModalse;

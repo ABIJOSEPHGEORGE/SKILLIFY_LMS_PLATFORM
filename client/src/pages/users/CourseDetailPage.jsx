@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateSingleCourse } from '../../redux/course'
 import { AiOutlineBulb } from 'react-icons/ai'
 import { HiDocumentDuplicate } from 'react-icons/hi'
+import Reviews from '../../components/users/Reviews'
 
   
   
@@ -231,7 +232,9 @@ function CourseDetailPage() {
                             </div>
                         </TabPanel>
                         <TabPanel key="reviews" value="reviews">
-                            Reviews
+                        <div className="w-full h-96">
+                            <Reviews courseId={id}/>
+                        </div>
                         </TabPanel>
                     
                     </TabsBody>

@@ -5,6 +5,7 @@ const { parentSubCategories } = require('../controller/admin/categoryController'
 const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
 const { isEnrolled, enrolledCourses, courseProgress, createReview, allReviews } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
+const { editCourse } = require('../controller/instructor/courseController');
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.post('/review/create/:id',createReview);
 
 router.put('/order-confirmation',orderConfirmation);
 router.put('/enrolled-course/progress/:id')
+
 
 router.delete('/cart/:id',deleteCartItem);
 

@@ -56,16 +56,29 @@ function EditCourse() {
             }
             
         }
-        axios.post('/instructor/course/create-course',form)
-        .then((res)=>{
-            if(res.status===200){
+        if(formData.edit_mode){
+            
+            axios.put(`/instructor/course/edit-course/${courseId}`,formData)
+            .then((res)=>{
                 dispatch(resetState())
                 navigate('/instructor/courses');
-            }
-        })
-        .catch((err)=>{
-            toast.error(err.response.data.message)
-        })
+            })
+            .catch((err)=>{
+                toast.error(err.response.data.message)
+            })
+        }else{
+            axios.post('/instructor/course/create-course',form)
+            .then((res)=>{
+                if(res.status===200){
+                    dispatch(resetState())
+                    navigate('/instructor/courses');
+                }
+            })
+            .catch((err)=>{
+                toast.error(err.response.data.message)
+            })
+        }
+        
     }
     const formContent = (step)=>{
         switch(step){
