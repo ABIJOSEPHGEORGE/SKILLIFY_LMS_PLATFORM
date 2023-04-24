@@ -128,7 +128,6 @@ function CourseDetailPage() {
                 <div className='w-3/5 h-full flex flex-col gap-5  place-content-start'>
                     <h2 className='text-3xl font-bold '>{course.course_title}</h2>
                     <h2 className='text-xl font-normal '>{course.course_subtitle}</h2>
-                    <p>{course.course_description}</p>
                 </div>
                 <div className="shadow-xl bg-white absolute right-36 h-auto px-1 py-8 w-80 flex-col flex gap-8 place-items-center">
                     <div className='p-3 rounded-md w-full h-60'>
@@ -200,9 +199,8 @@ function CourseDetailPage() {
                                                     {
                                                         section?.content?.map((content,index)=>(
                                                             <Accordion open={contOpen === index}>
-                                                                <AccordionHeader onClick={() => handleContOpen(index)} className='text-md font-semibold  capitalize font-poppins'>
-                                                                    <h2 className='flex gap-3 place-items-center'>{ content.content_type==="lecture" ? <MdOndemandVideo size={20}></MdOndemandVideo> : content.content_type==="quiz" ? <AiOutlineBulb size={20}></AiOutlineBulb> : <HiDocumentDuplicate size={20}></HiDocumentDuplicate> } {content.title} | {content.content_type}</h2>
-                                                                    
+                                                                <AccordionHeader onClick={() => handleContOpen(index)} className='text-md font-semibold flex place-items-center gap-1 capitalize font-poppins'>
+                                                                    <h2 className='flex gap-3 place-items-center text-start'>{ content.content_type==="lecture" ? <MdOndemandVideo size={20}></MdOndemandVideo> : content.content_type==="quiz" ? <AiOutlineBulb size={20}></AiOutlineBulb> : <HiDocumentDuplicate size={20}></HiDocumentDuplicate> } {content.title} <span className='border-l-2 border-primary px-1'>{content.content_type}</span></h2>
                                                                 </AccordionHeader>
                                                                 <AccordionBody className="font-poppins">
                                                                     {content.description}

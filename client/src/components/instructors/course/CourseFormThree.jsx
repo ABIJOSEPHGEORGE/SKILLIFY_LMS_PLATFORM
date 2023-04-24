@@ -208,8 +208,8 @@ function CourseFormThree({formik}) {
                                   <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
                                 </div>
                               </div>
-                              <div className='flex gap-3 place-items-center'>
-                                  <h1 className='font-semibold text-sm first-letter:capitalize'>description : </h1>
+                              <div className='flex gap-3 place-items-start'>
+                                  <p className='font-semibold text-sm capitalize flex gap-1'>description <span>:</span></p>
                                   <p className='font-light text-sm'>{item.description}</p>
                               </div>
                               {
@@ -263,7 +263,7 @@ function CourseFormThree({formik}) {
                                             <div className='flex flex-col gap-4'>
                                                 <div className="flex place-items-center">
                                                     <div className="flex flex-col w-full">
-                                                      <Input variant='static' label={`Question ${qindex+1}`} placeholder='Enter the question' type='text' value={ele.question} onChange={(e)=>{updateQuestion(e,qindex)}}/>
+                                                      <Input variant='static' label={`Question`} placeholder='Enter the question' type='text' value={ele.question} onChange={(e)=>{updateQuestion(e,qindex)}}/>
                                                       {
                                                         error?.question &&
                                                         <p className='text-red-500 font-normal text-sm font-poppins'>{error.question}</p>

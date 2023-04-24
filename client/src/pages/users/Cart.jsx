@@ -42,7 +42,7 @@ function Cart() {
             {
             cart?.cartItems?.length > 0 ?
             <div className="w-full absolute top-40 py-5 px-2 flex  place-content-center place-items-center gap-10">
-            <div className="w-3/5 flex place-content-between">
+            <div className="w-4/5 flex place-content-between px-3">
                 {
                
                 cart?.cartItems?.map((item)=>(
@@ -61,7 +61,7 @@ function Cart() {
                         </div>
                     </div>
                     <div className="flex flex-1 gap-3 place-content-center place-items-center">
-                        <div className='flex flex-col gap-1'>
+                        <div className='w-full flex flex-col gap-1'>
                             <h3 className='text-lg font-semibold '>₹ {item.course_sale_price}</h3>
                             <h3 className='text-lg font-semibold text-gray-600 line-through'>₹ {item.course_price}</h3>
                         </div>

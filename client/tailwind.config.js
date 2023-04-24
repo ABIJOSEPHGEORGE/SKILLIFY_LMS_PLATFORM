@@ -2,6 +2,9 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
 
 module.exports = withMT({
+  daisyui: {
+    themes: [],
+  },
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
@@ -18,12 +21,14 @@ module.exports = withMT({
       },
       fontFamily:{
         poppins:['Poppins', 'sans-serif']
-      }
+      },
+      
      
     },
   },
   plugins: [
-    require('tailwind-scrollbar-hide')
+    require('tailwind-scrollbar-hide'),
+    require("daisyui")
   ],
 })
 

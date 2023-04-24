@@ -72,7 +72,7 @@ function CourseListingPage() {
             <NavBar/>
         </div>
         <div className='p-5 w-full h-full flex'>
-            <div className="shadow-xl w-1/5 h-full px-5 bg-white flex flex-col gap-5 py-5">
+            <div className="shadow-xl w-1/5 h-auto px-5 bg-white flex flex-col gap-5 py-5">
                 <div className="w-full flex flex-col">
                     <h2 className='text-lg  font-semibold '>Sort By</h2>
                     <Radio id="low-to-high" name="sort" label="Low to high"  onClick={()=>{dispatch(updateFilter({...filter,sort:1}))}}/>
@@ -136,7 +136,7 @@ function CourseListingPage() {
                                 <div className='w-1/5 h-40'>
                                     <img className='w-full h-full rounded-md' src={details.base_url+course?.course_image} alt="course_image" />
                                 </div>
-                            <div className='flex flex-col place-content-start gap-3'>
+                            <div className=' w-3/5 flex flex-col place-content-start gap-3'>
                                 <h1 className='text-2xl font-semibold'>{course?.course_title}</h1>
                                 <p className='text-gray-600 font-normal'>{course?.course_description}</p>
                                 <div className="w-full flex flex-col gap-2 place-items-center">

@@ -78,5 +78,53 @@ module.exports = {
         }catch(err){
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
+    },
+    updateCourseProgress:async(req,res)=>{
+        try{
+
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
+    },
+
+
+
+    //Course Reviews
+    createReview:async(req,res)=>{
+        try{
+            const {_id,first_name,last_name} = await User.findOne({email:req.user});
+            const {desc,rating} = req.body;
+            const user_name = `$${first_name} ${last_name}`
+            const createdAt = new Date();
+            await Course.findOneAndUpdate({_id:req.params.id},{$push:{reviews:{userId:_id,user_name:user_name,rating:rating,review:desc,createdAt:createdAt}}});
+            res.status(201).json(success("OK"));
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
+    },
+    allReviews:async(req,res)=>{
+        try{
+            const {_id} = await User.findOne({email:req.user});
+            const course = await Course.findOne({_id:req.params.id}).select('reviews');
+            const totalReviews = course.reviews.length;
+            //checking the current user alreay wrote a review
+            const isDone = course.reviews.reduce((acc,curr)=>{
+                if(curr.userId.toString()===_id.toString()){
+                    return true;
+                }else{
+                    false;
+                }
+            },null);
+
+            const average = course.reviews.reduce((acc,curr)=>{
+                acc = acc+curr.rating;
+                return acc/totalReviews;
+            },0)
+            
+            res.status(200).json(success("OK",{reviews:course.reviews,currentUser:isDone,average:average,totalReviews:totalReviews}));
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
     }
+
 }

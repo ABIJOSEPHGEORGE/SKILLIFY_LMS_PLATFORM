@@ -5,7 +5,8 @@ const initialState = {
     courses : [],
     course:{},
     error:null,
-    enrolled_courses:[]
+    enrolled_courses:[],
+    reviews:{reviews:[],total_reviews:0,average:0}
 }
 
 
@@ -22,9 +23,12 @@ const courseSlice = createSlice({
         },
         updateMyLearning:(state,{payload})=>{
             state.enrolled_courses = payload;
+        },
+        updateReviews:(state,action)=>{
+            state.reviews = action.payload;
         }
     }
 })
 
-export const {updateCourses,updateSingleCourse,updateMyLearning } = courseSlice.actions;
+export const {updateCourses,updateSingleCourse,updateMyLearning,updateReviews } = courseSlice.actions;
 export default courseSlice.reducer;
