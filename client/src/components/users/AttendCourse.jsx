@@ -11,6 +11,7 @@ import { updateActiveProgress, updateContentTye, updateCourse, updateCourseProgr
 import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
+import Notes from './Notes';
 
 
 
@@ -221,6 +222,12 @@ function AttendCourse() {
                                                         </div>
                                                         <p className='text-xl text-gray-600 '>{course?.tutor?.description}</p>
                                                     </div>
+                                                </TabPanel>
+                                                <TabPanel key="notes" value="notes">
+                                                    <div className="w-full h-96">
+                                                         <Notes courseId={course.course_id._id}/>
+                                                    </div>
+                                                    
                                                 </TabPanel>
                                                 <TabPanel key="reviews" value="reviews">
                                                     <div className="w-full h-96">

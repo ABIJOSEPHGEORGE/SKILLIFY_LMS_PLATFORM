@@ -40,6 +40,7 @@ module.exports = {
                     createdAt:new Date(),
                     vote:0,
                 }
+                console.log(newMessage)
                  //emit the message to all users in the same discussion
                 socket.to(roomId).emit('receive_message',newMessage);
                 //saving the message to db

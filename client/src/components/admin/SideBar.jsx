@@ -28,10 +28,10 @@ function SideBar() {
                 <BiHomeAlt2 size={50} className='px-3'></BiHomeAlt2>
                 <h3 className=' font-semibold '>Dashboard</h3>
             </NavLink>
-            <div className="flex place-items-center h-10 my-2">
-               <BsBook size={50} className='px-3 text-primaryBlue'></BsBook>
-                <h3 className='font-semibold text-primaryBlue'>Courses</h3>
-            </div>
+            <NavLink to="/admin/courses" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
+               <BsBook size={50} className='px-3'></BsBook>
+                <h3 className='font-semibold'>Courses</h3>
+            </NavLink>
             <NavLink to="/admin/students" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
                 <AiOutlineUser size={50} className='px-3 '></AiOutlineUser>
                 <h3 className='font-semibold '>Students</h3>

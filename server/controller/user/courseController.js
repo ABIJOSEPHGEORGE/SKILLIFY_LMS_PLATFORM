@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Course = require("../../models/courseSchema");
 const User = require("../../models/userSchema");
 const { error, success } = require("../../responseApi");
+const { Notes } = require("../../models/noteSchema");
 module.exports = {
     getCourses:async(req,res)=>{
         try{
@@ -17,9 +18,9 @@ module.exports = {
 
             //sorting
             const sort = parseInt(req.query.sort);
+            const status = true;
 
-
-            const filter = { $and: [category,sub_category,price,searchKey]};
+            const filter = { $and: [category,sub_category,price,searchKey,{status:true}]};
 
             const courses = await Course.aggregate([
             { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
@@ -82,6 +83,31 @@ module.exports = {
     updateCourseProgress:async(req,res)=>{
         try{
 
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
+    },
+    newCourseNote:async(req,res)=>{
+        try{
+            const {_id} = await User.findOne({email:req.user})
+            const newNote = {
+                userId : _id,
+                courseId:req.params.id,
+                note:req.body.note,
+            }
+            
+            await Notes.create(newNote);
+            res.status(200).json(success("OK"));
+        }catch(err){
+            console.log(err)
+            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
+        }
+    },
+    allNotes:async(req,res)=>{
+        try{
+            const {_id} = await User.findOne({email:req.user});
+            const notes = await Notes.find({userId:_id,courseId:req.params.id});
+            res.status(200).json(success("OK",notes))
         }catch(err){
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }

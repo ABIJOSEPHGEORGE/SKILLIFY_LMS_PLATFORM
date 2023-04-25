@@ -29,6 +29,8 @@ import EditCourse from '../pages/instructor/EditCourse'
 import ConfirmOrder from './payments/ConfirmOrder'
 import MyLearning from '../pages/users/MyLearning'
 import CourseAttendingPage from './users/AttendCourse'
+import CourseManagement from '../pages/admin/CourseManagement'
+import ViewCourse from './admin/ViewCourse'
 
 
 
@@ -74,6 +76,8 @@ function AnimatedRoutes() {
           <Route path='instructors' element={<Instrcutors/>}/>
           <Route path='category' element={<CategoryManagement/>}/>
           <Route path='subcategory' element={<SubcategoryManagement/>}/>
+          <Route path='courses' element={<CourseManagement/>}/>
+          <Route path='view-course' element={<ViewCourse/>}/>
         </Route>
 
 
