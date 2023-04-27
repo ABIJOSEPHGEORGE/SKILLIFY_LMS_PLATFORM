@@ -11,13 +11,14 @@ import { HiDocumentDuplicate } from 'react-icons/hi';
 import { BsBook, BsClockHistory } from 'react-icons/bs';
 import {RiVideoFill} from 'react-icons/ri'
 import ConfirmationModal from '../modals/ConfirmationModal';
+import ApproveRejectModal from '../modals/ApproveRejectModal';
 
 function ViewCourse() {
     const [course,setCourse] = useState({});
     const [params] = useSearchParams();
     const [toggle,setToggle] = useState(false);
     const [reason,setReason] = useState('');
-    const [popup,setPopup] = useState({toggle:false,onConfirm:null,params:null})
+    const [popup,setPopup] = useState({toggle:false,onConfirm:null,params:null,approveToggle:false,type:''})
     const courseId = params.get('id')
     useEffect(()=>{
         fetchCourse()
@@ -60,6 +61,7 @@ function ViewCourse() {
       }
 
       function handleApprove(){
+        setPopup({...popup,approveToggle:false})
         axios.put(`/admin/course/approve/${courseId}`)
         .then((res)=>{
             fetchCourse()
@@ -71,6 +73,7 @@ function ViewCourse() {
 
       function handleReject(e){
         e.preventDefault()
+        setToggle(true)
         axios.put(`/admin/course/reject/${courseId}`,{reason:reason})
         .then((res)=>{
             setToggle(false);
@@ -128,8 +131,8 @@ function ViewCourse() {
                         </div>
                         :
                         <div className='flex gap-8'>
-                            <button className='px-5 py-2 text-white text-center bg-green-500' onClick={()=>{handleApprove()}}>Approve</button>
-                            <button className='px-5 py-2 text-white text-center bg-red-500' onClick={()=>{setToggle(true)}}>Reject</button>
+                            <button className='px-5 py-2 text-white text-center bg-green-500' onClick={()=>{setPopup({...popup,approveToggle:true,onConfirm:handleApprove,type:'approval'})}}>Approve</button>
+                            <button className='px-5 py-2 text-white text-center bg-red-500' onClick={()=>{setPopup({...popup,approveToggle:true,onConfirm:()=>{setToggle(true)},type:'reject'})}}>Reject</button>
                         </div>
                     }
                     
@@ -300,6 +303,10 @@ function ViewCourse() {
         {
             popup.toggle &&
             <ConfirmationModal popup={popup} setPopup={setPopup}/>
+        }
+        {
+            popup.approveToggle &&
+            <ApproveRejectModal popup={popup} setPopup={setPopup}/>
         }
     </div>
   )
