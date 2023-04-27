@@ -10,12 +10,14 @@ import { MdOndemandVideo, MdOutlineComputer } from 'react-icons/md';
 import { HiDocumentDuplicate } from 'react-icons/hi';
 import { BsBook, BsClockHistory } from 'react-icons/bs';
 import {RiVideoFill} from 'react-icons/ri'
+import ConfirmationModal from '../modals/ConfirmationModal';
 
 function ViewCourse() {
     const [course,setCourse] = useState({});
     const [params] = useSearchParams();
     const [toggle,setToggle] = useState(false);
     const [reason,setReason] = useState('');
+    const [popup,setPopup] = useState({toggle:false,onConfirm:null,params:null})
     const courseId = params.get('id')
     useEffect(()=>{
         fetchCourse()
@@ -82,12 +84,15 @@ function ViewCourse() {
       function courseStatus(status){
         axios.put(`/admin/course/status/${courseId}?status=${status}`)
         .then((res)=>{
-            fetchCourse()
+            fetchCourse();
+            setPopup({...popup,toggle:false})
         })
         .catch((err)=>{
             console.log(err)
         })
       }
+
+      
   return (
     <div className='h-full w-full font-poppins'>
         <div className="w-full z-50  bg-white border-b-2 border-darkPink h-auto p-5 flex place-content-between place-items-center">
@@ -115,11 +120,11 @@ function ViewCourse() {
                     {
                         course.isApproved==="approved" && course.status ===false ?
                         <div className='flex gap-8'>
-                            <button className='px-5 py-2 text-white text-center bg-green-500' onClick={()=>{courseStatus(true)}}>List Course</button>
+                            <button className='px-5 py-2 text-white text-center bg-green-500' onClick={()=>{setPopup({toggle:true,onConfirm:courseStatus,params:true})}}>List Course</button>
                         </div>
                         : course.isApproved==="approved" && course.status ?
                         <div>
-                            <button className='px-5 py-2 text-white text-center bg-red-500' onClick={()=>{courseStatus(false)}}>Unlist Course</button>
+                            <button className='px-5 py-2 text-white text-center bg-red-500' onClick={()=>{setPopup({toggle:true,onConfirm:courseStatus,params:false})}}>Unlist Course</button>
                         </div>
                         :
                         <div className='flex gap-8'>
@@ -291,6 +296,10 @@ function ViewCourse() {
                     </form>
                 </div>
             </div>
+        }
+        {
+            popup.toggle &&
+            <ConfirmationModal popup={popup} setPopup={setPopup}/>
         }
     </div>
   )
