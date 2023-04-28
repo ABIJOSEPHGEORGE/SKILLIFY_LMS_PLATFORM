@@ -52,6 +52,7 @@ export const imageValidation = (image)=>{
         }
     }
     const allowedExt = ['image/png','image/jpeg','image/jpg'];
+    
     if(!allowedExt.includes(image.type)){
         return {
             valid:false,
@@ -63,7 +64,8 @@ export const imageValidation = (image)=>{
             valid:false,
             reason:'Image size should be less than 2MB'
         }
-    }else{
+    }
+    else{
         return {
             valid:true
         }

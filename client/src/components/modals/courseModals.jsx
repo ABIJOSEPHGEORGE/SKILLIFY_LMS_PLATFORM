@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { motion } from "framer-motion"
 import { Input,Textarea } from "@material-tailwind/react"
 import { useDispatch, useSelector } from "react-redux"
@@ -5,19 +6,30 @@ import { editSectionDetails, updateSection } from "../../redux/createCourse"
 import { AiOutlineCloseCircle,AiOutlinePlus } from "react-icons/ai"
 import { useState } from "react"
 import { MdDelete } from "react-icons/md"
+import {useFormik} from 'formik'
+import { details } from "../../config"
+
 
 const EditSection=({setToggle,toggle})=>{
+    
+    useEffect(()=>{
+        window.scrollTo(0,0)
+        return()=>{
+            window.scrollTo(0,toggle.scroll)
+        }
+    },[])
+ 
     const dispatch = useDispatch()
     const {formData} = useSelector((state)=>state.createCourse)
     const [details,setDetails] = useState({title:formData.curriculum[toggle.index].title,description:formData.curriculum[toggle.index].description});
     function updateSectionDetails(){
         dispatch(editSectionDetails({sec_index:toggle.index,title:details.title,description:details.description}));
-        setToggle({...toggle,toggleEdit:false})
+        setToggle({...toggle,toggleEdit:false});
     }
-
 
     //const section = formData.curriculum[index];
     return(
+    <div className={`w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-screen`}>
         <div className="w-3/5  flex place-items-center place-content-center">
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{ ease: "easeOut", duration: 0.5 }} className="bg-white w-full p-5 gap-6 flex flex-col place-content-around shadow-xl rounded-xl my-3" >
                 <div className="w-full flex place-content-end">
@@ -30,13 +42,13 @@ const EditSection=({setToggle,toggle})=>{
                 <div className='w-full flex flex-col place-items-start place-content-center'>
                 <Textarea label='Section description' variant='static' type='text' name="section_description"  value={details.description} onChange={(e)=>setDetails({...details,description:e.target.value})} placeholder="Enter the section description"/>
                 </div>
-                <div className="w-full flex place-content-between place-items-center">
-                    <button className=' w-1/6 px-1 py-2 text-black font-normal bg-white border-gray-600 border-2' type="button" onClick={(e)=>{setToggle({...toggle,toggleEdit:false})}}>Cancel</button>
-                    <button className=' w-1/6 px-1 py-2 text-black font-normal bg-white border-gray-600 border-2' type="button" onClick={(e)=>{updateSectionDetails()}}>Update Section</button>
+                
+                <div className="w-full text-center">
+                    <button className="text-white bg-primaryBlue rounded-3xl px-8 py-3 w-2/5" onClick={(e)=>{updateSectionDetails()}}>Update</button>
                 </div>
             </motion.div>
         </div>
-        
+    </div>
     )
     
 }
@@ -110,11 +122,46 @@ return(
 }
 
 const EditLecture=({editToggle,setEditToggle})=>{
+    const dispatch = useDispatch()
+    const {formData} = useSelector((state)=>state.createCourse);
+    
     console.log(editToggle)
+    useEffect(()=>{
+        window.scrollTo(0,0);
+        return ()=>{
+            window.scrollTo(0,editToggle.scroll)
+        }
+    },[])
+
+    const {handleSubmit,handleChange,handleBlur} = useFormik({
+        initialValues:{
+            title:editToggle?.lecture_content?.title,
+            description:editToggle?.lecture_content?.description,
+        },
+        onSubmit:()=>{
+
+        }
+    })
+    
     return(
-        <div>
-            <Input label="Title" variant="static"/>
+    <div className="w-full h-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-20 z-50 left-0 ">
+        <div className="bg-white shadow-xl p-5 w-2/5 rounded-lg flex flex-col gap-6 font-poppins">
+            <div className="w-full flex place-content-end place-items-center cursor-pointer" onClick={()=>{setEditToggle({...editToggle,lecture_edit:false})}}>
+                <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+            </div>
+            <h2 className="text-center text-primaryBlue font-semibold text-xl">Edit Lecture</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                <Input label="Title" variant="static" name="title" color="gray" value={editToggle?.lecture_content?.title} onChange={handleChange}/>
+                <Textarea label="Description" variant="static" color="gray" name="description" value={editToggle?.lecture_content?.description} onChange={handleChange}/>
+                <div className="w-full">
+                <video  src={ details.base_url+editToggle?.lecture_content?.video_path} alt="video_preview" className="w-3/5 border-2 border-gray-100 p-5 my-5" controls/>
+                </div>
+                <div className="w-full text-center">
+                    <button className="text-white bg-primaryBlue rounded-3xl px-8 py-3 w-2/5">Update</button>
+                </div>
+             </form>
         </div>
+    </div>
     )
 }
 

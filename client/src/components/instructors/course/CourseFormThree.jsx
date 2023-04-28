@@ -15,18 +15,18 @@ import { details } from '../../../config';
 import { lectureValidation, sectionValidation } from '../../../validations/FormValidations';
 import DeleteModal from '../../modals/DeleteModal';
 import { BsCheckCircleFill } from 'react-icons/bs';
-import {ImCross} from 'react-icons/im'
+import {ImCross} from 'react-icons/im';
+import { UseScrollPosition } from 'react-hook-collections';
 
+function CourseFormThree() {
 
-function CourseFormThree({formik}) {
+  const scrollPosition = UseScrollPosition()
   const {section,formData,lecture,assignment,quiz,error} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
-  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null});
-  const [editToggle,setEditToggle] = useState({lecture_edit:false,index:null,lecture_content:null});
-  const [options,setOptions] = useState([]);
+  const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null,scroll:0});
+  const [editToggle,setEditToggle] = useState({lecture_edit:false,index:null,lecture_content:null,scroll:0});
   const [questions,setQuestions] = useState([]);
   const [video,setVideo] = useState(null);
-  const [path,setPath] = useState(null)
   const [popup,setPopup] = useState({toggle:false,params:null,action:null})
   const videoRef = useRef()
 
@@ -169,10 +169,10 @@ function CourseFormThree({formik}) {
     })
   }
   
-  console.log(formData)
+ 
  
   return (
-    <div className="font-poppins w-full h-auto flex flex-col place-content-evenly py-4">
+    <div className={`font-poppins w-full h-auto flex flex-col place-content-evenly py-4`}>
       <ToastContainer position='top-center' limit={3}></ToastContainer>
         <h2 className='text-start text-2xl text-black font-semibold py-5'>Curriculum</h2>
         
@@ -189,7 +189,7 @@ function CourseFormThree({formik}) {
                     </div>
                     <div className="flex gap-3 place-items-center">
                       <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>(dispatch(deleteSection(index)))})}}></MdDelete>
-                      <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index})}}></MdModeEdit>
+                      <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setToggle({...toggle,toggleEdit:true,index:index,scroll:scrollPosition})}}></MdModeEdit>
                     </div>
                     
                   </div>
@@ -206,7 +206,7 @@ function CourseFormThree({formik}) {
                                 </div>
                                 <div className="flex gap-3 place-items-center">
                                   <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>dispatch(deleteContent({sec_index:index,cindex:cindex}))})}}></MdDelete>
-                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setEditToggle({...editToggle,lecture_edit:true,index:index,lecture_content:item})}}></MdModeEdit>
+                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setEditToggle({...editToggle,lecture_edit:true,index:index,cindex:cindex,lecture_content:item,scroll:scrollPosition})}}></MdModeEdit>
                                 </div>
                               </div>
                               <div className='flex gap-3 place-items-start'>
@@ -462,16 +462,13 @@ function CourseFormThree({formik}) {
              
           </motion.div>
         }
-        {
-           toggle.toggleEdit &&
-          <div className="w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-full">
-            <courseModals.EditSection setToggle={setToggle} toggle={toggle}/>
-          </div>
-        }
+          {
+            toggle.toggleEdit &&
+              <courseModals.EditSection setToggle={setToggle} toggle={toggle}/>
+          }
+
           {editToggle.lecture_edit&&
-          <div className="w-full absolute top-0 flex flex-col place-content-center place-items-center bg-black bg-opacity-5 z-50 left-0 h-full">
             <courseModals.EditLecture setEditToggle={setEditToggle} editToggle={editToggle}/>
-          </div>
           }
           
         

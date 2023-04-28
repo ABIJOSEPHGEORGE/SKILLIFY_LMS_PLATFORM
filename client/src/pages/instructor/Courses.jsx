@@ -108,10 +108,14 @@ function Courses() {
                                 <AiOutlineEdit size={25}></AiOutlineEdit>
                                 <p className="font-semibold ">Edit</p>
                                 </Link>
-                                <div className="flex flex-col place-items-center cursor-pointer" onClick={()=>{setToggle(course._id)}}>
-                                <AiOutlineDelete size={25} className="text-red-300"></AiOutlineDelete>
-                                <p className="font-semibold text-red-500">Delete</p>
-                                </div>
+                                {
+                                    course.isApproved !== "approved" &&
+                                    <div className="flex flex-col place-items-center cursor-pointer" onClick={()=>{setToggle(course._id)}}>
+                                        <AiOutlineDelete size={25} className="text-red-300"></AiOutlineDelete>
+                                        <p className="font-semibold text-red-500">Delete</p>
+                                    </div>
+                                }
+                                
                             </div>
                         </td>
                     </tr>
