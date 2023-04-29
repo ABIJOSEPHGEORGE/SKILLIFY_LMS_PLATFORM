@@ -58,15 +58,55 @@ const EditSection=({setToggle,toggle})=>{
     
 }
 
-const EditAssignment=({})=>{
+const EditAssignment=({setEditToggle,editToggle})=>{
+    const {lecture_content} = editToggle;
+    const dispatch = useDispatch()
+    const {handleSubmit,handleBlur,handleChange,errors,touched,values} = useFormik({
+        initialValues:{
+            title:lecture_content?.title,
+            description:lecture_content?.description,
+        },
+        validationSchema:lectureSchema,
+        onSubmit:(values)=>{
+            const assignment = {title:values.title,description:values.description,content_type:"assignment"}
+            dispatch(editLecture({sec_index:editToggle.index,con_index:editToggle.cindex,content:assignment}))
+            setEditToggle({...editToggle,lecture_edit:false})
+        }
+    })
     return(
-        <div>
-            edit assignment
+        <div className={`w-full h-full absolute top-0 bottom-0 flex flex-col place-items-center place-content-center  bg-black bg-opacity-20 z-50 left-0`}>
+        <div className={`bg-white shadow-xl p-5 w-3/6 rounded-lg flex flex-col gap-6 font-poppins`}>
+            <div className="w-full flex place-content-end place-items-center cursor-pointer" onClick={()=>{setEditToggle({...editToggle,lecture_edit:false})}}>
+                <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+            </div>
+            <h2 className="text-center text-primaryBlue font-semibold text-xl">Edit Assignment</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                <div>
+                    <Input label="Title" variant="static" name="title" color="gray" defaultValue={editToggle?.lecture_content?.title} value={values.title} onChange={handleChange} onBlur={handleBlur}/>
+                    {
+                        errors?.title && touched?.title &&
+                        <p className='text-red-500 font-normal text-sm font-poppins'>{errors?.title}</p>
+                    }
+                </div>
+                <div>
+                    <Textarea label="Description" variant="static" color="gray" name="description"  defaultValue={editToggle?.lecture_content?.description} onChange={handleChange} value={values.description} onBlur={handleBlur} className="scrollbar-thin  scrollbar-thumb-gray-900 scrollbar-track-gray-100" />
+                    {
+                        errors?.description && touched?.description &&
+                        <p className='text-red-500 font-normal text-sm font-poppins'>{errors?.description}</p>
+                    }
+                </div>
+                
+                
+                <div className="w-full text-center">
+                    <button className="text-white bg-primaryBlue rounded-3xl px-8 py-3 w-2/5" type="submit">Update</button>
+                </div>
+             </form>
         </div>
+    </div>
     )
 }
 
-const EditQuestion=({setToggle,toggle,updateQuestion,updateCorrectAnswer,updateOption,addOption,addQuestion})=>{
+const EditQuiz=({setToggle,toggle,updateQuestion,updateCorrectAnswer,updateOption,addOption,addQuestion})=>{
 return(
     <div className="w-3/5  flex place-items-center place-content-center">
     <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{ ease: "easeOut", duration: 0.5 }} className="bg-white w-full p-5 gap-6 flex flex-col place-content-around shadow-xl rounded-xl my-3" >
@@ -172,7 +212,7 @@ const EditLecture=({editToggle,setEditToggle})=>{
         validationSchema:lectureSchema,
         onSubmit:(values)=>{
             const lecture = {title:values.title,description:values.description,video_name:video.video_name,video_path:video.video_path,content_type:"lecture"}
-            dispatch(editLecture({sec_index:editToggle.index,con_index:editToggle.cindex,lecture}))
+            dispatch(editLecture({sec_index:editToggle.index,con_index:editToggle.cindex,content:lecture}))
             setEditToggle({...editToggle,lecture_edit:false})
         }
     })
@@ -261,8 +301,9 @@ const EditLecture=({editToggle,setEditToggle})=>{
 
 const courseModalse = {
     EditSection,
-    EditQuestion,
+    EditQuiz,
     EditLecture,
+    EditAssignment
 }
 
 export default courseModalse;

@@ -24,7 +24,7 @@ function CourseFormThree() {
   const {section,formData,lecture,assignment,quiz,error} = useSelector(state=>state.createCourse);
   const dispatch = useDispatch( )
   const [toggle,setToggle] = useState({section:false,curriculum:{status:false,index:''},lecture:{status:false,index:''},quiz:false,assignment:false,question:false,toggleEdit:false,index:null,scroll:0});
-  const [editToggle,setEditToggle] = useState({lecture_edit:false,index:null,lecture_content:null,scroll:0});
+  const [editToggle,setEditToggle] = useState({lecture_edit:false,assignment_edit:false,quiz_edit:false,index:null,lecture_content:null,scroll:0,content_type:''});
   const [questions,setQuestions] = useState([]);
   const [video,setVideo] = useState(null);
   const [popup,setPopup] = useState({toggle:false,params:null,action:null})
@@ -168,8 +168,6 @@ function CourseFormThree() {
       console.log(err)
     })
   }
-  
- 
  
   return (
     <div className={`font-poppins w-full h-auto flex flex-col place-content-evenly py-4`}>
@@ -206,7 +204,7 @@ function CourseFormThree() {
                                 </div>
                                 <div className="flex gap-3 place-items-center">
                                   <MdDelete size={20} className="cursor-pointer" onClick={()=>{setPopup({toggle:true,action:()=>dispatch(deleteContent({sec_index:index,cindex:cindex}))})}}></MdDelete>
-                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setEditToggle({...editToggle,lecture_edit:true,index:index,cindex:cindex,lecture_content:item,scroll:scrollPosition})}}></MdModeEdit>
+                                  <MdModeEdit size={20} className='cursor-pointer' onClick={()=>{setEditToggle({...editToggle,lecture_edit:true,index:index,cindex:cindex,lecture_content:item,scroll:scrollPosition,content_type:item.content_type})}}></MdModeEdit>
                                 </div>
                               </div>
                               <div className='flex gap-3 place-items-start'>
@@ -468,9 +466,13 @@ function CourseFormThree() {
           }
 
           {editToggle.lecture_edit&&
+            editToggle.content_type==="lecture" ?
             <courseModals.EditLecture setEditToggle={setEditToggle} editToggle={editToggle}/>
+            : editToggle.lecture_edit&&editToggle.content_type==="assignment" ? 
+            <courseModals.EditAssignment setEditToggle={setEditToggle} editToggle={editToggle}/>
+            :  editToggle.lecture_edit&&editToggle.content_type==="quiz" ? 
+            null:null
           }
-          
         
          {
           popup.toggle &&

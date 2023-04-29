@@ -89,7 +89,7 @@ const createCourseSlice = createSlice({
             state.formData.curriculum[payload.sec_index].content.splice(payload.cindex,1)
         },
         editLecture:(state,{payload})=>{
-            state.formData.curriculum[payload.sec_index].content[payload.con_index] = payload.lecture;
+            state.formData.curriculum[payload.sec_index].content[payload.con_index] = payload.content;
         },
 
 
