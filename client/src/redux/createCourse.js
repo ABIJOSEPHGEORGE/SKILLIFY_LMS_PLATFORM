@@ -22,21 +22,7 @@ const initialState = {
         course_completion_message:'',
         edit_mode:false,
     },
-    editData:{
-        course_title:'',
-        course_subtitle:'',
-        course_description:'',
-        category:'',
-        sub_category:'',
-        course_image:'',
-        promotional_video:'',
-        curriculum:[],
-        course_type:'',
-        course_price:'',
-        course_sale_price:'',
-        course_welcome_message:'',
-        course_completion_message:'',
-    },
+    
     section:{title:'',description:'',content:[]},
     lecture:{title:'',description:'',video_path:'',video_name:''},
     assignment:{title:'',description:''},
@@ -102,6 +88,9 @@ const createCourseSlice = createSlice({
         deleteContent:(state,{payload})=>{
             state.formData.curriculum[payload.sec_index].content.splice(payload.cindex,1)
         },
+        editLecture:(state,{payload})=>{
+            state.formData.curriculum[payload.sec_index].content[payload.con_index] = payload.lecture;
+        },
 
 
 
@@ -149,5 +138,6 @@ export const {
     updateError,
     deleteContent,
     updateEditdata,
+    editLecture,
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;

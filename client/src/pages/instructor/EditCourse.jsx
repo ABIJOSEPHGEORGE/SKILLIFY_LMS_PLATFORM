@@ -20,7 +20,7 @@ function EditCourse() {
     console.log(courseId)
     const {formData,error} = useSelector((state)=>state.createCourse)
     const navigate = useNavigate()
-    
+    console.log(formData)
     useEffect(()=>{
         axios.get(`/course/${courseId}`)
         .then((res)=>{
@@ -97,7 +97,7 @@ function EditCourse() {
   return (
     <div className='flex w-full h-auto'>
         <SideMenu/>
-        <div className="w-full h-auto flex flex-col place-content-center shadow-xl rounded-md m-5">
+        <div className="w-full h-auto flex flex-col place-content-center shadow-xl rounded-md m-5" >
             <ToastContainer position='top-center' limit={3}></ToastContainer>
             <div className='w-full h-auto flex flex-col place-content-start place-items-start px-20'>
                 {formContent(activeStep)}

@@ -28,7 +28,8 @@ module.exports = withMT({
   },
   plugins: [
     require('tailwind-scrollbar-hide'),
-    require("daisyui")
+    require("daisyui"),
+    require('tailwind-scrollbar')({ nocompatible: true }),
   ],
 })
 

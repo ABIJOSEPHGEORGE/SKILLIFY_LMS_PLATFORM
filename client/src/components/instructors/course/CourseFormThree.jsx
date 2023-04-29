@@ -178,7 +178,7 @@ function CourseFormThree() {
         
         {
           formData.curriculum.length>0 &&
-        <div className=' flex flex-col gap-6 overflow-y-scroll h-auto'>
+        <div className=' flex flex-col gap-6 h-screen overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-100'>
             {
               formData.curriculum.map((item,index)=>(
                 <div className="bg-gray-300 border-2 border-gray-600 bg-opacity-10 w-full h-auto p-5 gap-6 flex flex-col place-content-around">

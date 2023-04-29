@@ -1,12 +1,21 @@
 const Course = require("../../models/courseSchema");
 const User = require('../../models/userSchema')
-const { error, success } = require("../../responseApi")
+const { error, success } = require("../../responseApi");
+const fs = require('fs')
 const io = require('socket.io')
 
 
 module.exports ={
     uploadVideo:async(req,res)=>{
         try{
+            if(req.body?.exist_path){
+                console.log(req.body)
+                fs.unlink(req.body.exist_path,(err)=>{
+                    if(err){
+                        return err;
+                    }
+                })
+            }
             if(req.file){
                 return res.status(201).json(success("OK",{path:req.file.path}));
             }else{

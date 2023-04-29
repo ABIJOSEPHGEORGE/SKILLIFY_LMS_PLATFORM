@@ -144,3 +144,7 @@ export const checkoutSchema = Yup.object({
     email:Yup.string().email().required('Email is required'),
 })
 
+export const lectureSchema = Yup.object({
+    title:Yup.string().trim().required("Title is required"),
+    description:Yup.string().trim().required('Description is required')
+})
