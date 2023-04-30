@@ -36,7 +36,7 @@ function CourseFormTwo() {
     <div className="font-poppins w-full h-full flex  place-content-start place-items-start ">
         <div  className='w-3/5 flex flex-col place-items-start place-content-center px-3'>
             <label htmlFor="course_title" className="text-primaryBlue font-semibold text-xl py-2">Course Image</label>
-            <img src={!formData.course_image ? "/instructor/image-placeholder.png" : formData.edit_mode && typeof(formData.course_image)==='string' ? details.base_url+formData.course_image : URL.createObjectURL(formData.course_image)} alt="image_preview" className="w-3/5 border-2 border-gray-100 p-5 my-5"/>
+            <img src={!formData.course_image ? "/instructor/image-placeholder.png" : formData.edit_mode && typeof(formData.course_image)==='string' ? details.base_url+formData.course_image : URL.createObjectURL(formData.course_image)} alt="image_preview" className="w-full border-2 border-gray-100 p-5 my-5"/>
             {
               !formData.course_image ?
               <>

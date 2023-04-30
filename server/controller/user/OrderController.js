@@ -41,23 +41,58 @@ module.exports = {
             res.status(500).json(error("Something wen't wrong,Try after sometimes"));
         }
     },
+    // orderConfirmation:async(req,res)=>{
+    //     try{
+    //         const response = await Order.findOneAndUpdate({_id:req.body.orderId},{status:'success'},{new:true});
+    //         //clearing the user cart
+    //         await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}});
+    //         //adding the purchased courses to user enrolled list
+    //         console.log(response)
+    //         response.courses.forEach(async(ele)=>{
+    //             //total session and total content in the active session
+    //             const eachCourse = await Course.findOne({_id:ele});
+    //             const completion_status = [];
+    //             eachCourse.curriculum.forEach((item,index)=>{
+    //                 completion_status.push(
+    //                     {section:index+1,active_content:1,total_content:item.content.length,completed:false}
+    //                 )
+    //             })
+    //             await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id,completion_status:completion_status}}});
+    //         })
+            
+    //         res.status(201).json(success("OK",response))
+    //     }catch(err){
+    //         console.log(err)
+    //         return res.status(500).json(error("Something wen't wrong,Try after sometimes"))
+    //     }
+    // }
     orderConfirmation:async(req,res)=>{
         try{
             const response = await Order.findOneAndUpdate({_id:req.body.orderId},{status:'success'},{new:true});
             //clearing the user cart
             await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}});
             //adding the purchased courses to user enrolled list
-            console.log(response)
-            response.courses.forEach(async(ele)=>{
+            
+            response.courses.forEach(async(courseId)=>{
                 //total session and total content in the active session
-                const eachCourse = await Course.findOne({_id:ele});
-                const completion_status = [];
-                eachCourse.curriculum.forEach((item,index)=>{
-                    completion_status.push(
-                        {section:index+1,active_content:1,total_content:item.content.length,completed:false}
-                    )
-                })
-                await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id,completion_status:completion_status}}});
+                const eachCourse = await Course.findOne({_id:courseId});
+                const completion_status = eachCourse.curriculum.map((session, index) => {
+                    return {
+                        session_id: session._id,
+                        active_content: 1,
+                        total_content: session.content.length,
+                        completed: false,
+                        last_watched_content_id: ''
+                    };
+                });
+
+               const status = await User.findOneAndUpdate({ email: req.user },{$push:{enrolled_course: {course_id: courseId,progress: 0,
+                                completion_status: completion_status
+                            }
+                        }
+                    }
+                );
+                console.log(status)
             })
             
             res.status(201).json(success("OK",response))
@@ -66,6 +101,7 @@ module.exports = {
             return res.status(500).json(error("Something wen't wrong,Try after sometimes"))
         }
     }
+
 }
 
 async function createOrder(billing_address,cartTotal,user){

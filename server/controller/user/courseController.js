@@ -158,6 +158,51 @@ module.exports = {
         }catch(err){
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
-    }
+    },
+
+    updateVideoProgress:async(req,res)=>{
+        const { video_id, progress } = req.body;
+        try {
+            
+            const courseId = new mongoose.Types.ObjectId(req.params.id)
+            // Find the relevant enrolled course for the user
+            const user = await User.findOne({
+                email: req.user,
+            });
+            const enrolled_course = user.enrolled_course.reduce((acc,curr)=>{
+                if(curr.course_id.toString()===courseId.toString()){
+                    return curr;
+                }
+            },{})
+            console.log(enrolled_course)
+            // Update the video progress for the relevant video
+            const videoIndex = enrolled_course.video_progress.findIndex(
+                (video) => video.video_id.toString() === video_id
+            );
+            
+            if (videoIndex === -1) {
+                // If the video doesn't exist, add it to the video progress array
+                enrolled_course.video_progress.push({
+                video_id: video_id,
+                progress: 0,
+                watched: true,
+                });
+            } else {
+                // Update the existing video progress object
+                const videoProgress = enrolled_course.video_progress[videoIndex];
+                videoProgress.progress = progress;
+                videoProgress.watched = true;
+            }
+            
+            // Save the updated enrolled course to the database
+            await user.save();
+            
+            // Return a success response
+            return res.status(200).json({ message: 'Video progress updated' });
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Something went wrong" });
+          }
+    },
 
 }

@@ -5,8 +5,9 @@ const initialState = {
     course:null,
     course_progress:[],
     active_progress:{session:1,content:1},
-    video_path:'',
-    content_type:''
+    video:{},
+    content_type:'',
+
 }
 
 const attendCourseSlice = createSlice({
@@ -26,7 +27,7 @@ const attendCourseSlice = createSlice({
             state.active_progress = action.payload;
         },
         updateVideoPath:(state,action)=>{
-            state.video_path = action.payload;
+            state.video = action.payload;
         },
         updateContentTye:(state,action)=>{
             state.content_type = action.payload;

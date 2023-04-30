@@ -3,7 +3,7 @@ const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
 const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
-const { isEnrolled, enrolledCourses, courseProgress, createReview, allReviews, newCourseNote, allNotes } = require('../controller/user/courseController');
+const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
 const { editCourse } = require('../controller/instructor/courseController');
 
@@ -28,7 +28,7 @@ router.post('/review/create/:id',createReview);
 router.post('/course/notes/:id',tokenVerification,newCourseNote);
 
 router.put('/order-confirmation',orderConfirmation);
-router.put('/enrolled-course/progress/:id')
+router.put('/enroll/progress/:id/video-progress',updateVideoProgress)
 
 
 router.delete('/cart/:id',deleteCartItem);

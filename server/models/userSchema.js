@@ -19,9 +19,42 @@ const enrolled_course = {
     },
     completion_status:{
         type:Array,
-    }
-
+    },
+    video_progress: [{
+        video_id: {
+            type: String,
+        },
+        progress: {
+            type: Number,
+            default: 0
+        },
+        watched: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    quiz_progress: [{
+        quiz_id: {
+            type: String, // unique ID for the quiz
+            required: true
+        },
+        completed: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    assignment_progress: [{
+        assignment_id: {
+            type: String, // unique ID for the assignment
+            required: true
+        },
+        completed: {
+            type: Boolean,
+            default: false
+        }
+    }]
 }
+
 const User = mongoose.model('User',new mongoose.Schema({
     first_name:{
         type:String,

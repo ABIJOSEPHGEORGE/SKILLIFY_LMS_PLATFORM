@@ -6,6 +6,8 @@ import { MdOndemandVideo } from 'react-icons/md';
 import { HiDocumentDuplicate } from 'react-icons/hi';
 import {ImFileVideo} from 'react-icons/im'
 import { details } from '../../config';
+import ReactPlayer from 'react-player'
+import { debounce } from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
 import { updateActiveProgress, updateContentTye, updateCourse, updateCourseProgress, updateToggle, updateVideoPath } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
@@ -17,16 +19,40 @@ import Notes from './Notes';
 
 function AttendCourse() {
 
-    const { toggle, course,course_progress,active_progress,video_path,content_type} = useSelector((state) => state.attendCourse)
+    const { toggle, course,course_progress,active_progress,video,content_type} = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
     const videoRef = useRef(null);
     
+    //updating progress based on recat player
+    const [isPlaying,setIsPlaying] = useState(false);
+    const [videoId,setVideoId] = useState(null);
+    const [progress, setProgress] = useState(0);
+    const playerRef = useRef(null);
     
-
+    
    
     useEffect(()=>{
         fetchCourseProgress()
+        setContent()
     },[])
+
+
+    const handleProgress = debounce((progress) => {
+        axios
+          .put(`/user/enroll/progress/${course?.course_id?._id}/video-progress`, {
+            // session_id: sessionId,
+            video_id: video.video_id,
+            progress: progress.playedSeconds,
+            watched: progress.playedSeconds === progress.duration,
+          })
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }, 5000);
+
 
     function fetchCourseProgress(){
         axios.get(`/user/course/progress/${course?.course_id?._id}`)
@@ -38,7 +64,7 @@ function AttendCourse() {
             console.log(err)
         })
     }
-
+    console.log(course_progress)
     function courseProgress() {
         let completedFound = false;
         course_progress?.forEach((item) => {
@@ -56,12 +82,12 @@ function AttendCourse() {
             if(active_progress.session-1===index){
                 dispatch(updateContentTye(ele?.content[active_progress.content-1].content_type));
                 if(ele?.content[active_progress.content-1].content_type==="lecture"){
-                    dispatch(updateVideoPath(ele?.content[active_progress.content-1].video_path))
+                    dispatch(updateVideoPath({video_path:ele?.content[active_progress.content-1].video_path,video_id:ele?.content[active_progress.content-1].video_id}))
                 }
             }
         })
     }
-    setContent()
+    
 
     
 
@@ -72,30 +98,30 @@ function AttendCourse() {
         const threshold = 0.5; // in seconds
     
         if (duration - currentTime <= threshold) {
-          updateProgress()
+        //   updateProgress()
         }
       };
 
       
-    function updateProgress(){
-        console.log(course_progress)
-        if(course_progress.active_content===course_progress.total_content){
-            dispatch(updateCourseProgress({...course_progress,completed:true}))
-        }else{
-            dispatch(updateCourseProgress({...course_progress,active_content:course_progress.active_content+1}))
-        }
-        courseProgress()
-        setContent()
-        console.log(course_progress)
-        //   axios.put('/users/enrolled-course/progress/:id')
-        //   .then((res)=>{
+    // function updateProgress(){
+    //     console.log(course_progress)
+    //     if(course_progress.active_content===course_progress.total_content){
+    //         dispatch(updateCourseProgress({...course_progress,completed:true}))
+    //     }else{
+    //         dispatch(updateCourseProgress({...course_progress,active_content:course_progress.active_content+1}))
+    //     }
+    //     courseProgress()
+    //     setContent()
+    //     console.log(course_progress)
+    //     //   axios.put('/users/enrolled-course/progress/:id')
+    //     //   .then((res)=>{
 
-        //   })
-        //   .catch((err)=>{
+    //     //   })
+    //     //   .catch((err)=>{
 
-        //   })
-        alert("hello")
-    }
+    //     //   })
+    //     alert("hello")
+    // }
 
     
 
@@ -148,7 +174,22 @@ function AttendCourse() {
                 </div>
                 <div className="w-full flex gap-2 h-full py-5">
                     <div className="w-3/4 flex flex-col">
-                    <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video>
+                    {/* <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video> */}
+                    <ReactPlayer width="1080px" height="960px" url={details.base_url+video?.video_path} controls={true} config={{
+                            file: {
+                            attributes: {
+                                controlsList: 'nodownload'
+                            }
+                            }
+                            
+                        }}
+                        ref={playerRef}
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                        onProgress={(progress) => {
+                            handleProgress(progress)
+                          }}
+                    />
                         <div className='w-full h-full'>
                                 <div className='flex flex-col w-full h-full'>
                                     {

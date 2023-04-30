@@ -16,6 +16,7 @@ import { lectureValidation, sectionValidation } from '../../../validations/FormV
 import DeleteModal from '../../modals/DeleteModal';
 import { BsCheckCircleFill } from 'react-icons/bs';
 import {ImCross} from 'react-icons/im';
+import { v4 as uuidv4 } from 'uuid';
 import { UseScrollPosition } from 'react-hook-collections';
 
 function CourseFormThree() {
@@ -53,7 +54,7 @@ function CourseFormThree() {
         console.log(isValid)
         if(!isValid){
               dispatch(createContent({index:index,
-              content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_path:lecture.video_path,content_type:content_type}}));
+              content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_id:lecture.video_id,video_path:lecture.video_path,content_type:content_type}}));
               dispatch(updateLecture({title:'',description:'',video:''}));
               setToggle({...toggle,lecture:!toggle.lecture})
               setVideo(null);
@@ -63,13 +64,13 @@ function CourseFormThree() {
         }
     }else if(content_type==="assignment"){
       dispatch(createContent({index:index,
-        content:{title:assignment.title,description:assignment.description,content_type:content_type}}));
+        content:{title:assignment.title,description:assignment.description,content_type:content_type,assignment_id:uuidv4()}}));
         dispatch(updateAssignment({title:'',description:'',file_name:''}));
         setToggle({...toggle,assignment:!toggle.assignment})
         dispatch(updateError(null))
     }else if(content_type==="quiz"){
       dispatch(createContent({index:index,
-        content:{title:quiz.title,description:quiz.description,content_type:content_type,questions:[]}}));
+        content:{title:quiz.title,description:quiz.description,content_type:content_type,quiz_id:uuidv4(),questions:[]}}));
         setToggle({...toggle,quiz:!toggle.quiz})
         dispatch(updateError(null))
     }
@@ -160,7 +161,7 @@ function CourseFormThree() {
     
     axios.post('/instructor/course/upload-video',form)
     .then((res)=>{
-        dispatch(updateLecture({...lecture,video_name:video.name,video_path:res.data.results.path}))
+        dispatch(updateLecture({...lecture,video_name:video.name,video_path:res.data.results.path,video_id:res.data.results.videoId}))
         videoRef.current.textContent = "Uploaded"
         setVideo(null)
     })
@@ -235,7 +236,7 @@ function CourseFormThree() {
                                                     <li className='list-none'>{index+1}. {ele.question}</li>
                                                   </ul>
                                                   
-                                                  <div className='flex gap-4 place-items-center'>
+                                                  <div className='flex flex-col gap-4 place-content-center'>
                                                       
                                                         <>
                                                         <p className='font-semibold text-md'>Options : </p>
@@ -471,7 +472,8 @@ function CourseFormThree() {
             : editToggle.lecture_edit&&editToggle.content_type==="assignment" ? 
             <courseModals.EditAssignment setEditToggle={setEditToggle} editToggle={editToggle}/>
             :  editToggle.lecture_edit&&editToggle.content_type==="quiz" ? 
-            null:null
+            <courseModals.EditQuiz setEditToggle={setEditToggle} editToggle={editToggle}/>
+            :null
           }
         
          {

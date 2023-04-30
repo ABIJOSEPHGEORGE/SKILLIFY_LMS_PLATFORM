@@ -3,6 +3,8 @@ const User = require('../../models/userSchema')
 const { error, success } = require("../../responseApi");
 const fs = require('fs')
 const io = require('socket.io')
+const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose')
 
 
 module.exports ={
@@ -17,7 +19,8 @@ module.exports ={
                 })
             }
             if(req.file){
-                return res.status(201).json(success("OK",{path:req.file.path}));
+                const uuid = uuidv4();
+                return res.status(201).json(success("OK",{path:req.file.path,videoId:uuid}));
             }else{
                 return res.status(415).json(error("Please upload a valid file"));
             }
@@ -25,14 +28,46 @@ module.exports ={
             return res.status(500).json(error("Something wen't wrong, Try after sometimes"));
         }
     },
+    // createCourse:async(req,res)=>{
+    //     try{
+    //         req.body.course_image = req.files['course_image'][0].path;
+    //         req.body.promotional_video = req.files['promotional_video'][0].path;
+    //         req.body.curriculum = JSON.parse(req.body.curriculum)
+    //         //fetching the tutor details
+    //         const tutor = await User.findOne({email:req.user});
+    //         req.body.tutor = {first_name:tutor.first_name,last_name:tutor.last_name,profile_image:tutor.profile_image,description:tutor.description,email:tutor.email}
+    //         await Course.create(req.body)
+    //         return res.status(200).json(success("Course created successfully"));
+    //     }catch(err){
+    //         console.log(err)
+    //         return res.status(500).json(error("Something went wrong, Try after sometimes"))
+    //     }
+    // },
     createCourse:async(req,res)=>{
         try{
+            console.log(req.body)
             req.body.course_image = req.files['course_image'][0].path;
             req.body.promotional_video = req.files['promotional_video'][0].path;
-            req.body.curriculum = JSON.parse(req.body.curriculum)
+            console.log(req.body.curriculum)
+            const curriculum = JSON.parse(req.body.curriculum)
+            
+            // Create new ObjectIds for each curriculum
+            req.body.curriculum = curriculum.map((section) => {
+                return { 
+                    title: section.title,
+                    description:section.description,
+                    content: section.content.map((contentItem) => {
+                        return {
+                            ...contentItem,
+                            _id: new mongoose.Types.ObjectId()
+                        }
+                    })
+                }
+            })
             //fetching the tutor details
             const tutor = await User.findOne({email:req.user});
             req.body.tutor = {first_name:tutor.first_name,last_name:tutor.last_name,profile_image:tutor.profile_image,description:tutor.description,email:tutor.email}
+            
             await Course.create(req.body)
             return res.status(200).json(success("Course created successfully"));
         }catch(err){
@@ -40,6 +75,7 @@ module.exports ={
             return res.status(500).json(error("Something went wrong, Try after sometimes"))
         }
     },
+    
     getAllCourses:async(req,res)=>{
         try{
             
@@ -68,5 +104,6 @@ module.exports ={
         }catch(err){
             return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
         }
-    }
+    },
+    
 }

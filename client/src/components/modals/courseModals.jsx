@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Input,Textarea } from "@material-tailwind/react"
 import { useDispatch, useSelector } from "react-redux"
-import { editLecture, editSectionDetails, updateFormData, updateLecture, updateSection } from "../../redux/createCourse"
-import { AiOutlineClose, AiOutlineCloseCircle,AiOutlinePlus } from "react-icons/ai"
+import { editLecture, editSectionDetails, getQuiz, updateFormData, updateLecture, updateSection } from "../../redux/createCourse"
+import { AiFillDelete, AiOutlineClose, AiOutlineCloseCircle,AiOutlinePlus } from "react-icons/ai"
 import { useState } from "react"
 import { MdDelete } from "react-icons/md"
 import {useFormik} from 'formik'
@@ -106,72 +106,138 @@ const EditAssignment=({setEditToggle,editToggle})=>{
     )
 }
 
-const EditQuiz=({setToggle,toggle,updateQuestion,updateCorrectAnswer,updateOption,addOption,addQuestion})=>{
-return(
-    <div className="w-3/5  flex place-items-center place-content-center">
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{ ease: "easeOut", duration: 0.5 }} className="bg-white w-full p-5 gap-6 flex flex-col place-content-around shadow-xl rounded-xl my-3" >
-    <div className="w-full flex place-content-end">
-        <AiOutlineCloseCircle size={20} className=" cursor-pointer" onClick={()=>{setToggle({...toggle,toggleEdit:false})}}></AiOutlineCloseCircle>
-    </div>
-    <div className="w-full h-auto flex flex-col gap-6 p-3">
-        {
-        toggle?.map((ele, qindex) => (
-            <div className='flex flex-col gap-4'>
-            <div className="flex place-items-center">
-                <Input variant='static' label={`Question ${qindex + 1}`} placeholder='Enter the question' type='text' value={ele.question} onChange={(e) => { updateQuestion(e, qindex) }} />
-                <MdDelete size={20} className=' cursor-pointer' onClick={() => {}}></MdDelete>
+const EditQuiz = ({ editToggle, setEditToggle }) => {
+    const { lecture_content, index, cindex } = editToggle;
+    const dispatch = useDispatch();
+    const { quizData } = useSelector((state) => state.createCourse);
+  
+    useEffect(() => {
+      dispatch(getQuiz({ sec_index: index, con_index: cindex }));
+    }, []);
+    const [quizCopy, setQuizCopy] = useState(quizData);
+    
+   
+const handleNewOption = (index) => {
+    const options = [...quizCopy.questions[index].options];
+    options.push({ answer: '', isCorrect: false });
+  
+    const newQuestion = {
+      ...quizCopy.questions[index],
+      options: options,
+    };
+  
+    const newQuestionsArray = [...quizCopy.questions];
+    newQuestionsArray[index] = newQuestion;
+  
+    const newQuizCopy = {
+      ...quizCopy,
+      questions: newQuestionsArray,
+    };
+  
+    // Update the quizCopy object with the new question object
+    setQuizCopy(newQuizCopy);
+  };
+
+  const handleDeleteOption = (index, oindex) => {
+    const questions = [...quizCopy.questions];
+    const options = [...questions[index].options];
+    options.splice(oindex,1);
+    
+    questions[index] = {
+      ...questions[index],
+      options: options,
+    };
+
+    const newQuizCopy = {
+      ...quizCopy,
+      questions: questions,
+    };
+    setQuizCopy(newQuizCopy);
+    console.log(quizCopy)
+  };
+
+    const handleFormSubmit = (event) => {
+      event.preventDefault();
+  
+      // Access the form values directly from the event.target object
+      const formValues = {
+        title: event.target.title.value,
+        description: event.target.description.value,
+        questions: quizCopy.questions.map((question, qindex) => {
+          const newQuestion = {
+            question: event.target[`questions[${qindex}].question`].value,
+            options: question.options.map((option, oindex) => ({
+              answer: event.target[`questions[${qindex}].options[${oindex}].answer`].value,
+              isCorrect: option.isCorrect,
+            })),
+          };
+          return newQuestion;
+        }),
+      };
+  
+      console.log(formValues);
+      // Perform any necessary actions with the form values
+      // ...
+    };
+  
+    return (
+        <div className={`w-full h-full absolute top-0 bottom-0 flex flex-col place-items-center place-content-center  bg-black bg-opacity-20 z-50 left-0`}>
+            <div className={`bg-white shadow-xl p-5 w-3/6 rounded-lg flex flex-col gap-6 font-poppins`}>
+            <div className="w-full flex place-content-end place-items-center cursor-pointer" onClick={() => { setEditToggle({ ...editToggle, lecture_edit: false }) }}>
+                <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
             </div>
-
-
-
-            {
-                ele?.options.map((option, oindex) => (
-                <div className="w-full flex place-items-center gap-4">
-
-                    <Input variant='static' label={`Option ${oindex + 1}`} value={option.answer} placeholder='Enter the Option' type='text' onChange={(e) => { updateOption(e, qindex, oindex) }} />
-
-
-
-                    <MdDelete size={20} className=' cursor-pointer' onClick={() => {}}></MdDelete>
+            <h2 className="text-center text-primaryBlue font-semibold text-xl">Edit Quiz</h2>
+            <form onSubmit={handleFormSubmit} className="flex flex-col gap-8">
+                <div>
+                <Input label="Title" variant="static" name="title" color="gray" defaultValue={lecture_content?.title} />
+                {/* Add any necessary validation or error handling */}
                 </div>
-
-                ))
-            }
-            {
-                ele.options.length > 0 &&
-                <div className='w-full'>
-                <label className='text-md text-gray-600 focus:text-blue-500'>Select the correct answer</label>
-                <select name="correct_answer" className='w-full focus:outline-none cursor-pointer' onChange={(e) => { updateCorrectAnswer(e, qindex) }} id="correct_answer">
-                    <option>select</option>
-                    {
-
-                    ele.options.map((option, index) => (
-                        <option value={index}>{option.answer}</option>
-                    ))
-                    }
-                </select>
+                <div>
+                <Textarea label="Description" variant="static" color="gray" name="description" defaultValue={lecture_content?.description} className="scrollbar-thin  scrollbar-thumb-gray-900 scrollbar-track-gray-100" />
+                {/* Add any necessary validation or error handling */}
                 </div>
-            }
-            <div className="w-full flex place-content-between place-items-center gap-3">
-                <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm' type="button" onClick={() => { addOption(qindex) }}>Option <AiOutlinePlus size={20}></AiOutlinePlus></button>
-
-
-                <button className='flex gap-2 border-2 border-gray-500 py-1 px-2 text-sm bg-black text-white' type='button' onClick={() => { addQuestion(qindex) }}>Add</button>
-
-
+                <div className="flex flex-col gap-6 h-60 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-100">
+                {quizCopy?.questions?.map((item, index) => (
+                    <div className="w-full flex flex-col place-items-center bg-gray-50 p-5" key={index}>
+                    <div className="w-full flex flex-col gap-6">
+                        <Input
+                        variant="static"
+                        label={`Question ${index + 1}`}
+                        name={`questions[${index}].question`}
+                        defaultValue={item?.question}
+                        />
+                        {/* Add any necessary validation or error handling */}
+                        <div className="flex flex-col gap-5">
+                        {item?.options?.map((option, oindex) => (
+                            <div className="w-full flex place-items-end place-content-between gap-2">
+                                    <Input
+                                    variant="static"
+                                    label={`Option ${oindex + 1}`}
+                                    name={`questions[${index}].options[${oindex}].answer`}
+                                    defaultValue={option?.answer}
+                                    />
+                                    <MdDelete size={20} className=" cursor-pointer" onClick={()=>{handleDeleteOption(index,oindex)}}></MdDelete>
+                            </div>
+                            /* Add any necessary validation or error handling */
+                            
+                        ))}
+                        </div>
+                        <div className="w-full flex place-content-start">
+                            <button className="bg-white border-2 border-gray-600 text-gray-800 px-3 py-2" onClick={()=>{handleNewOption(index)}}>Add Option</button>
+                        </div>
+                    </div>
+                    </div>
+                ))}
+                </div>
+                <button type="submit">update</button>
+            </form>
             </div>
-            </div>
-        ))
-
-        }
-
-
-
-            </div>
-        </motion.div>
-    </div>
+        </div>
+      
     )
 }
+                   
+  
 
 const EditLecture=({editToggle,setEditToggle})=>{
     const dispatch = useDispatch()
@@ -195,7 +261,7 @@ const EditLecture=({editToggle,setEditToggle})=>{
             .then((res)=>{
                 console.log(res)
                 videoRef.current.textContent = "Uploaded"
-                setVideo({...video,video_name:video.upload?.name,video_path:res.data.results.path,toggle:false})
+                setVideo({...video,video_name:video.upload?.name,video_id:res.data.results.videoId,video_path:res.data.results.path,toggle:false})
                 setMsg({upload:'Video Uploaded successfully'})
             })
             .catch((err)=>{
