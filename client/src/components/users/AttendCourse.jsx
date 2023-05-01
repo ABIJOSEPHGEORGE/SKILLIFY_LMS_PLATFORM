@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState,useCallback} from 'react'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { Tabs, TabsHeader, Accordion, AccordionBody, AccordionHeader, Tab, TabPanel, TabsBody } from '@material-tailwind/react'
 import { AiOutlineBulb } from 'react-icons/ai'
@@ -9,33 +9,29 @@ import { details } from '../../config';
 import ReactPlayer from 'react-player'
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateActiveProgress, updateContentTye, updateCourse, updateCourseProgress, updateToggle, updateVideoPath } from '../../redux/attendCourseSlice';
+import { updateActiveProgress, updateContentTye, updateCourse, updateCourseProgress, updateToggle, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
 import Notes from './Notes';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 
 
 function AttendCourse() {
 
-    const { toggle, course,course_progress,active_progress,video,content_type} = useSelector((state) => state.attendCourse)
+    const { toggle, course,course_progress,active_progress,video,content_type,video_progress} = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
     const videoRef = useRef(null);
-    
+
     //updating progress based on recat player
     const [isPlaying,setIsPlaying] = useState(false);
-    const [videoId,setVideoId] = useState(null);
     const [progress, setProgress] = useState(0);
+    const [videoId,setVideoId] = useState(null)
     const playerRef = useRef(null);
+    const navigate = useNavigate()
     
     
-   
-    useEffect(()=>{
-        fetchCourseProgress()
-        setContent()
-    },[])
-
 
     const handleProgress = debounce((progress) => {
         axios
@@ -51,20 +47,22 @@ function AttendCourse() {
           .catch((err) => {
             console.log(err);
           });
-      }, 5000);
+      }, 1000);
 
+
+     
 
     function fetchCourseProgress(){
         axios.get(`/user/course/progress/${course?.course_id?._id}`)
         .then((res)=>{
             dispatch(updateCourseProgress(res.data.results.enrolled_course[0].completion_status));
-            courseProgress()
+            setContent()
         })
         .catch((err)=>{
             console.log(err)
         })
     }
-    console.log(course_progress)
+    
     function courseProgress() {
         let completedFound = false;
         course_progress?.forEach((item) => {
@@ -75,20 +73,25 @@ function AttendCourse() {
             completedFound = true;
           }
         });
+        
       }
 
-    function setContent(){
+      
+
+     function setContent(){
         course?.course_id?.curriculum?.forEach((ele,index)=>{
             if(active_progress.session-1===index){
                 dispatch(updateContentTye(ele?.content[active_progress.content-1].content_type));
                 if(ele?.content[active_progress.content-1].content_type==="lecture"){
+                    
                     dispatch(updateVideoPath({video_path:ele?.content[active_progress.content-1].video_path,video_id:ele?.content[active_progress.content-1].video_id}))
+                    setVideoId(ele?.content[active_progress.content-1].video_id)
                 }
             }
         })
+        
     }
     
-
     
 
     const handleVideoEnded = () => {
@@ -122,10 +125,24 @@ function AttendCourse() {
     //     //   })
     //     alert("hello")
     // }
+   
 
+    function videoProgress(video){
+        axios.get(`/user/enroll/video-progress/${course?.course_id?._id}/${video.video_id}`)
+        .then((res) => {
+            
+            dispatch(updateVideoProgress(res.data.results))
+            setProgress(res.data.results.progress)
+            playerRef?.current.seekTo(res.data.results.progress)
+        })
+        .catch((err) => {
+            console.log(err) 
+        })
+    }
     
-
-    console.log(course.course_id)
+    
+    fetchCourseProgress()
+    videoProgress(video)
     const [open, setOpen] = useState(active_progress.session-1);
 
     const handleOpen = (value) => {
@@ -153,7 +170,7 @@ function AttendCourse() {
             </svg>
         );
     }
-    console.log(active_progress)
+    
     return (
         <div className='absolute top-0 left-0 z-50 w-full h-full font-poppins'>
             <div className="w-full flex flex-col place-items-center p-5 h-auto">
@@ -166,30 +183,39 @@ function AttendCourse() {
                         <h2 className='text-darkPink font-semibold text-md'>Completed : {course?.progress}%</h2>
                     </div>
                     <div className='w-[15%] flex  place-items-center place-content-end'>
-                        <div className="flex flex-col place-content-center place-items-center cursor-pointer" onClick={() => dispatch(updateToggle(!toggle))}>
+                        <Link to="/user/my-learning" className="flex flex-col place-content-center place-items-center cursor-pointer">
                             <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
                             <h3 className='text-md font-semibold'>Exit</h3>
-                        </div>
+                        </Link>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 h-full py-5">
                     <div className="w-3/4 flex flex-col">
                     {/* <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video> */}
-                    <ReactPlayer width="1080px" height="960px" url={details.base_url+video?.video_path} controls={true} config={{
-                            file: {
-                            attributes: {
-                                controlsList: 'nodownload'
-                            }
-                            }
-                            
-                        }}
-                        ref={playerRef}
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                        onProgress={(progress) => {
-                            handleProgress(progress)
-                          }}
-                    />
+                        
+                            <ReactPlayer width="1080px" height="960px" url={details.base_url+video?.video_path} controls={true} config={{
+                                file: {
+                                attributes: {
+                                    controlsList: 'nodownload'
+                                }
+                                }
+                                
+                                }}
+                                ref={playerRef}
+                                onPlay={() => setIsPlaying(true)}
+                                onPause={() => setIsPlaying(false)}
+                                onProgress={(progress) => {
+                                    if(isPlaying){
+                                        handleProgress(progress)
+                                    }
+                                    
+                                }}
+                               
+                            />
+                        
+                        
+                    
+                    
                         <div className='w-full h-full'>
                                 <div className='flex flex-col w-full h-full'>
                                     {
@@ -266,13 +292,13 @@ function AttendCourse() {
                                                 </TabPanel>
                                                 <TabPanel key="notes" value="notes">
                                                     <div className="w-full h-96">
-                                                         <Notes courseId={course.course_id._id}/>
+                                                         <Notes courseId={course?.course_id._id}/>
                                                     </div>
                                                     
                                                 </TabPanel>
                                                 <TabPanel key="reviews" value="reviews">
                                                     <div className="w-full h-96">
-                                                         <Reviews courseId={course.course_id._id}/>
+                                                         <Reviews courseId={course?.course_id._id}/>
                                                     </div>
                                                     
                                                 </TabPanel>

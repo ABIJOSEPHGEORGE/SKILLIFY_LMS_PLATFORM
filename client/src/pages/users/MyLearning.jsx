@@ -5,7 +5,7 @@ import axios from 'axios';
 import { updateMyLearning } from '../../redux/course';
 import { details } from '../../config';
 import { Progress } from "@material-tailwind/react";
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import AttendCourse from '../../components/users/AttendCourse';
 import { updateCourse, updateToggle } from '../../redux/attendCourseSlice';
 
@@ -13,6 +13,7 @@ function MyLearning() {
     const dispatch = useDispatch();
     const {toggle,course} = useSelector((state)=>state.attendCourse)
     const {enrolled_courses} = useSelector((state)=>state.courses)
+    const navigate = useNavigate()
     useEffect(()=>{
         axios.get('/user/enrolled-courses')
         .then((res)=>{
@@ -37,8 +38,7 @@ function MyLearning() {
 
   return (
     <>
-    {
-    !toggle ?
+    
     <div className='w-full h-full font-poppins'>
         <div className="w-full h-34 bg-lightblue flex flex-col place-content-between">
             <NavBar/>
@@ -62,7 +62,7 @@ function MyLearning() {
                         </div>
                         
                         <div className="w-full flex place-content-start m-0">
-                            <button className='bg-darkPink text-white text-center px-4 py-3' onClick={()=>{attendCourse(course?.course_id?._id)}}>{course?.progress>0 ? 'Continue Learning' : 'Start Learning'}</button>
+                            <button  className='bg-darkPink text-white text-center px-4 py-3' onClick={()=>{attendCourse(course?.course_id?._id)}}>{course?.progress>0 ? 'Continue Learning' : 'Start Learning'}</button>
                         </div>
                             
                             </div>
@@ -81,9 +81,7 @@ function MyLearning() {
         }
         
     </div>
-    :
-    <AttendCourse />
-    }
+    
     </>
   )
 }

@@ -18,7 +18,7 @@ function SideMenu() {
     }
 
   return (
-    <div className='bg-white w-1/6 h-auto shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
+    <div className='bg-white w-1/6 h-auto min-h-screen shadow-xl rounded-tr-3xl rounded-br-3xl font-poppins'>
         <div className="flex py-3">
             <img src="/avatar.png" alt="admin_profile_image" className='rounded-xl w-30 h-30' />
             <div className="flex flex-col place-content-center place-items-start">
@@ -35,14 +35,8 @@ function SideMenu() {
                 <BsBook size={50} className='px-3'></BsBook>
                 <h3 className=' font-semibold '>Courses</h3>
             </NavLink>
-            <NavLink to="/instructor/students" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <AiOutlineUser size={50} className='px-3'></AiOutlineUser>
-                <h3 className=' font-semibold '>Students</h3>
-            </NavLink>
-            <NavLink to="/instructor/assignments" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <MdOutlineAssignment  size={50} className='px-3'></MdOutlineAssignment>
-                <h3 className=' font-semibold '>Assignments</h3>
-            </NavLink>
+            
+            
             <NavLink to="/instructor/announcements" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
                 <GrAnnounce size={50} className='px-3'></GrAnnounce>
                 <h3 className=' font-semibold '>Announcements</h3>
@@ -51,18 +45,9 @@ function SideMenu() {
                 <CiWallet size={50} className='px-3'></CiWallet>
                 <h3 className=' font-semibold '>Payments</h3>
             </NavLink>
-            <NavLink to="/instructor/announcements" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <BsBox size={50} className='px-3'></BsBox>
-                <h3 className=' font-semibold '>Orders</h3>
-            </NavLink>
-            <NavLink to="/instructor/qanda" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <BsPatchQuestion size={50} className='px-3'></BsPatchQuestion>
-                <h3 className=' font-semibold '>Q&A</h3>
-            </NavLink>
-            <NavLink to="/instructor/reviews" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <TbStars size={50} className='px-3'></TbStars>
-                <h3 className=' font-semibold '>Reviews</h3>
-            </NavLink>
+            
+            
+           
             <NavLink onClick={handleLogout} className= 'flex place-items-center bg-white-10 my-2'>
                 <CiLogout size={50} className='px-3'></CiLogout>
                 <h3 className=' font-semibold '>Logout</h3>

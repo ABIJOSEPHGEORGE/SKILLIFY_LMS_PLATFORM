@@ -204,5 +204,36 @@ module.exports = {
             return res.status(500).json({ message: "Something went wrong" });
           }
     },
+    getVideorogress:async(req,res)=>{
+       
+            try {
+              // Get the course ID and video ID from the request parameters
+              const courseId = new mongoose.Types.ObjectId(req.params.id);
+              const videoId = req.params.videoId;
+              
+              // Find the relevant enrolled course for the user
+              const user = await User.findOne({ email: req.user });
+              const enrolled_course = user.enrolled_course.find(
+                (course) => course.course_id.toString() === courseId.toString()
+              );
+              
+              // Find the relevant video progress for the video
+              const videoProgress = enrolled_course.video_progress.find(
+                (video) => video.video_id === videoId
+              );
+              console.log(videoProgress,"===viddeo")
+              if (!videoProgress) {
+                // If the video progress is not found, return an error
+                return res.status(404).json({ message: 'Video progress not found' });
+              }
+              
+              // Return the video progress
+              return res.status(200).json(success("OK",videoProgress));
+            } catch (error) {
+              console.error(error);
+              return res.status(500).json({ message: 'Something went wrong' });
+            }
+         
+    },
 
 }

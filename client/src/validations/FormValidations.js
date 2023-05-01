@@ -148,3 +148,10 @@ export const lectureSchema = Yup.object({
     title:Yup.string().trim().required("Title is required"),
     description:Yup.string().trim().required('Description is required')
 })
+
+export const profileValidation = Yup.object({
+    first_name:Yup.string().trim().required("First Name is required"),
+    last_name:Yup.string().trim().required("Last Name is required"),
+    email:Yup.string().email().trim().required("Email is required"),
+    description:Yup.string().trim()
+})
