@@ -51,14 +51,20 @@ function EditCourse() {
         for (const key in formData) {
             if(key==='curriculum'){
                 form.append(key,JSON.stringify(formData[key]))
-            }else{
+            }else if(key==='reviews'){
+                form.append(key,JSON.stringify(formData[key]))
+            }else if(key==='tutor'){
+                form.append(key,JSON.stringify(formData[key]))
+            }
+            else{
                 form.append(key, formData[key]);
             }
             
         }
         if(formData.edit_mode){
+            console.log(formData)
             
-            axios.put(`/instructor/course/edit-course/${courseId}`,formData)
+            axios.put(`/instructor/course/edit-course/${courseId}`,form)
             .then((res)=>{
                 dispatch(resetState())
                 navigate('/instructor/courses');

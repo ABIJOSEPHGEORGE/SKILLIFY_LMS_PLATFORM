@@ -14,7 +14,8 @@ import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
 import Notes from './Notes';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { updateMyLearning } from '../../redux/course';
 
 
 
@@ -23,6 +24,7 @@ function AttendCourse() {
     const { toggle, course,course_progress,active_progress,video,content_type,video_progress} = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
     const videoRef = useRef(null);
+    const {enrolled_courses} = useSelector((state)=>state.courses)
 
     //updating progress based on recat player
     const [isPlaying,setIsPlaying] = useState(false);
@@ -30,6 +32,24 @@ function AttendCourse() {
     const [videoId,setVideoId] = useState(null)
     const playerRef = useRef(null);
     const navigate = useNavigate()
+    
+    useEffect(()=>{
+        axios.get('/user/enrolled-courses')
+        .then((res)=>{
+            dispatch(updateMyLearning(res.data.results))
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+
+        const course = enrolled_courses.filter((course)=>{
+            return course ? course?.course_id._id === id : null;
+        });
+
+        if(!course){
+            navigate('/user/my-learning',{replace:true})
+        }
+    },[])
     
     
 
@@ -94,39 +114,6 @@ function AttendCourse() {
     
     
 
-    const handleVideoEnded = () => {
-        const video = videoRef.current;
-        const duration = video.duration;
-        const currentTime = video.currentTime;
-        const threshold = 0.5; // in seconds
-    
-        if (duration - currentTime <= threshold) {
-        //   updateProgress()
-        }
-      };
-
-      
-    // function updateProgress(){
-    //     console.log(course_progress)
-    //     if(course_progress.active_content===course_progress.total_content){
-    //         dispatch(updateCourseProgress({...course_progress,completed:true}))
-    //     }else{
-    //         dispatch(updateCourseProgress({...course_progress,active_content:course_progress.active_content+1}))
-    //     }
-    //     courseProgress()
-    //     setContent()
-    //     console.log(course_progress)
-    //     //   axios.put('/users/enrolled-course/progress/:id')
-    //     //   .then((res)=>{
-
-    //     //   })
-    //     //   .catch((err)=>{
-
-    //     //   })
-    //     alert("hello")
-    // }
-   
-
     function videoProgress(video){
         axios.get(`/user/enroll/video-progress/${course?.course_id?._id}/${video.video_id}`)
         .then((res) => {
@@ -140,8 +127,6 @@ function AttendCourse() {
         })
     }
     
-    
-    fetchCourseProgress()
     videoProgress(video)
     const [open, setOpen] = useState(active_progress.session-1);
 
@@ -218,7 +203,7 @@ function AttendCourse() {
                     
                         <div className='w-full h-full'>
                                 <div className='flex flex-col w-full h-full'>
-                                    {
+                                    {/* {
                                         course?.progress < 5 &&
                                         <div className='w-full py-10 flex gap-3 place-items-center place-content-center'>
                                             <div className="flex gap-2 place-items-center border-r-2 border-darkPink px-2">
@@ -231,7 +216,7 @@ function AttendCourse() {
                                             </div>
                                             <h3>{course?.course_id?.course_welcome_message}</h3>
                                         </div>
-                                    }
+                                    } */}
                                     <div className="w-full flex gap-3">
 
                                         <Tabs value="overview" className="w-full">

@@ -98,10 +98,41 @@ module.exports ={
     },
     editCourse:async(req,res)=>{
         try{
-            
+            console.log(req.files)
+            if(Object.keys(req.files).length !== 0 && req.files['course_image']){
+                req.body.course_image = req.files['course_image'][0].path;
+            }
+            if(Object.keys(req.files).length !== 0 && req.files['promotional_video']){
+                req.body.promotional_video = req.files['promotional_video'][0].path;
+            }
+        
+            req.body.tutor = JSON.parse(req.body.tutor);
+            req.body.reviews = JSON.parse(req.body.reviews);
+            const curriculum = JSON.parse(req.body.curriculum)
+            // Create new ObjectIds for each curriculum
+            req.body.curriculum = curriculum.map((section) => {
+                return { 
+                    title: section.title,
+                    description:section.description,
+                    content: section.content.map((contentItem) => {
+                        if(!contentItem._id){
+                            return {
+                                ...contentItem,
+                                _id: new mongoose.Types.ObjectId()
+                            }
+                        }else{
+                            return {
+                                ...contentItem
+                            }
+                        }
+                        
+                    })
+                }
+            })
             await Course.findOneAndUpdate({_id:req.params.id},req.body,{new:true});
             res.status(200).json(success("OK"));
         }catch(err){
+            console.log(err)
             return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
         }
     },

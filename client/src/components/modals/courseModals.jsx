@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Input,Textarea } from "@material-tailwind/react"
 import { useDispatch, useSelector } from "react-redux"
-import { editLecture, editSectionDetails, getQuiz, updateFormData, updateLecture, updateSection } from "../../redux/createCourse"
+import { editLecture, editSectionDetails, getQuiz, updateFormData, updateLecture, updateQuizData, updateSection } from "../../redux/createCourse"
 import { AiFillDelete, AiOutlineClose, AiOutlineCloseCircle,AiOutlinePlus } from "react-icons/ai"
 import { useState } from "react"
 import { MdDelete } from "react-icons/md"
@@ -109,8 +109,8 @@ const EditAssignment=({setEditToggle,editToggle})=>{
 const EditQuiz = ({ editToggle, setEditToggle }) => {
     const { lecture_content, index, cindex } = editToggle;
     const dispatch = useDispatch();
-    const { quizData } = useSelector((state) => state.createCourse);
-  
+    const { formData } = useSelector((state) => state.createCourse);
+    let quizData =  formData.curriculum[index].content[cindex];
     useEffect(() => {
       dispatch(getQuiz({ sec_index: index, con_index: cindex }));
     }, []);
@@ -141,7 +141,7 @@ const handleNewOption = (index) => {
   const handleDeleteOption = (index, oindex) => {
     const questions = [...quizCopy.questions];
     const options = [...questions[index].options];
-    options.splice(oindex,1);
+    options.splice(oindex,1)
     
     questions[index] = {
       ...questions[index],
@@ -153,8 +153,19 @@ const handleNewOption = (index) => {
       questions: questions,
     };
     setQuizCopy(newQuizCopy);
-    console.log(quizCopy)
+    
   };
+
+  const handleDeleteQuestion=(index)=>{
+    const questions = [...quizCopy.questions];
+    questions.splice(index,1);
+
+    const newQuizCopy = {
+        ...quizCopy,
+        questions:questions
+    };
+    setQuizCopy(newQuizCopy)
+  }
 
     const handleFormSubmit = (event) => {
       event.preventDefault();
@@ -163,6 +174,9 @@ const handleNewOption = (index) => {
       const formValues = {
         title: event.target.title.value,
         description: event.target.description.value,
+        quiz_id:quizCopy.quiz_id,
+        _id:quizCopy._id,
+        content_type:'quiz',
         questions: quizCopy.questions.map((question, qindex) => {
           const newQuestion = {
             question: event.target[`questions[${qindex}].question`].value,
@@ -174,10 +188,9 @@ const handleNewOption = (index) => {
           return newQuestion;
         }),
       };
-  
-      console.log(formValues);
-      // Perform any necessary actions with the form values
-      // ...
+        console.log(formValues)
+      dispatch(updateQuizData({index,cindex,data:formValues}))
+      setEditToggle({ ...editToggle, lecture_edit: false })
     };
   
     return (
@@ -200,12 +213,16 @@ const handleNewOption = (index) => {
                 {quizCopy?.questions?.map((item, index) => (
                     <div className="w-full flex flex-col place-items-center bg-gray-50 p-5" key={index}>
                     <div className="w-full flex flex-col gap-6">
-                        <Input
-                        variant="static"
-                        label={`Question ${index + 1}`}
-                        name={`questions[${index}].question`}
-                        defaultValue={item?.question}
-                        />
+                        <div className="flex gap-3 place-content-between place-items-end">
+                            <Input
+                            variant="static"
+                            label={`Question ${index + 1}`}
+                            name={`questions[${index}].question`}
+                            defaultValue={item?.question}
+                            />
+                            <MdDelete size={20} className=" cursor-pointer" onClick={()=>{handleDeleteQuestion(index)}}></MdDelete>
+                        </div>
+                        
                         {/* Add any necessary validation or error handling */}
                         <div className="flex flex-col gap-5">
                         {item?.options?.map((option, oindex) => (
@@ -229,7 +246,9 @@ const handleNewOption = (index) => {
                     </div>
                 ))}
                 </div>
-                <button type="submit">update</button>
+                <div className="w-full flex place-content-center">
+                    <button type="submit" className="bg-primaryBlue px-5 w-2/5 py-3 text-white font-semibold rounded-3xl">update</button>
+                </div>
             </form>
             </div>
         </div>

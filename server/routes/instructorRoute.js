@@ -21,7 +21,9 @@ router.post('/course/create-course',upload.fields([
     { name: 'promotional_video', maxCount: 1 },
   ]),createCourse);
 
-router.put('/course/edit-course/:id',editCourse);
+router.put('/course/edit-course/:id',upload.fields([
+  { name: 'course_image', maxCount: 1 },
+  { name: 'promotional_video', maxCount: 1 }]),editCourse);
 
 router.delete('/course/:id',deletCourse)
 

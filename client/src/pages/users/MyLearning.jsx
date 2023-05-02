@@ -31,7 +31,9 @@ function MyLearning() {
         });
         dispatch(updateCourse(course[0]))
         dispatch(updateToggle(!toggle));
-        
+        if(course){
+            navigate(`/user/learn?attend=${course[0].course_id.course_title}&id=${id}`)
+        }
     }
 
 

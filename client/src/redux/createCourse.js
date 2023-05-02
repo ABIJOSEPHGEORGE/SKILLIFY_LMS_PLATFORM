@@ -22,6 +22,8 @@ const initialState = {
         course_completion_message:'',
         edit_mode:false,
     },
+
+    
     
     section:{title:'',description:'',content:[]},
     lecture:{title:'',description:'',video_path:'',video_name:'',video_id:''},
@@ -95,7 +97,9 @@ const createCourseSlice = createSlice({
         getQuiz:(state,{payload})=>{
             state.quizData = state.formData.curriculum[payload.sec_index].content[payload.con_index];
         },
-
+        updateQuizData:(state,{payload})=>{
+            state.formData.curriculum[payload.index].content[payload.cindex] = payload.data;
+        },
 
 
 
@@ -142,5 +146,6 @@ export const {
     updateEditdata,
     editLecture,
     getQuiz,
+    updateQuizData
     } = createCourseSlice.actions;
 export default createCourseSlice.reducer;
