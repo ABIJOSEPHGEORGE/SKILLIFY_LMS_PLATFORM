@@ -1,14 +1,41 @@
-import React, { useState } from 'react'
-import { ToastContainer } from 'react-toastify'
+import React, { useEffect, useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
 import NavBar from '../../components/users/NavBar'
 import { Input, Textarea } from '@material-tailwind/react'
 import { Link } from 'react-router-dom'
 import {FaRegUser} from 'react-icons/fa'
 import Profile from '../../components/users/profile&settings/Profile'
 import ProfileImage from '../../components/users/profile&settings/ProfileImage'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+import { updateProfileImage } from '../../redux/profileSlice'
+import { details } from '../../config'
+import ResetPassword from '../../components/users/profile&settings/ResetPassword'
 
 function UserProfile() {
-    const [state,setState] = useState('profile')
+    const [state,setState] = useState('profile');
+    const {profile_image} = useSelector((state)=>state.profile);
+    const dispatch = useDispatch();
+    
+    useEffect(()=>{
+        fetchProfileImage()
+    },[])
+
+    function fetchProfileImage(){
+        axios.get('/user/account/profile-image')
+        .then((res)=>{
+            if(res.data.results){
+                const profile_url = details.base_url+res.data.results;
+                dispatch(updateProfileImage(profile_url))
+            }else{
+                dispatch(updateProfileImage(null))
+            }
+            
+        })
+        .catch((err)=>{
+            toast.error("Something wen't wrong...")
+        })
+    }
   return (
     <div className='w-full h-full'>
         <ToastContainer position='top-center' limit={3}></ToastContainer>
@@ -19,7 +46,15 @@ function UserProfile() {
             <div className="w-1/6 h-auto min-h-screen pt-40 flex flex-col place-items-center bg-secondary">
                 <div className="avatar flex flex-col place-items-center gap-3">
                     <div className=" w-36 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 ">
-                        <img src="https://www.assyst.de/cms/upload/sub/digitalisierung/18-F.jpg" alt='profile_image'/>
+                        {
+                            profile_image ?
+                            <img src={profile_image} alt='profile_image'/>
+                            :
+                            <div className="bg-black bg-opacity-50 w-full h-full flex place-content-center place-items-center">
+                                <h1 className='text-white text-center font-semibold text-4xl'>A</h1>
+                            </div>
+                        }
+                       
                         
                     </div>
                     <h2 className='text-2xl font-semibold'>Hello Abin!</h2>
@@ -45,7 +80,7 @@ function UserProfile() {
                     : state ==="profile-image" ?
                     <ProfileImage/>
                     : state === "password-reset" ?
-                    null : null
+                    <ResetPassword/> : <Profile/>
                 }
             </div>
         </div>

@@ -155,3 +155,9 @@ export const profileValidation = Yup.object({
     email:Yup.string().email().trim().required("Email is required"),
     description:Yup.string().trim()
 })
+
+export const resetPasswordSchema = Yup.object({
+    existing_password:Yup.string().trim().required("Existing password is required"),
+    new_password:Yup.string().trim().required("New password is required"),
+    confirm_new_password:Yup.string().trim().oneOf([Yup.ref('new_password'), null], "Passwords don't match").required('Confirm new password is required'),
+})

@@ -6,7 +6,8 @@ const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../contr
 const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
 const { editCourse } = require('../controller/instructor/courseController');
-const { fetchAccountDetails, updateProfileInfo } = require('../controller/user/accountController');
+const { fetchAccountDetails, updateProfileInfo, updateProfileImage, getProfileImage, resetPassword } = require('../controller/user/accountController');
+const {upload}= require('../config/multer');
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.get('/reviews/:id',allReviews);
 router.get('/course/notes/:id',tokenVerification,allNotes);
 router.get('/enroll/video-progress/:id/:videoId',getVideorogress);
 router.get('/account',fetchAccountDetails)
+router.get('/account/profile-image',getProfileImage)
 
 router.post('/add-to-cart/:id',addToCart);
 router.post('/checkout/stripe',stripeCheckout);
@@ -33,6 +35,9 @@ router.post('/course/notes/:id',tokenVerification,newCourseNote);
 router.put('/order-confirmation',orderConfirmation);
 router.put('/enroll/progress/:id/video-progress',updateVideoProgress);
 router.put('/account',updateProfileInfo);
+
+router.patch('/account/profile-image',upload.single("profile_image"),updateProfileImage);
+router.patch('/account/password',resetPassword);
 
 
 router.delete('/cart/:id',deleteCartItem);
