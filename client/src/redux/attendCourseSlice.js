@@ -7,7 +7,9 @@ const initialState = {
     active_progress:{session:1,content:1},
     video:{},
     content_type:'',
-    video_progress:{video_id:null,progress:null,watched:null},
+    video_progress:[],
+    quiz_progress:[],
+    assignment_progress:[]
 
 }
 
@@ -35,11 +37,17 @@ const attendCourseSlice = createSlice({
         },
         updateVideoProgress:(state,action)=>{
             state.video_progress = action.payload;
+        },
+        updateQuizProgress:(state,action)=>{
+            state.quiz_progress = action.payload;
+        },
+        updateAssignmentProgress:(state,action)=>{
+            state.assignment_progress = action.payload;
         }
     
     }
 })
 
 export const {updateToggle,updateCourse,updateCourseProgress,updateActiveProgress,updateVideoPath
-    ,updateContentTye,updateVideoProgress} = attendCourseSlice.actions;
+    ,updateContentTye,updateVideoProgress,updateAssignmentProgress,updateQuizProgress} = attendCourseSlice.actions;
 export default attendCourseSlice.reducer;

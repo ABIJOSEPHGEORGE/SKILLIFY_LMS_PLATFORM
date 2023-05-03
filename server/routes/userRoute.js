@@ -3,7 +3,7 @@ const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
 const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
-const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress } = require('../controller/user/courseController');
+const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress, findCurrentSession, fetchActiveContent, fetchCourseContent, contentCompleted } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
 const { editCourse } = require('../controller/instructor/courseController');
 const { fetchAccountDetails, updateProfileInfo, updateProfileImage, getProfileImage, resetPassword } = require('../controller/user/accountController');
@@ -25,7 +25,10 @@ router.get('/reviews/:id',allReviews);
 router.get('/course/notes/:id',tokenVerification,allNotes);
 router.get('/enroll/video-progress/:id/:videoId',getVideorogress);
 router.get('/account',fetchAccountDetails)
-router.get('/account/profile-image',getProfileImage)
+router.get('/account/profile-image',getProfileImage);
+
+router.get('/course/active-session/:id',findCurrentSession);
+router.get('/course/content/:id',fetchCourseContent)
 
 router.post('/add-to-cart/:id',addToCart);
 router.post('/checkout/stripe',stripeCheckout);
@@ -35,6 +38,7 @@ router.post('/course/notes/:id',tokenVerification,newCourseNote);
 router.put('/order-confirmation',orderConfirmation);
 router.put('/enroll/progress/:id/video-progress',updateVideoProgress);
 router.put('/account',updateProfileInfo);
+router.put('/enroll/course-content/status',contentCompleted);
 
 router.patch('/account/profile-image',upload.single("profile_image"),updateProfileImage);
 router.patch('/account/password',resetPassword);

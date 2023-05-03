@@ -31,6 +31,14 @@ const enrolled_course = {
         watched: {
             type: Boolean,
             default: false
+        },
+        completed:{
+            type:Boolean,
+            default:false,
+        },
+        total_duration:{
+            type:Number,
+            default:0,
         }
     }],
     quiz_progress: [{

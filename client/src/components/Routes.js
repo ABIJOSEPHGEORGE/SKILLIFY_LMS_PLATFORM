@@ -61,7 +61,7 @@ function AnimatedRoutes() {
             <Route path='checkout' element={<Checkout/>}/>
             <Route path='confirm-order' element={<ConfirmOrder/>}/>
             <Route path='my-learning' element={<MyLearning/>}/>
-            <Route path='learn' element={<CourseAttendingPage/>}/>
+            <Route path='learn/:id' element={<CourseAttendingPage/>}/>
             <Route path='profile' element={<UserProfile/>}/>
         </Route>
 

@@ -61,7 +61,8 @@ module.exports ={
                             ...contentItem,
                             _id: new mongoose.Types.ObjectId()
                         }
-                    })
+                    }),
+                    session_id:new mongoose.Types.ObjectId(),
                 }
             })
             //fetching the tutor details
@@ -136,5 +137,9 @@ module.exports ={
             return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
         }
     },
+
+
+
+    
     
 }

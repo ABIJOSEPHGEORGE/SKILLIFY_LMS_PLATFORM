@@ -29,10 +29,10 @@ function MyLearning() {
         const course = enrolled_courses.filter((course)=>{
             return course ? course?.course_id._id === id : null;
         });
-        dispatch(updateCourse(course[0]))
+       
         dispatch(updateToggle(!toggle));
         if(course){
-            navigate(`/user/learn?attend=${course[0].course_id.course_title}&id=${id}`)
+            navigate(`/user/learn/${id}`)
         }
     }
 

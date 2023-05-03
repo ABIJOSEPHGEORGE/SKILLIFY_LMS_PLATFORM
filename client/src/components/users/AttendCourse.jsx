@@ -19,47 +19,82 @@ import { updateMyLearning } from '../../redux/course';
 
 
 
+
+
+
+
+
 function AttendCourse() {
 
-    const { toggle, course,course_progress,active_progress,video,content_type,video_progress} = useSelector((state) => state.attendCourse)
+    const { toggle, course,course_progress,active_progress,video_progress,quiz_progress,assignment_progress} = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
-    const videoRef = useRef(null);
-    const {enrolled_courses} = useSelector((state)=>state.courses)
+    const videoRef = useRef(null)
 
     //updating progress based on recat player
     const [isPlaying,setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [videoId,setVideoId] = useState(null)
+    const [video,setVideo] = useState(null)
     const playerRef = useRef(null);
     const navigate = useNavigate()
+    const {id} = useParams()
+    const [active,setActive] = useState({})
+    const [content,setContent] = useState([])
+    const [duration,setDuration] = useState(0)
+    const [seek,setSeek] = useState(false)
     
     useEffect(()=>{
+        isCourseEnrolled()  
+        courseProgress()  
+    },[dispatch])
+
+    useEffect(()=>{
+        fetchActiveSession();
+    },[id]);
+
+    useEffect(()=>{
+        fetchCourseContent()
+    },[active])
+
+    
+
+    // useEffect(()=>{
+    //     playerRef?.current.progress(progress)
+    //     console.log(progress)
+    // },[progress])
+    
+    
+
+    function isCourseEnrolled(){
         axios.get('/user/enrolled-courses')
         .then((res)=>{
             dispatch(updateMyLearning(res.data.results))
+            const isEnrolled = res.data.results.filter((course)=>{
+                return course ? course?.course_id._id === id : null;
+            });
+            
+            if(isEnrolled.length===0){
+                navigate('/user/my-learning',{replace:true})
+            }else{
+                dispatch(updateCourse(isEnrolled[0]));
+            }
         })
         .catch((err)=>{
             console.log(err)
         })
-
-        const course = enrolled_courses.filter((course)=>{
-            return course ? course?.course_id._id === id : null;
-        });
-
-        if(!course){
-            navigate('/user/my-learning',{replace:true})
-        }
-    },[])
+        
+    }
     
     
 
     const handleProgress = debounce((progress) => {
+        console.log(duration,'======')
         axios
-          .put(`/user/enroll/progress/${course?.course_id?._id}/video-progress`, {
+          .put(`/user/enroll/progress/${id}/video-progress`, {
             // session_id: sessionId,
             video_id: video.video_id,
             progress: progress.playedSeconds,
             watched: progress.playedSeconds === progress.duration,
+            total_duration : duration,
           })
           .then((res) => {
             console.log(res.data);
@@ -67,67 +102,65 @@ function AttendCourse() {
           .catch((err) => {
             console.log(err);
           });
+         
       }, 1000);
 
-
-     
-
-    function fetchCourseProgress(){
-        axios.get(`/user/course/progress/${course?.course_id?._id}`)
+    function fetchActiveSession(){
+        axios.get(`/user/course/active-session/${id}`)
         .then((res)=>{
-            dispatch(updateCourseProgress(res.data.results.enrolled_course[0].completion_status));
-            setContent()
+            setActive(res.data.results)
         })
         .catch((err)=>{
             console.log(err)
         })
     }
-    
-    function courseProgress() {
-        let completedFound = false;
-        course_progress?.forEach((item) => {
-          if (item.completed === true) {
-            completedFound = true;
-          } else if (completedFound === false) {
-            dispatch(updateActiveProgress({ session: item.section, content: item.active_content }));
-            completedFound = true;
-          }
-        });
-        
-      }
 
-      
+    //gettingthe active content
+    async function fetchCourseContent(){
+        console.log(active)
+        await axios.get(`/user/course/content/${id}/`)
+        .then((res)=>{
+           setContent(res.data.results);
+           
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
 
-     function setContent(){
-        course?.course_id?.curriculum?.forEach((ele,index)=>{
-            if(active_progress.session-1===index){
-                dispatch(updateContentTye(ele?.content[active_progress.content-1].content_type));
-                if(ele?.content[active_progress.content-1].content_type==="lecture"){
-                    
-                    dispatch(updateVideoPath({video_path:ele?.content[active_progress.content-1].video_path,video_id:ele?.content[active_progress.content-1].video_id}))
-                    setVideoId(ele?.content[active_progress.content-1].video_id)
-                }
+        videoProgress()
+        renderActiveContent()
+    }
+
+    const renderActiveContent=()=>{
+        const current_session = active.currentSession;
+        const current_content = content[current_session?.index].content[current_session?.active_content-1];
+
+        //check content type
+        setVideo({video_path:current_content?.video_path,video_id:current_content?.video_id,content_id:current_content?._id})
+    }
+
+
+    async function videoProgress(){
+        const current_session = active.currentSession;
+        const current_content = content[current_session?.index].content[current_session?.active_content-1]
+        try{
+            const res = await axios.get(`/user/enroll/video-progress/${id}/${current_content.video_id}`)
+            if(res.data.results.found===false){
+                playerRef.current.seekTo(0);
+                // dispatch(updateVideoProgress(res.data.results))
+                setProgress(0)  
+                return
             }
-        })
-        
-    }
-    
-    
-
-    function videoProgress(video){
-        axios.get(`/user/enroll/video-progress/${course?.course_id?._id}/${video.video_id}`)
-        .then((res) => {
-            
-            dispatch(updateVideoProgress(res.data.results))
+            playerRef.current.seekTo(res.data.results.progress);
+            // dispatch(updateVideoProgress(res.data.results))
             setProgress(res.data.results.progress)
-            playerRef?.current.seekTo(res.data.results.progress)
-        })
-        .catch((err) => {
+            
+        }catch(err){
             console.log(err) 
-        })
+        }
     }
     
-    videoProgress(video)
+    
     const [open, setOpen] = useState(active_progress.session-1);
 
     const handleOpen = (value) => {
@@ -155,6 +188,72 @@ function AttendCourse() {
             </svg>
         );
     }
+
+   
+    const videoPercentage=()=>{
+        const totalDuration = playerRef.current.getDuration();
+        console.log(progress)
+        const percentage = (progress/totalDuration)*100;
+        console.log(percentage,'=======')
+    }
+
+    
+    const loadContent=async(content)=>{
+       setVideo({video_path:content.video_path,video_id:content.video_id})   
+       const res = await axios.get(`/user/enroll/video-progress/${id}/${content.video_id}`)        
+            if(res.data.results.found===false){
+                playerRef.current.seekTo(0);
+                // dispatch(updateVideoProgress(res.data.results))
+                setProgress(0)  
+                return
+            }else{
+                playerRef.current.seekTo(res.data.results.progress);
+                // dispatch(updateVideoProgress(res.data.results))
+                setProgress(res.data.results.progress)
+            }
+             
+    }
+
+    function handleDuration(duration){
+        
+        setDuration(duration)
+    }
+
+    function courseProgress(){
+        axios.get(`/user/course/progress/${id}`)
+        .then((res)=>{
+
+           const video_completion =  res.data.results?.enrolled_course[0].video_progress.map((video,index)=>{
+                    return {
+                        video_id : video.video_id,
+                        completed:video.completed,
+                        percentage:video.progress > 0 ? (video.progress/video.total_duration) : 0,
+                    }
+            })
+
+            dispatch(updateVideoProgress(video_completion));
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
+    function handleOnSeek(){
+        setSeek(true)
+    }
+
+    function handleVideoEnded(){
+        const current_session = active.currentSession;
+        const session_id = content[current_session?.index].session_id
+        axios.put('/user/enroll/course-content/status',{courseId:id,contentId:video?.video_id,contentType:"lecture",sessionId:session_id})
+        .then((res)=>{
+            console.log(res,'ended++++++++++++')
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
     
     return (
         <div className='absolute top-0 left-0 z-50 w-full h-full font-poppins'>
@@ -195,8 +294,20 @@ function AttendCourse() {
                                     }
                                     
                                 }}
-                               
+                                onReady={()=>{
+                                    if(!isPlaying && !seek){
+                                        playerRef.current.seekTo(parseFloat(progress),'seconds')
+                                    }
+                                }}
+                                
+                                onSeek={handleOnSeek}
+                                
+                                onDuration={handleDuration}
+                                
+                               onEnded={handleVideoEnded}
                             />
+                            
+                            
                         
                         
                     
@@ -319,13 +430,14 @@ function AttendCourse() {
                                                     section?.content?.map((content, cindex) => (
                                                         <AccordionBody className="font-poppins">
 
-                                                        <div className="w-full flex flex-col gap-2">
-                                                                <div className={active_progress.content-1===cindex && active_progress.session-1===index ? 'flex place-items-center gap-3 bg-lightblue p-3 cursor-pointer' : 'flex place-items-center gap-2 cursor-pointer hover:bg-lightblue p-3'}>
+                                                        <div className="w-full flex flex-col gap-2" onClick={()=>{loadContent(content)}}>
+                                                                <div className={content?.video_path === video?.video_path ? 'flex place-items-center gap-3 bg-lightblue p-3 cursor-pointer' : 'flex place-items-center gap-2 cursor-pointer hover:bg-lightblue p-3'}>
                                                                    <div>
                                                                     <MdOndemandVideo size={20}></MdOndemandVideo>
                                                                    </div>
                                                                     <h3 className=' font-semibold  px-2 text-sm'>{content.title}</h3>
-                                                                    
+                                                                  
+                                                                    <p className='text-green-500 font-semibold hidden'>Completed</p>
                                                                 </div>
                                                         </div>
                                                         

@@ -41,31 +41,7 @@ module.exports = {
             res.status(500).json(error("Something wen't wrong,Try after sometimes"));
         }
     },
-    // orderConfirmation:async(req,res)=>{
-    //     try{
-    //         const response = await Order.findOneAndUpdate({_id:req.body.orderId},{status:'success'},{new:true});
-    //         //clearing the user cart
-    //         await User.findOneAndUpdate({email:req.user},{$set:{cart:[]}});
-    //         //adding the purchased courses to user enrolled list
-    //         console.log(response)
-    //         response.courses.forEach(async(ele)=>{
-    //             //total session and total content in the active session
-    //             const eachCourse = await Course.findOne({_id:ele});
-    //             const completion_status = [];
-    //             eachCourse.curriculum.forEach((item,index)=>{
-    //                 completion_status.push(
-    //                     {section:index+1,active_content:1,total_content:item.content.length,completed:false}
-    //                 )
-    //             })
-    //             await User.findOneAndUpdate({email:req.user},{$push:{enrolled_course:{course_id:ele._id,completion_status:completion_status}}});
-    //         })
-            
-    //         res.status(201).json(success("OK",response))
-    //     }catch(err){
-    //         console.log(err)
-    //         return res.status(500).json(error("Something wen't wrong,Try after sometimes"))
-    //     }
-    // }
+    
     orderConfirmation:async(req,res)=>{
         try{
             const response = await Order.findOneAndUpdate({_id:req.body.orderId},{status:'success'},{new:true});
@@ -77,14 +53,35 @@ module.exports = {
                 //total session and total content in the active session
                 const eachCourse = await Course.findOne({_id:courseId});
                 const completion_status = eachCourse.curriculum.map((session, index) => {
-                    return {
-                        session_id: session._id,
+                    const sessionStatus = {
                         active_content: 1,
                         total_content: session.content.length,
                         completed: false,
-                        last_watched_content_id: ''
+                        session_id:session.session_id,
                     };
+                
+                    sessionStatus.content = session.content.map((content, index) => {
+                        let contentStatus = {
+                            _id: content._id,
+                            content_type: content.content_type,
+                            completed: false
+
+                        };
+                
+                        if (content.content_type === 'lecture') {
+                            contentStatus.video_id = content.video_id;
+                        } else if (content.content_type === 'quiz') {
+                            contentStatus.quiz_id = content.quiz_id;
+                        } else if (content.content_type === 'assignment') {
+                            contentStatus.assignment_id = content.assignment_id;
+                        }
+                
+                        return contentStatus;
+                    });
+                
+                    return sessionStatus;
                 });
+                
 
                const status = await User.findOneAndUpdate({ email: req.user },{$push:{enrolled_course: {course_id: courseId,progress: 0,
                                 completion_status: completion_status

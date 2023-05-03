@@ -161,7 +161,7 @@ module.exports = {
     },
 
     updateVideoProgress:async(req,res)=>{
-        const { video_id, progress } = req.body;
+        const { video_id, progress,completed,watched,total_duration } = req.body;
         try {
             
             const courseId = new mongoose.Types.ObjectId(req.params.id)
@@ -186,12 +186,20 @@ module.exports = {
                 video_id: video_id,
                 progress: 0,
                 watched: true,
+                completed:false,
                 });
             } else {
                 // Update the existing video progress object
                 const videoProgress = enrolled_course.video_progress[videoIndex];
-                videoProgress.progress = progress;
+                
                 videoProgress.watched = true;
+                videoProgress.total_duration = total_duration;
+
+                if(videoProgress.progress<progress){
+                    videoProgress.progress=progress
+                }else{
+                    videoProgress.progress = videoProgress.progress
+                }
             }
             
             // Save the updated enrolled course to the database
@@ -224,7 +232,7 @@ module.exports = {
               console.log(videoProgress,"===viddeo")
               if (!videoProgress) {
                 // If the video progress is not found, return an error
-                return res.status(404).json({ message: 'Video progress not found' });
+                return res.status(200).json(success("Video progress not found",{found:false}));
               }
               
               // Return the video progress
@@ -235,5 +243,173 @@ module.exports = {
             }
          
     },
+
+
+    //fetching the active session and content
+
+    findCurrentSession:async(req,res)=> {
+        try {
+            const user = await User.findOne({email:req.user});
+            const courseId =req.params.id;
+            const enrolledCourse = user.enrolled_course.find(course => course.course_id.toString() === courseId);
+            if (!enrolledCourse) {
+            return;
+            }
+            const completionStatus = enrolledCourse.completion_status;
+            const firstIncompleteSession = completionStatus.find(session => !session.completed);
+            if (!firstIncompleteSession) {
+            return;
+            }
+            const currentSession = {
+            index: completionStatus.indexOf(firstIncompleteSession),
+            type: '',
+            id: '',
+            active_content:firstIncompleteSession.active_content
+            };
+            const videoProgress = enrolledCourse.video_progress.find(video => video.watched === false);
+            if (videoProgress) {
+            currentSession.type = 'video';
+            currentSession.id = videoProgress.video_id;
+            return currentSession;
+            }
+            const quizProgress = enrolledCourse.quiz_progress.find(quiz => quiz.completed === false);
+            if (quizProgress) {
+            currentSession.type = 'quiz';
+            currentSession.id = quizProgress.quiz_id;
+            return currentSession;
+            }
+            const assignmentProgress = enrolledCourse.assignment_progress.find(assignment => assignment.completed === false);
+            if (assignmentProgress) {
+            currentSession.type = 'assignment';
+            currentSession.id = assignmentProgress.assignment_id;
+            return currentSession;
+            }
+            res.status(200).json(success("OK",{currentSession,videoProgress,quizProgress,assignmentProgress}));
+        } catch (error) {
+            return res.status(500).json({ message: 'Something went wrong' });
+        }
+    },
+    fetchCourseContent:async(req,res)=>{
+        try{
+            const courseId = req.params.id;
+            const {curriculum} = await Course.findOne({_id:courseId}).select('curriculum');
+            res.status(200).json(success("OK",curriculum));
+        }catch(err){
+            console.log(err)
+            res.status(500).json({ message: 'Something went wrong' });
+        }
+    },
+    fetchAllVideoProgress:async(req,res)=>{
+        try{
+            const courseId = req.params.id;
+            const enrolled_course = await User.findOne({email:req.user}).select()
+        }catch(err){
+            res.status(500).json({ message: 'Something went wrong' });
+        }
+    },
+    contentCompleted:async(req,res)=>{
+        try{
+            const { courseId, contentId, contentType,sessionId} = req.body;
+            
+            const user = await User.findOne({email:req.user})
+            //finding the course status
+            const course_status = user.enrolled_course.map((item,index)=>{
+                if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
+                    return item;
+                }
+            })
+            const course_index = user.enrolled_course.map((item,index)=>{
+                if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
+                    return index;
+                }
+            })
+
+         console.log(sessionId,"---------=====")
+         //index 0 error
+            
+            //finding and updating the content in the completion status
+            const current_section = course_status[0].completion_status.map((section,index)=>{
+                if(section.session_id.toString()===new mongoose.Types.ObjectId(sessionId).toString()){
+                    return section;
+                }
+            })
+
+            console.log(current_section)
+
+            //updating video status completed
+            current_section[0].content.forEach((content,index)=>{
+                if(content.video_id===contentId){
+                    content.completed=true;
+                }
+            })
+            
+            
+
+            //updating the active content
+            const incomplete_content = current_section[0].content.reduce((acc,curr,index)=>{
+                if(!curr.completed){
+                    return index;
+                }else{
+                    return -1;
+                }
+            },-1)
+
+            if(incomplete_content!==-1){
+                current_section[0].active_content = incomplete_content+1;
+            }
+
+           
+
+            //checking whether all content in the section has been completed
+            const status = current_section[0].content.every(obj=>obj.completed);
+            //if all true update the current session as completed
+            if(status){
+                current_section[0].completed = true;
+            }
+
+            //calculating the percentage for updating the progress
+            const total_sessions = course_status[0].completion_status.length;
+            const total_content = course_status[0].completion_status.reduce((acc,curr)=>{
+                    acc = acc + curr.content.length
+                    return acc;
+            },0);
+            const total_completed_session = course_status[0].completion_status.reduce((acc,curr)=>{
+                if(curr.completed){
+                    acc = acc +1;
+                }
+                return acc;
+            },0)
+            const total_completed_content = course_status[0].completion_status.reduce((acc,curr)=>{
+                const completed =curr.content.reduce((con,concurr)=>{
+                    if(concurr.completed){
+                        con = con+1;
+                    }
+                    return con
+                },0)
+                acc = acc +completed;
+                return acc;
+            },0)
+
+            //updatin gthe course progress
+            const overallPercentage = (total_completed_content / total_content) * (total_completed_session / total_sessions) * 100;
+            //updating the totalProgress
+            course_status[0].progress = Math.floor(overallPercentage)
+           
+            user.enrolled_course[course_index] = course_status[0]
+
+            
+            //updating the user 
+            await user.save()
+            
+
+            res.status(200).json(success("OK"))
+
+        }catch(err){
+            console.log(err)
+            res.status(500).json(error("Something wen't wrong..."))
+        }
+    }
+
+
 
 }

@@ -78,7 +78,7 @@ function Reviews({courseId}) {
             reviews?.reviews?.length>0 ?
         <div className="mb-2 shadow-lg rounded-t-8xl rounded-b-5xl overflow-hidden rounded-xl">
             {
-                reviews?.reviews.map((review,rindex)=>(
+                reviews?.reviews?.map((review,rindex)=>(
                 <div className='w-full h-auto' key={rindex}>
                     <div className="pt-3 pb-3 md:pb-1 px-4 md:px-16 bg-gray-200">
                     <div className="flex flex-wrap items-center ">
@@ -87,9 +87,9 @@ function Reviews({courseId}) {
                             <img src="/user-avatar.jpeg" alt='' />
                         </div>
                     </div>
-                      <h4 className="w-full md:w-auto text-xl font-heading font-medium">{review.user_name}</h4>
+                      <h4 className="w-full md:w-auto text-xl font-heading font-medium">{review?.user_name}</h4>
                       <div className="w-full md:w-px h-2 md:h-8 mx-8 bg-gray-200"></div>
-                      <span clasNames="mr-4 text-xl font-heading font-medium">{review.rating}/5</span>
+                      <span clasNames="mr-4 text-xl font-heading font-medium">{review?.rating}/5</span>
                       <div className="flex gap-1 ml-3">
                       {
                             [...Array(parseInt(review?.rating))].map((_,index)=>(
