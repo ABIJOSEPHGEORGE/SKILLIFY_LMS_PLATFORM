@@ -141,7 +141,7 @@ function CourseListingPage() {
                                 <p className='text-gray-600 font-normal'>{course?.course_description}</p>
                                 <div className="w-full flex flex-col gap-2 place-items-center">
                                     <div className="w-full flex gap-2 place-items-center font-semibold text-gray-700">
-                                        <img className='w-10 h-10' src={course?.profile_image ? details.base_url+course?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
+                                        <img className='w-10 h-10' src={course?.tutor?.profile_image ? details.base_url+course?.tutor?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
                                         <p>{course?.tutor?.first_name} {course?.tutor?.last_name}</p>
                                     </div>
                                    <div className="flex gap-3 w-full place-content-start">

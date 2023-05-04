@@ -222,7 +222,7 @@ function CourseDetailPage() {
                             <div className="w-full bg-gray-100 p-5">
                                 <div className="flex gap-2 place-items-center">
                                     <div className="w-20">
-                                        <img className='w-14 h-14' src={course?.profile_image ? details.base_url+course?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
+                                        <img className='w-14 h-14' src={course?.tutor?.profile_image ? details.base_url+course?.tutor?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
                                     </div>
                                     <div className="flex flex-col gap-3 place-content-start">
                                         <h1 className='flex gap-3 font-poppins text-xl font-semibold text-black'>{course?.tutor?.first_name} {course?.tutor?.last_name}</h1>

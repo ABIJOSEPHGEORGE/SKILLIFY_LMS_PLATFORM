@@ -193,6 +193,14 @@ module.exports = {
         }catch(err){
             res.status(500).json(error('Something went wrong,Try after sometimes...'))
         }
+    },
+    fetchUserInfo:async(req,res)=>{
+        try{
+            const user = await User.findOne({email:req.user});
+            res.status(200).json(success("OK",{first_name:user.first_name,profile_image:user.profile_image}))
+        }catch(err){
+            res.status(500).json(error("Something wen't wrong..."))
+        }
     }
 }
 

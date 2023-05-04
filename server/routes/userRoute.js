@@ -8,6 +8,7 @@ const { getAllDiscussions } = require('../controller/user/discussionController')
 const { editCourse } = require('../controller/instructor/courseController');
 const { fetchAccountDetails, updateProfileInfo, updateProfileImage, getProfileImage, resetPassword } = require('../controller/user/accountController');
 const {upload}= require('../config/multer');
+const { fetchUserInfo } = require('../controller/user/authController');
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.get('/course/notes/:id',tokenVerification,allNotes);
 router.get('/enroll/video-progress/:id/:videoId',getVideorogress);
 router.get('/account',fetchAccountDetails)
 router.get('/account/profile-image',getProfileImage);
+router.get('/account/userinfo',fetchUserInfo)
 
 router.get('/course/active-session/:id',findCurrentSession);
 router.get('/course/content/:id',fetchCourseContent)

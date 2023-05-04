@@ -9,6 +9,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { updateSearchKey } from '../../redux/courseListing'
 import { userToken } from '../../helpers/user/AuthHelpers'
 import jwt_decode from 'jwt-decode'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { details } from '../../config'
 
 
 function NavBar() {
@@ -18,6 +21,7 @@ function NavBar() {
   const [searchParams,setSearchParams] = useSearchParams()
   const searchInput = searchParams.get("key")
   const [search,setSearch] = useState("")
+  const [user,setUser] = useState(null)
 
 
   useEffect(()=>{
@@ -37,6 +41,21 @@ function NavBar() {
   if(token){
     decode = jwt_decode(token)
   }
+
+ 
+    function fetchUser(){
+      axios.get('/user/account/userinfo')
+      .then((res)=>{
+        setUser(res.data.results)
+      })
+      .catch((err)=>{
+        toast.error("Something wen't wrong...")
+      })
+    }
+    
+    useEffect(()=>{
+      fetchUser()
+    },[token])
 
   const navigate = useNavigate()
     const handleLogout = (e)=>{
@@ -75,8 +94,8 @@ function NavBar() {
               
               <Link to="/user/my-learning" className='px-1 list-none'>My Learning</Link>
               <li className='px-1 list-none cursor-pointer' onClick={(e)=>{handleLogout(e)}}>Logout</li>
-              <Link to="/user/profile" className='w-12 h-12 px-3 py-3 rounded-3xl bg-lightPink flex place-content-center place-items-center cursor-pointer'>
-                  <h2 className='text-black font-bold text-2xl uppercase'>A</h2>
+              <Link to="/user/profile" className='w-12 h-12  rounded-3xl bg-lightPink flex place-content-center place-items-center cursor-pointer'>
+                <h2 className='text-black font-bold text-2xl uppercase'>{user?.first_name?.split("")[0]}</h2>
               </Link>
             </div>  
               :

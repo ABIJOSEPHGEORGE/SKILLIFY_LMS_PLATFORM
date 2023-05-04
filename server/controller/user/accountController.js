@@ -1,7 +1,8 @@
 const User = require('../../models/userSchema')
 const {success, error} = require('../../responseApi')
 const fs = require('fs');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const Course = require('../../models/courseSchema');
 module.exports = {
     fetchAccountDetails:async(req,res)=>{
         try{
@@ -22,15 +23,25 @@ module.exports = {
     },
     updateProfileImage:async(req,res)=>{
         try{
-            //finding and deleting the previous the profile image
+            //finding and deleting the previous profile image
             const prev_img = await User.findOne({email:req.user}).select("profile_image");
             if(prev_img.profile_image){
                 fs.unlinkSync(prev_img.profile_image);
             }
-            await User.findOneAndUpdate({email:req.user},{profile_image:req.file.path})
+            const user = await User.findOne({email:req.user});
+            user.profile_image = req.file.path;
+            //if user is an instrcutor updating the profile in user courses
+            if (user.instructor) {
+                const courses = await Course.find({ 'tutor.email': req.user });
+                courses.forEach(async (course) => {
+                    await Course.findOneAndUpdate({_id:course._id},{'tutor.profile_image':req.file.path})
+                });
+            }
+            await user.save()
+
             res.status(200).json(success("Profile Image updated successfully",req.file.path));
         }catch(err){
-            console.log(err)
+           console.log(err)
             res.status(500).json(error("Something went wrong..."))
         }
     },

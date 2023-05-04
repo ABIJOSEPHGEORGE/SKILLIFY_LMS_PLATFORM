@@ -72,7 +72,7 @@ module.exports ={
             await Course.create(req.body)
             return res.status(200).json(success("Course created successfully"));
         }catch(err){
-            console.log(err)
+            
             return res.status(500).json(error("Something went wrong, Try after sometimes"))
         }
     },
@@ -84,7 +84,7 @@ module.exports ={
             const courses = await Course.find({"tutor.email":req.user});
             return res.status(200).json(success("OK",courses));
         }catch(err){
-            console.log(err)
+       
             return res.status(500).json(error("Something wen't wrong, Try after sometimes"));
         }
     },
