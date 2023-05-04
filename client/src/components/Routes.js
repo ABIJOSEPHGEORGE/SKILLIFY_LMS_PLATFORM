@@ -32,6 +32,8 @@ import CourseAttendingPage from './users/AttendCourse'
 import CourseManagement from '../pages/admin/CourseManagement'
 import ViewCourse from './admin/ViewCourse'
 import UserProfile from '../pages/users/UserProfile'
+import CouponManagement from '../pages/admin/CouponManagement'
+import AdminDashboard from '../pages/admin/AdminDash'
 
 
 
@@ -73,13 +75,14 @@ function AnimatedRoutes() {
         </Route>
 
         <Route path='/admin' element={<PrivateRoute role="admin"/>}>
-          <Route path='dashboard' element={<Dashboard/>}/>
+          <Route path='dashboard' element={<AdminDashboard/>}/>
           <Route path='students' element={<Students/>}/>
           <Route path='instructors' element={<Instrcutors/>}/>
           <Route path='category' element={<CategoryManagement/>}/>
           <Route path='subcategory' element={<SubcategoryManagement/>}/>
           <Route path='courses' element={<CourseManagement/>}/>
           <Route path='view-course' element={<ViewCourse/>}/>
+          <Route path='coupon' element={<CouponManagement/>}/>
         </Route>
 
 

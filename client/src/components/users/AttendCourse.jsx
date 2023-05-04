@@ -9,13 +9,14 @@ import { details } from '../../config';
 import ReactPlayer from 'react-player'
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateActiveProgress, updateContentTye, updateCourse, updateCourseProgress, updateToggle, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
+import { updateActive, updateActiveProgress, updateContent, updateContentTye, updateCourse, updateCourseProgress, updateQuizData, updateToggle, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
 import Notes from './Notes';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { updateMyLearning } from '../../redux/course';
+import AttendQuiz from './AttendQuiz';
 
 
 
@@ -41,6 +42,8 @@ function AttendCourse() {
     const [content,setContent] = useState([])
     const [duration,setDuration] = useState(0)
     const [seek,setSeek] = useState(false)
+    const [contentType,setContentType] = useState('');
+    const [quiz,setQuiz] = useState('')
     
     useEffect(()=>{
         isCourseEnrolled()  
@@ -109,6 +112,7 @@ function AttendCourse() {
         axios.get(`/user/course/active-session/${id}`)
         .then((res)=>{
             setActive(res.data.results)
+            dispatch(updateActive(res.data.results))
         })
         .catch((err)=>{
             console.log(err)
@@ -121,7 +125,7 @@ function AttendCourse() {
         await axios.get(`/user/course/content/${id}/`)
         .then((res)=>{
            setContent(res.data.results);
-           
+           dispatch(updateContent(res.data.results));
         })
         .catch((err)=>{
             console.log(err)
@@ -134,9 +138,17 @@ function AttendCourse() {
     const renderActiveContent=()=>{
         const current_session = active.currentSession;
         const current_content = content[current_session?.index].content[current_session?.active_content-1];
-
-        //check content type
-        setVideo({video_path:current_content?.video_path,video_id:current_content?.video_id,content_id:current_content?._id})
+        setContentType(current_content.content_type)
+        
+        if(current_content.content_type==="lecture"){
+            setVideo({video_path:current_content?.video_path,video_id:current_content?.video_id,content_id:current_content?._id})
+        }else if(current_content.content_type==="quiz"){
+            setQuiz(current_content);
+            dispatch(updateQuizData(current_content))
+        }else if(current_content.content_type==="assignment"){
+            console.log(current_content)
+        }
+        
     }
 
 
@@ -276,7 +288,9 @@ function AttendCourse() {
                 <div className="w-full flex gap-2 h-full py-5">
                     <div className="w-3/4 flex flex-col">
                     {/* <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video> */}
-                        
+                        {
+                            contentType==="lecture" ?
+
                             <ReactPlayer width="1080px" height="960px" url={details.base_url+video?.video_path} controls={true} config={{
                                 file: {
                                 attributes: {
@@ -307,7 +321,11 @@ function AttendCourse() {
                                onEnded={handleVideoEnded}
                             />
                             
-                            
+                            : contentType==="quiz" ?
+                            <AttendQuiz/>
+                            : contentType==="assignment" ?
+                            null : null
+                        }
                         
                         
                     

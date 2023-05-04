@@ -161,3 +161,12 @@ export const resetPasswordSchema = Yup.object({
     new_password:Yup.string().trim().required("New password is required"),
     confirm_new_password:Yup.string().trim().oneOf([Yup.ref('new_password'), null], "Passwords don't match").required('Confirm new password is required'),
 })
+
+export const couponSchema = Yup.object({
+    coupon_id:Yup.string().trim().required("Coupon id is required"),
+    minimum_purchase:Yup.number().required("Minimum purchase is required"),
+    users_allowed:Yup.number().required("Maximum users allowed is required"),
+    discount_amount:Yup.number().required("Discount amount is required"),
+    maximum_discount_amount:Yup.number().required("Maximum discount amount is required"),
+    expiry_date:Yup.date().required("Coupon expiry date is required"),
+})

@@ -309,7 +309,7 @@ module.exports = {
     },
     contentCompleted:async(req,res)=>{
         try{
-            const { courseId, contentId, contentType,sessionId} = req.body;
+            const { courseId, contentId, contentType,sessionId,payload} = req.body;
             
             const user = await User.findOne({email:req.user})
             //finding the course status
@@ -318,35 +318,41 @@ module.exports = {
                     return item;
                 }
             })
-            const course_index = user.enrolled_course.map((item,index)=>{
-                if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
-                    return index;
-                }
-            })
+            // const course_index = user.enrolled_course.map((item,index)=>{
+            //     if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
+            //         return index;
+            //     }
+            // })
 
-         console.log(sessionId,"---------=====")
-         //index 0 error
+            const course_index = course_status.findIndex((ele)=>ele!==undefined);
+         
             
             //finding and updating the content in the completion status
-            const current_section = course_status[0].completion_status.map((section,index)=>{
+            const current_section = course_status[course_index].completion_status.map((section,index)=>{
                 if(section.session_id.toString()===new mongoose.Types.ObjectId(sessionId).toString()){
                     return section;
                 }
             })
 
-            console.log(current_section)
+            const curr_index = current_section.findIndex((ele)=>ele!==undefined);
 
             //updating video status completed
-            current_section[0].content.forEach((content,index)=>{
-                if(content.video_id===contentId){
+            current_section[curr_index].content.forEach((content,index)=>{
+                if(contentType==="lecture"&&content.video_id===contentId){
                     content.completed=true;
+                }else if(contentType==="quiz"&&content.quiz_id===contentId){
+                    console.log("hello from abin")
+                    content.completed = true;
+                    content.score = payload;
+                }else if(contentType==="assignment"&&content.assignment_id===contentId){
+                    content.completed = true;
                 }
             })
             
             
 
             //updating the active content
-            const incomplete_content = current_section[0].content.reduce((acc,curr,index)=>{
+            const incomplete_content = current_section[curr_index].content.reduce((acc,curr,index)=>{
                 if(!curr.completed){
                     return index;
                 }else{
@@ -355,31 +361,31 @@ module.exports = {
             },-1)
 
             if(incomplete_content!==-1){
-                current_section[0].active_content = incomplete_content+1;
+                current_section[curr_index].active_content = incomplete_content+1;
             }
 
            
 
             //checking whether all content in the section has been completed
-            const status = current_section[0].content.every(obj=>obj.completed);
+            const status = current_section[curr_index].content.every(obj=>obj.completed);
             //if all true update the current session as completed
             if(status){
-                current_section[0].completed = true;
+                current_section[curr_index].completed = true;
             }
 
             //calculating the percentage for updating the progress
-            const total_sessions = course_status[0].completion_status.length;
-            const total_content = course_status[0].completion_status.reduce((acc,curr)=>{
+            const total_sessions = course_status[course_index].completion_status.length;
+            const total_content = course_status[course_index].completion_status.reduce((acc,curr)=>{
                     acc = acc + curr.content.length
                     return acc;
             },0);
-            const total_completed_session = course_status[0].completion_status.reduce((acc,curr)=>{
+            const total_completed_session = course_status[course_index].completion_status.reduce((acc,curr)=>{
                 if(curr.completed){
                     acc = acc +1;
                 }
                 return acc;
             },0)
-            const total_completed_content = course_status[0].completion_status.reduce((acc,curr)=>{
+            const total_completed_content = course_status[course_index].completion_status.reduce((acc,curr)=>{
                 const completed =curr.content.reduce((con,concurr)=>{
                     if(concurr.completed){
                         con = con+1;
@@ -393,9 +399,9 @@ module.exports = {
             //updatin gthe course progress
             const overallPercentage = (total_completed_content / total_content) * (total_completed_session / total_sessions) * 100;
             //updating the totalProgress
-            course_status[0].progress = Math.floor(overallPercentage)
+            course_status[course_index].progress = Math.floor(overallPercentage)
            
-            user.enrolled_course[course_index] = course_status[0]
+            user.enrolled_course[course_index] = course_status[course_index]
 
             
             //updating the user 
@@ -407,6 +413,38 @@ module.exports = {
         }catch(err){
             console.log(err)
             res.status(500).json(error("Something wen't wrong..."))
+        }
+    },
+    quizProgress:async(req,res)=>{
+        try{
+            const user = await User.findOne({email:req.user});
+            const course = user.enrolled_course.reduce((acc,curr)=>{
+                if(curr.course_id.toString()===new mongoose.Types.ObjectId(req.params.courseId).toString()){
+                    return curr;
+                }else{
+                    return null;
+                }
+            },{})
+            //finding and updating the content in the completion status
+            const current_section = course.completion_status.map((section,index)=>{
+                if(section.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString()){
+                    return section;
+                }
+            })
+
+            const curr_index = current_section.findIndex((ele)=>ele!==undefined);
+            const quizData = current_section[curr_index].content.map((ele,index)=>{
+                if(ele.content_type==="quiz"&&ele.quiz_id===req.params.contentId){
+                    return ele;
+                }
+            })
+
+            const quiz_index = quizData.findIndex((ele)=>ele!==undefined);
+
+            res.status(200).json(success("OK",quizData[quiz_index]))
+        }catch(err){
+            console.log(err)
+            res.status(500).json(error("Something went wwrong..."))
         }
     }
 

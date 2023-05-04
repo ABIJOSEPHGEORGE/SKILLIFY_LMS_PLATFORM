@@ -40,18 +40,15 @@ function SideBar() {
                 <SlGraduation size={50} className='px-3'></SlGraduation>
                 <h3 className='font-semibold'>Instructors</h3>
             </NavLink>
-            <div className="flex place-items-center h-10 my-2">
+            <NavLink to='/admin/coupon' className="flex place-items-center h-10 my-2">
                 <CiDiscount1  size={50} className='px-3 text-primaryBlue'></CiDiscount1>
                 <h3 className='font-semibold text-primaryBlue'>Coupon</h3>
-            </div>
+            </NavLink>
             <div className="flex place-items-center h-10 my-2">
                 <CiWallet size={50} className='px-3 text-primaryBlue'></CiWallet>
                 <h3 className='font-semibold text-primaryBlue'>Payments</h3>
             </div>
-            <div className="flex place-items-center h-10 my-2">
-                <BsBox size={50} className='px-3 text-primaryBlue'></BsBox>
-                <h3 className='font-semibold text-primaryBlue'>Orders</h3>
-            </div>
+        
             <NavLink to="/admin/category" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
                 <BiCategoryAlt size={50} className='px-3'></BiCategoryAlt>
                 <h3 className='font-semibold'>Categories</h3>

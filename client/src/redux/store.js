@@ -8,6 +8,7 @@ import cartSlice from './cartSlice'
 import courseListSlice from './courseListing'
 import attendCourseSlice from './attendCourseSlice'
 import profileSlice from './profileSlice'
+import couponSlice from './couponSlice'
 export default configureStore({
   reducer: {
     admin: adminReducer,
@@ -19,5 +20,6 @@ export default configureStore({
     courseList:courseListSlice,
     attendCourse:attendCourseSlice,
     profile:profileSlice,
+    couponSlice:couponSlice,
   },
 })

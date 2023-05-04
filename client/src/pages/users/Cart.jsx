@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/users/NavBar'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,10 +7,12 @@ import { details } from '../../config';
 import { AiOutlineCloseSquare } from 'react-icons/ai';
 import {toast,ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom';
+import { Input } from '@material-tailwind/react';
 
 function Cart() {
     const dispatch = useDispatch();
     const {cart} = useSelector((state)=>state.cart)
+    const [coupon,setCoupon] = useState("")
 
     useEffect(()=>{
         dispatch(fetchCartItems())
@@ -25,6 +27,10 @@ function Cart() {
         .catch((err)=>{
             toast.error(err.response.data.message)
         })
+    }
+
+    function applyCoupon(){
+        alert(coupon)
     }
 
 
@@ -84,10 +90,21 @@ function Cart() {
                         </div>
                     ))
                 }
+
+            <div className="w-full flex flex-col gap-3 place-content-center">
+                    <Input className='bg-white rounded-none' color='pink' name='coupon' value={coupon} onChange={(e)=>setCoupon(e.target.value)} placeholder='Enter Coupon'/>
+                    <div className="w-full">
+                        <button className='text-sm' onClick={()=>applyCoupon()}>Apply Coupon</button>
+                    </div>
+                   
+                </div>
+
                 <div className='w-full flex gap-2 place-content-between'>
                     <p className='text-xl font-semibold '>Sub Total : </p>
                     <p className='font-semibold'>₹ {cart.subTotal}</p>
                 </div>
+
+                
                
                 <Link to="/user/checkout" className='w-full bg-darkPink text-center text-white font-semibold'><button className='bg-darkPink px-3 py-2 text-white font-semibold'>Checkout</button></Link>
             </div>

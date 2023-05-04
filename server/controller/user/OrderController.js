@@ -20,6 +20,7 @@ module.exports = {
                 return acc;
            },0);
            
+           
             //creating the order
             const billing_address = req.body;
             const order = await createOrder(billing_address,cartTotal,user)
@@ -72,6 +73,7 @@ module.exports = {
                             contentStatus.video_id = content.video_id;
                         } else if (content.content_type === 'quiz') {
                             contentStatus.quiz_id = content.quiz_id;
+                            contentStatus.score = 0;
                         } else if (content.content_type === 'assignment') {
                             contentStatus.assignment_id = content.assignment_id;
                         }

@@ -3,7 +3,7 @@ const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
 const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
-const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress, findCurrentSession, fetchActiveContent, fetchCourseContent, contentCompleted } = require('../controller/user/courseController');
+const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress, findCurrentSession, fetchActiveContent, fetchCourseContent, contentCompleted, quizStatus, quizProgress } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
 const { editCourse } = require('../controller/instructor/courseController');
 const { fetchAccountDetails, updateProfileInfo, updateProfileImage, getProfileImage, resetPassword } = require('../controller/user/accountController');
@@ -29,6 +29,7 @@ router.get('/account/profile-image',getProfileImage);
 
 router.get('/course/active-session/:id',findCurrentSession);
 router.get('/course/content/:id',fetchCourseContent)
+router.get('/quiz/status/:courseId/:sessionId/:contentId',quizProgress)
 
 router.post('/add-to-cart/:id',addToCart);
 router.post('/checkout/stripe',stripeCheckout);
