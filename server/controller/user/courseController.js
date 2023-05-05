@@ -160,6 +160,7 @@ module.exports = {
         }
     },
 
+    //course attending part
     updateVideoProgress:async(req,res)=>{
         const { video_id, progress,completed,watched,total_duration } = req.body;
         try {
@@ -262,8 +263,6 @@ module.exports = {
             }
             const currentSession = {
             index: completionStatus.indexOf(firstIncompleteSession),
-            type: '',
-            id: '',
             active_content:firstIncompleteSession.active_content
             };
             const videoProgress = enrolledCourse.video_progress.find(video => video.watched === false);
@@ -286,7 +285,7 @@ module.exports = {
             }
             res.status(200).json(success("OK",{currentSession,videoProgress,quizProgress,assignmentProgress}));
         } catch (error) {
-            return res.status(500).json({ message: 'Something went wrong' });
+            return res.status(500).json(error("Something wen't wrong..."));
         }
     },
     fetchCourseContent:async(req,res)=>{
@@ -318,11 +317,7 @@ module.exports = {
                     return item;
                 }
             })
-            // const course_index = user.enrolled_course.map((item,index)=>{
-            //     if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
-            //         return index;
-            //     }
-            // })
+            
 
             const course_index = course_status.findIndex((ele)=>ele!==undefined);
          
@@ -336,12 +331,11 @@ module.exports = {
 
             const curr_index = current_section.findIndex((ele)=>ele!==undefined);
 
-            //updating video status completed
+            //updating content status completed
             current_section[curr_index].content.forEach((content,index)=>{
                 if(contentType==="lecture"&&content.video_id===contentId){
                     content.completed=true;
                 }else if(contentType==="quiz"&&content.quiz_id===contentId){
-                    console.log("hello from abin")
                     content.completed = true;
                     content.score = payload;
                 }else if(contentType==="assignment"&&content.assignment_id===contentId){
@@ -417,30 +411,29 @@ module.exports = {
     },
     quizProgress:async(req,res)=>{
         try{
+           
             const user = await User.findOne({email:req.user});
-            const course = user.enrolled_course.reduce((acc,curr)=>{
-                if(curr.course_id.toString()===new mongoose.Types.ObjectId(req.params.courseId).toString()){
-                    return curr;
-                }else{
-                    return null;
-                }
-            },{})
-            //finding and updating the content in the completion status
-            const current_section = course.completion_status.map((section,index)=>{
-                if(section.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString()){
-                    return section;
-                }
-            })
+          
+            const course = user.enrolled_course.find((ele)=>ele.course_id.toString()===req.params.courseId)
+            
+            //finding content in the completion status
+            // const current_section = course.completion_status.map((section,index)=>{
+            //     if(section.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString()){
+            //         return section;
+            //     }
+            // })
+            console.log(req.params.sessionId)
+            // const current_section = course.completion_status.find((ele)=>ele.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString())
+            // console.log(current_section)
+            // const curr_index = current_section.findIndex((ele)=>ele!==undefined);
+            // const quizData = current_section[curr_index].content.map((ele,index)=>{
+            //     if(ele.content_type==="quiz"&&ele.quiz_id===req.params.contentId){
+            //         return ele;
+            //     }
+            // })
 
-            const curr_index = current_section.findIndex((ele)=>ele!==undefined);
-            const quizData = current_section[curr_index].content.map((ele,index)=>{
-                if(ele.content_type==="quiz"&&ele.quiz_id===req.params.contentId){
-                    return ele;
-                }
-            })
-
-            const quiz_index = quizData.findIndex((ele)=>ele!==undefined);
-
+            // const quiz_index = quizData.findIndex((ele)=>ele!==undefined);
+            // console.log(quizData[quiz_index],"quiz")
             res.status(200).json(success("OK",quizData[quiz_index]))
         }catch(err){
             console.log(err)

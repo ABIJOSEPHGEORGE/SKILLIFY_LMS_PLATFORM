@@ -29,7 +29,7 @@ function Discussion({courseId}) {
      })
 
      useEffect(()=>{
-        scrollRef.current?.scrollIntoView({behaviour:'smooth'})
+        //scrollRef.current?.scrollIntoView({behaviour:'smooth'})
      },[discussions])
      //fetch all discussions
      function fetchDiscussions(courseId){

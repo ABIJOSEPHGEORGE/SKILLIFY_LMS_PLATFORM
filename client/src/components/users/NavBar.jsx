@@ -39,8 +39,15 @@ function NavBar() {
   const token = userToken()
   let decode;
   if(token){
-    decode = jwt_decode(token)
+    decode = jwt_decode(token);
   }
+
+  useEffect(()=>{
+    const token = userToken()
+    if(token){
+      fetchUser()
+    }
+  },[])
 
  
     function fetchUser(){
@@ -53,10 +60,7 @@ function NavBar() {
       })
     }
     
-    useEffect(()=>{
-      fetchUser()
-    },[token])
-
+    
   const navigate = useNavigate()
     const handleLogout = (e)=>{
         localStorage.removeItem('authKey');

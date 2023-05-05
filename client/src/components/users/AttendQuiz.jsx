@@ -12,26 +12,28 @@ function AttendQuiz() {
   const [quizStatus,setQuizStatus] = useState(null)
   const {id} = useParams()
 
-    useEffect(()=>{
-        fetchQuizDetails()
-    },[])
+    // useEffect(()=>{
+    //     fetchQuizDetails()
+    // },[])
 
+    console.log(quizData,"====quizdata attend quiz===")
 
- function fetchQuizDetails(){
-  const current_session = active.currentSession;
-  const session_id = content[current_session?.index].session_id
-  const current_content = content[current_session?.index].content[current_session?.active_content-1];
-  axios.get(`/user/quiz/status/${id}/${session_id}/${current_content?.quiz_id}`)
-  .then((res)=>{
-    setQuizStatus(res.data.results);
-    if(res.data.results.completed){
-      setScore(res.data.results.score);
-    }
-  })
-  .catch((err)=>{
-    console.log(err)
-  })
- }
+//  function fetchQuizDetails(){
+//   console.log(active,"====quiz active====")
+//   const current_session = active.currentSession;
+//   const session_id = content[current_session?.index].session_id
+//   axios.get(`/user/quiz/status/${id}/${session_id}/${quizData?.quiz_id}`)
+//   .then((res)=>{
+//     console.log(res.data.results,"====completed=====")
+//     setQuizStatus(res.data.results);
+//     if(res.data.results.completed){
+//       setScore(res.data.results.score);
+//     }
+//   })
+//   .catch((err)=>{
+//     console.log(err)
+//   })
+//  }
 
 
   const handleAnswer = (isCorrect,index) => {
@@ -62,7 +64,7 @@ function AttendQuiz() {
   }
 
   const renderQuiz = () => {
-    if (currentQuestion < quizData.questions.length && !quizStatus?.completed) {
+    if (currentQuestion < quizData.questions?.length && !quizStatus?.completed) {
       return (
         <div className='flex flex-col gap-5'>
           <h2 className='text-xl font-semibold'>

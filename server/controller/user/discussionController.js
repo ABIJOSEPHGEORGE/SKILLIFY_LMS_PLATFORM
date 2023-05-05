@@ -7,7 +7,7 @@ module.exports = {
         try{
             //getting the user detail
             const user = await User.findOne({email:req.user});
-            //creatin the message
+            //creating the message
             const message = {
                 message : req.body,
                 student_id:user._id,
@@ -38,15 +38,15 @@ module.exports = {
                     first_name:first_name,
                     email:email,
                     createdAt:new Date(),
-                    vote:0,
                 }
                 console.log(newMessage)
-                 //emit the message to all users in the same discussion
-                socket.to(roomId).emit('receive_message',newMessage);
+                
                 //saving the message to db
                 const discussion = await Discussion.findOneAndUpdate({course_id:courseId},
                     {$push:{messages:newMessage},$addToSet:{students:_id}},{upsert:true,new:true});
                
+                 //emit the message to all users in the same discussion
+                 socket.to(roomId).emit('receive_message',newMessage);
                 
             }catch(err){
                 console.log(err)

@@ -21,14 +21,20 @@ db.connectDB();
 
 const httpServer = require('http').createServer(app)
 const io = new Server(httpServer,{
-  cors:'*'
+  cors:{
+    origin:process.env.DOMAIN,
+    methods:['GET','POST'],
+    transports:['websocket','polling'],
+    credentials:true
+  },
+  allowEIO3: true
 })
 
 socketioConnection(io)
 
 app.use(cors(
     {
-      origin: 'http://localhost:3000',
+      origin:process.env.DOMAIN,
       credentials:true
     }
   ));
