@@ -71,22 +71,7 @@ module.exports = {
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
     },
-    courseProgress:async(req,res)=>{
-        try{
-            const completion_status = await User.findOne({email:req.user,enrolled_course:{$elemMatch:{course_id:req.params.id}}})
-            .select('enrolled_course.$')
-            res.status(200).json(success('OK',completion_status));
-        }catch(err){
-            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
-        }
-    },
-    updateCourseProgress:async(req,res)=>{
-        try{
-
-        }catch(err){
-            res.status(500).json(error("Something wen't wrong, Try after sometimes"))
-        }
-    },
+    
     newCourseNote:async(req,res)=>{
         try{
             const {_id} = await User.findOne({email:req.user})
@@ -165,16 +150,12 @@ module.exports = {
         const { video_id, progress,completed,watched,total_duration } = req.body;
         try {
             
-            const courseId = new mongoose.Types.ObjectId(req.params.id)
+            //const courseId = new mongoose.Types.ObjectId(req.params.id)
             // Find the relevant enrolled course for the user
             const user = await User.findOne({
                 email: req.user,
             });
-            const enrolled_course = user.enrolled_course.reduce((acc,curr)=>{
-                if(curr.course_id.toString()===courseId.toString()){
-                    return curr;
-                }
-            },{})
+            const enrolled_course = user.enrolled_course.find((ele)=>ele.course_id.toString()===req.params.id)
             console.log(enrolled_course)
             // Update the video progress for the relevant video
             const videoIndex = enrolled_course.video_progress.findIndex(
@@ -217,13 +198,13 @@ module.exports = {
        
             try {
               // Get the course ID and video ID from the request parameters
-              const courseId = new mongoose.Types.ObjectId(req.params.id);
+            //   const courseId = new mongoose.Types.ObjectId(req.params.id);
               const videoId = req.params.videoId;
               
               // Find the relevant enrolled course for the user
               const user = await User.findOne({ email: req.user });
               const enrolled_course = user.enrolled_course.find(
-                (course) => course.course_id.toString() === courseId.toString()
+                (course) => course.course_id.toString() === req.params.id
               );
               
               // Find the relevant video progress for the video
@@ -409,6 +390,16 @@ module.exports = {
             res.status(500).json(error("Something wen't wrong..."))
         }
     },
+    courseProgress:async(req,res)=>{
+        try{
+            const {enrolled_course} = await User.findOne({email:req.user}).select("enrolled_course")
+            const course = await enrolled_course.find((ele)=>ele.course_id.toString()===req.params.courseId);
+            res.status(200).json(success("OK",course?.progress))
+        }catch(err){
+            console.log(err)
+            res.status(500).json(error("Something went wrong..."))
+        }
+    },
     quizProgress:async(req,res)=>{
         try{
            
@@ -416,25 +407,13 @@ module.exports = {
           
             const course = user.enrolled_course.find((ele)=>ele.course_id.toString()===req.params.courseId)
             
-            //finding content in the completion status
-            // const current_section = course.completion_status.map((section,index)=>{
-            //     if(section.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString()){
-            //         return section;
-            //     }
-            // })
-            console.log(req.params.sessionId)
-            // const current_section = course.completion_status.find((ele)=>ele.session_id.toString()===new mongoose.Types.ObjectId(req.params.sessionId).toString())
-            // console.log(current_section)
-            // const curr_index = current_section.findIndex((ele)=>ele!==undefined);
-            // const quizData = current_section[curr_index].content.map((ele,index)=>{
-            //     if(ele.content_type==="quiz"&&ele.quiz_id===req.params.contentId){
-            //         return ele;
-            //     }
-            // })
-
-            // const quiz_index = quizData.findIndex((ele)=>ele!==undefined);
-            // console.log(quizData[quiz_index],"quiz")
-            res.status(200).json(success("OK",quizData[quiz_index]))
+           
+            
+            const current_section = course.completion_status.find((ele)=>ele.session_id.toString()===req.params.sessionId)
+            console.log(current_section)
+           
+            const quizData = current_section.content.find((ele)=>ele.quiz_id===req.params.contentId)
+            res.status(200).json(success("OK",quizData))
         }catch(err){
             console.log(err)
             res.status(500).json(error("Something went wwrong..."))

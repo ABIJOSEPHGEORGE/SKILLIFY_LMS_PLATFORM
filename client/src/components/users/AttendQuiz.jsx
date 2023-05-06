@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-function AttendQuiz() {
+function AttendQuiz({progressPercentage,renderActiveContent}) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const { quizData,active,content } = useSelector(state => state.attendCourse);
@@ -12,31 +12,32 @@ function AttendQuiz() {
   const [quizStatus,setQuizStatus] = useState(null)
   const {id} = useParams()
 
-    // useEffect(()=>{
-    //     fetchQuizDetails()
-    // },[])
+    useEffect(()=>{
+        fetchQuizDetails()
+    },[])
 
     console.log(quizData,"====quizdata attend quiz===")
 
-//  function fetchQuizDetails(){
-//   console.log(active,"====quiz active====")
-//   const current_session = active.currentSession;
-//   const session_id = content[current_session?.index].session_id
-//   axios.get(`/user/quiz/status/${id}/${session_id}/${quizData?.quiz_id}`)
-//   .then((res)=>{
-//     console.log(res.data.results,"====completed=====")
-//     setQuizStatus(res.data.results);
-//     if(res.data.results.completed){
-//       setScore(res.data.results.score);
-//     }
-//   })
-//   .catch((err)=>{
-//     console.log(err)
-//   })
-//  }
+ function fetchQuizDetails(){
+  console.log(active,"====quiz active====")
+  const current_session = active.currentSession;
+  const session_id = content[current_session?.index].session_id
+  axios.get(`/user/quiz/status/${id}/${session_id}/${quizData?.quiz_id}`)
+  .then((res)=>{
+    console.log(res.data.results,"====completed=====")
+    setQuizStatus(res.data.results);
+    if(res.data.results.completed){
+      setScore(res.data.results.score);
+    }
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
+ }
 
 
   const handleAnswer = (isCorrect,index) => {
+    console.log(isCorrect,index,"======iscorrect")
     if (isCorrect) {
       setScore(score + 1);
     }
@@ -53,9 +54,10 @@ function AttendQuiz() {
         //saving the data in db
         const current_session = active.currentSession;
         const session_id = content[current_session?.index].session_id
-        axios.put('/user/enroll/course-content/status',{courseId:id,contentId:quizData?.quiz_id,contentType:"quiz",sessionId:session_id,score:score})
+        axios.put('/user/enroll/course-content/status',{courseId:id,contentId:quizData?.quiz_id,contentType:"quiz",sessionId:session_id,payload:score})
         .then((res)=>{
-            console.log(res,'ended++++++++++++')
+            progressPercentage()
+            renderActiveContent()
         })
         .catch((err)=>{
             console.log(err)
@@ -80,7 +82,7 @@ function AttendQuiz() {
                 value={option.isCorrect}
                 label={option.answer}
                 className='radio'
-                onChange={() => handleAnswer(option.isCorrect,index)}
+                onChange={() => handleAnswer(option?.isCorrect,index)}
               />
             ))}
           </ul>

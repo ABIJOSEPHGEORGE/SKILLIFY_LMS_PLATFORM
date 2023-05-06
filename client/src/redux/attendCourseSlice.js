@@ -14,7 +14,8 @@ const initialState = {
     assignmentData:{},
     content:'',
     active:'',
-
+    video_durations:{},
+    progress_percentage:0,
 }
 
 const attendCourseSlice = createSlice({
@@ -60,11 +61,17 @@ const attendCourseSlice = createSlice({
         updateAssignmentData:(state,action)=>{
             state.assignmentData = action.payload;
         },
+        updateVideoDurations:(state,action)=>{
+            state.video_durations = action.payload;
+        },
+        updateProgressPercentage:(state,action)=>{
+            state.progress_percentage = action.payload;
+        }
     
     }
 })
 
 export const {updateToggle,updateCourse,updateCourseProgress,updateActiveProgress,updateVideoPath
     ,updateContentTye,updateVideoProgress,updateAssignmentProgress,updateQuizProgress,updateQuizData,
-    updateContent,updateActive,updateAssignmentData} = attendCourseSlice.actions;
+    updateContent,updateActive,updateAssignmentData,updateVideoDurations,updateProgressPercentage} = attendCourseSlice.actions;
 export default attendCourseSlice.reducer;

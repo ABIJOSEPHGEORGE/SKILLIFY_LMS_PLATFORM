@@ -9,7 +9,7 @@ import { details } from '../../config';
 import ReactPlayer from 'react-player'
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateActive, updateActiveProgress, updateAssignmentData, updateContent, updateContentTye, updateCourse, updateCourseProgress, updateQuizData, updateToggle, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
+import { updateActive, updateActiveProgress, updateAssignmentData, updateContent, updateContentTye, updateCourse, updateCourseProgress, updateProgressPercentage, updateQuizData, updateToggle, updateVideoDurations, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
@@ -21,7 +21,7 @@ import AttendAssignment from './AttendAssignment';
 
 function AttendCourse() {
 
-    const { toggle, course, course_progress, active_progress, video_progress, quiz_progress, assignment_progress, content, active } = useSelector((state) => state.attendCourse)
+    const { toggle, course,progress_percentage, course_progress, active_progress, video_progress, quiz_progress, assignment_progress,video_durations, content, active } = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
     const videoRef = useRef(null)
 
@@ -45,6 +45,7 @@ function AttendCourse() {
     useEffect(() => {
         fetchActiveSession()
         fetchCourseContent()
+        progressPercentage()
     }, []);
 
     useEffect(() => {
@@ -79,7 +80,9 @@ function AttendCourse() {
     console.log(content,"====content====")
 
     const handleProgress = debounce((progress) => {
-        console.log(duration, '======')
+        const durations = {video_id:video.video_id,played_seconds:progress.playedSeconds,total_duration:duration}
+        dispatch(updateVideoDurations({...video_durations,durations}))
+        console.log(video_durations,"video_durations")
         axios
             .put(`/user/enroll/progress/${id}/video-progress`, {
                 // session_id: sessionId,
@@ -95,7 +98,18 @@ function AttendCourse() {
                 console.log(err);
             });
 
-    }, 1000);
+    },1000)
+
+
+    function progressPercentage(){
+        axios.get(`/user/enrolled-course/progress/${id}`)
+        .then((res)=>{
+            dispatch(updateProgressPercentage(res.data.results));
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
 
 
     async function fetchActiveSession() {
@@ -125,20 +139,11 @@ function AttendCourse() {
             const current_session = active.currentSession;
             console.log(content[current_session?.index])
             const current_content = content[current_session?.index].content[current_session?.active_content - 1];
-            console.log(current_content,"-----current content----")
+        
             setContentType(current_content.content_type)
 
             if (current_content.content_type === "lecture") {
                 setVideo({ video_path: current_content?.video_path, video_id: current_content?.video_id, content_id: current_content?._id })
-            } else if (current_content.content_type === "quiz") {
-                setQuiz(current_content);
-                dispatch(updateQuizData(current_content))
-            } else if (current_content.content_type === "assignment") {
-                console.log(current_content)
-            }
-
-            //course progress
-            if (current_session.content_type === "lecture") {
                 const res = await axios.get(`/user/enroll/video-progress/${id}/${current_content.video_id}`)
                 if (res.data.results.found === false) {
                     playerRef.current.seekTo(0);
@@ -147,6 +152,11 @@ function AttendCourse() {
                 }
                 playerRef.current.seekTo(res.data.results.progress);
                 setProgress(res.data.results.progress)
+            } else if (current_content.content_type === "quiz") {
+                setQuiz(current_content);
+                dispatch(updateQuizData(current_content))
+            } else if (current_content.content_type === "assignment") {
+                console.log(current_content)
             }
 
         } catch (err) {
@@ -181,13 +191,7 @@ function AttendCourse() {
     }
 
 
-    const videoPercentage = () => {
-        const totalDuration = playerRef.current.getDuration();
-        console.log(progress)
-        const percentage = (progress / totalDuration) * 100;
-        console.log(percentage, '=======')
-    }
-
+   
 
     const loadContent = async (content,index,cindex) => {
         try{
@@ -253,13 +257,16 @@ function AttendCourse() {
         const session_id = content[current_session?.index].session_id
         axios.put('/user/enroll/course-content/status', { courseId: id, contentId: video?.video_id, contentType: "lecture", sessionId: session_id })
             .then((res) => {
-                console.log(res, 'ended++++++++++++')
+                fetchActiveSession()
+                renderActiveContent()
+                progressPercentage()
             })
             .catch((err) => {
                 console.log(err)
             })
     }
 
+   
 
     return (
         <div className='absolute top-0 left-0 z-50 w-full h-full font-poppins'>
@@ -270,7 +277,7 @@ function AttendCourse() {
                     </div>
                     <div className="w-[70%] flex  place-content-between place-items-center px-3">
                         <h1 className='text-xl font-semibold'>{course?.course_id?.course_title}</h1>
-                        <h2 className='text-darkPink font-semibold text-md'>Completed : {course?.progress}%</h2>
+                        <h2 className='text-darkPink font-semibold text-md'>Completed : {progress_percentage}%</h2>
                     </div>
                     <div className='w-[15%] flex  place-items-center place-content-end'>
                         <Link to="/user/my-learning" className="flex flex-col place-content-center place-items-center cursor-pointer">
@@ -296,6 +303,7 @@ function AttendCourse() {
                                     ref={playerRef}
                                     onPlay={() => setIsPlaying(true)}
                                     onPause={() => setIsPlaying(false)}
+                                    playing={isPlaying}
                                     onProgress={(progress) => {
                                         if (isPlaying) {
                                             handleProgress(progress)
@@ -307,6 +315,7 @@ function AttendCourse() {
                                             playerRef.current.seekTo(parseFloat(progress), 'seconds')
                                         }
                                     }}
+                                    
 
                                     onSeek={handleOnSeek}
 
@@ -316,7 +325,7 @@ function AttendCourse() {
                                 />
 
                                 : contentType === "quiz" ?
-                                    <AttendQuiz />
+                                    <AttendQuiz renderActiveContent={renderActiveContent} progressPercentage={progressPercentage}/>
                                     : contentType === "assignment" ?
                                         <AttendAssignment/> : null
                         }

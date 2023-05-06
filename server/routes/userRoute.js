@@ -27,7 +27,8 @@ router.get('/course/notes/:id',tokenVerification,allNotes);
 router.get('/enroll/video-progress/:id/:videoId',getVideorogress);
 router.get('/account',fetchAccountDetails)
 router.get('/account/profile-image',getProfileImage);
-router.get('/account/userinfo',fetchUserInfo)
+router.get('/account/userinfo',fetchUserInfo);
+router.get('/enrolled-course/progress/:courseId',courseProgress);
 
 router.get('/course/active-session/:id',findCurrentSession);
 router.get('/course/content/:id',fetchCourseContent)
