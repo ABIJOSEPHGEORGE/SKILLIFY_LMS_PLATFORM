@@ -92,10 +92,7 @@ function AttendCourse() {
     const handleProgress = (progress) => {
         const durations = {video_id:video.video_id,played_seconds:progress.playedSeconds,total_duration:duration}
         dispatch(updateVideoDurations({...video_durations,durations}))
-        console.log(video_durations,"video_durations")
-        if (duration - progress.playedSeconds <= 1000) {
-            handleVideoEnded()
-          }
+       
         axios
             .put(`/user/enroll/progress/${id}/video-progress`, {
                 // session_id: sessionId,

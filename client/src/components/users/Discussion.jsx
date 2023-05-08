@@ -6,9 +6,10 @@ import jwt_decode from 'jwt-decode';
 import TimeAgo from 'react-timeago'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { details } from '../../config';
 
 function Discussion() {
-    const socket = io("ws://localhost:3001");
+    const socket = io(`${details.base_url}`);
     const [message,setMessage] = useState('');
     const [discussions,setDiscussions] = useState([])
     const scrollRef = useRef();

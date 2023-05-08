@@ -1,5 +1,6 @@
 import axios from 'axios'
-axios.defaults.baseURL = 'http://localhost:3001'
+import { details } from '../config';
+axios.defaults.baseURL = details.base_url
 
 //instructor signup
 export const instructorSignup=async(values)=>{

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
-axios.defaults.baseURL = 'http://localhost:3001'
+import { details } from '../../config';
+axios.defaults.baseURL = details.base_url
 
 
 //Handling user registration

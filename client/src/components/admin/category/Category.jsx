@@ -7,6 +7,7 @@ import {toast,ToastContainer} from 'react-toastify'
 import {CiEdit} from 'react-icons/ci'
 import {MdDeleteOutline} from 'react-icons/md'
 import EditCategory from './EditCategory';
+import { details } from '../../../config';
 
 
 function Category() {
@@ -93,7 +94,7 @@ function Category() {
                         </div>
                         </th>
                         <td class="w-full h-full md:w-1/5">
-                            <img className='w-full h-full m-1' src={`http://localhost:3001/${category.category_image}`} alt={category.category_name} />
+                            <img className='w-full h-full m-1' src={`${details.base_url}/${category.category_image}`} alt={category.category_name} />
                         </td>
                         <td class="px-6 py-4">
                             <p className='text-lg text-semibold text-black first-letter:capitalize'>{category.category_name.split("-").join(" ")}</p>
