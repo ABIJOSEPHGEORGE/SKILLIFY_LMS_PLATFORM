@@ -4,7 +4,7 @@ import {BsBook,BsBox,BsPatchQuestion} from 'react-icons/bs'
 import {AiOutlineUser} from 'react-icons/ai'
 import {CiWallet,CiLogout, CiDiscount1} from 'react-icons/ci'
 import { NavLink} from 'react-router-dom'
-import {MdOutlineAssignment}  from 'react-icons/md'
+import {MdOutlineAssignment, MdOutlineSpeakerNotes}  from 'react-icons/md'
 import {GrAnnounce} from 'react-icons/gr';
 import {TbStars} from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
@@ -35,14 +35,14 @@ function SideMenu() {
                 <BsBook size={50} className='px-3'></BsBook>
                 <h3 className=' font-semibold '>Courses</h3>
             </NavLink>
-            <NavLink to="/instructor/coupon" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <CiDiscount1  size={50} className='px-3 text-primaryBlue'></CiDiscount1>
-                <h3 className=' font-semibold '>Coupon</h3>
+            <NavLink to="/instructor/assignments" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
+                <MdOutlineAssignment  size={50} className='px-3'></MdOutlineAssignment>
+                <h3 className=' font-semibold '>Assignments</h3>
             </NavLink>
             
             
             <NavLink to="/instructor/announcements" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <GrAnnounce size={50} className='px-3'></GrAnnounce>
+                <MdOutlineSpeakerNotes size={50} className='px-3'></MdOutlineSpeakerNotes>
                 <h3 className=' font-semibold '>Announcements</h3>
             </NavLink>
             <NavLink to="/instructor/payments" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>

@@ -12,7 +12,7 @@ import { Input } from '@material-tailwind/react';
 function Cart() {
     const dispatch = useDispatch();
     const {cart} = useSelector((state)=>state.cart)
-    const [coupon,setCoupon] = useState("")
+    
 
     useEffect(()=>{
         dispatch(fetchCartItems())
@@ -29,9 +29,7 @@ function Cart() {
         })
     }
 
-    function applyCoupon(){
-        alert(coupon)
-    }
+    
 
 
   return (
@@ -91,13 +89,7 @@ function Cart() {
                     ))
                 }
 
-            <div className="w-full flex flex-col gap-3 place-content-center">
-                    <Input className='bg-white rounded-none' color='pink' name='coupon' value={coupon} onChange={(e)=>setCoupon(e.target.value)} placeholder='Enter Coupon'/>
-                    <div className="w-full">
-                        <button className='text-sm' onClick={()=>applyCoupon()}>Apply Coupon</button>
-                    </div>
-                   
-                </div>
+            
 
                 <div className='w-full flex gap-2 place-content-between'>
                     <p className='text-xl font-semibold '>Sub Total : </p>

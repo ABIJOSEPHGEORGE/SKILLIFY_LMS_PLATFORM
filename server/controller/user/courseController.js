@@ -3,6 +3,7 @@ const Course = require("../../models/courseSchema");
 const User = require("../../models/userSchema");
 const { error, success } = require("../../responseApi");
 const { Notes } = require("../../models/noteSchema");
+const Assignment = require("../../models/assignmentSchema");
 module.exports = {
     getCourses:async(req,res)=>{
         try{
@@ -103,11 +104,15 @@ module.exports = {
     //Course Reviews
     createReview:async(req,res)=>{
         try{
-            const {_id,first_name,last_name} = await User.findOne({email:req.user});
+            const {_id,first_name,last_name,profile_image} = await User.findOne({email:req.user});
             const {desc,rating} = req.body;
             const user_name = `${first_name} ${last_name}`
+            let user_profile;
+            if(profile_image){
+                user_profile = profile_image
+            }
             const createdAt = new Date();
-            await Course.findOneAndUpdate({_id:req.params.id},{$push:{reviews:{userId:_id,user_name:user_name,rating:rating,review:desc,createdAt:createdAt}}});
+            await Course.findOneAndUpdate({_id:req.params.id},{$push:{reviews:{userId:_id,user_name:user_name,rating:rating,review:desc,createdAt:createdAt,profile_image:user_profile}}});
             res.status(201).json(success("OK"));
         }catch(err){
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
@@ -141,6 +146,7 @@ module.exports = {
             
             res.status(200).json(success("OK",{reviews:course.reviews,currentUser:isDone,average:average,totalReviews:totalReviews}));
         }catch(err){
+            console.log(err)
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
     },
@@ -149,17 +155,17 @@ module.exports = {
     updateVideoProgress:async(req,res)=>{
         const { video_id, progress,completed,watched,total_duration } = req.body;
         try {
-            
+            console.log(video_id,"video id")
             //const courseId = new mongoose.Types.ObjectId(req.params.id)
             // Find the relevant enrolled course for the user
             const user = await User.findOne({
                 email: req.user,
             });
             const enrolled_course = user.enrolled_course.find((ele)=>ele.course_id.toString()===req.params.id)
-            console.log(enrolled_course)
+         
             // Update the video progress for the relevant video
             const videoIndex = enrolled_course.video_progress.findIndex(
-                (video) => video.video_id.toString() === video_id
+                (video) => video.video_id === video_id
             );
             
             if (videoIndex === -1) {
@@ -294,7 +300,7 @@ module.exports = {
             const user = await User.findOne({email:req.user})
             //finding the course status
             const course_status = user.enrolled_course.map((item,index)=>{
-                if(item.course_id.toString()===new mongoose.Types.ObjectId(courseId).toString()){
+                if(item.course_id.toString()===courseId){
                     return item;
                 }
             })
@@ -312,6 +318,16 @@ module.exports = {
 
             const curr_index = current_section.findIndex((ele)=>ele!==undefined);
 
+
+            //submitting the assignment if the content is an assignment
+            if(contentType==="assignment"){
+                const {_id} = await User.findOne({email:req.user});
+                const course = await Course.findOne({_id:courseId});
+               
+               await Assignment.create({answer:payload.answer,course_id:course._id,user_id:_id,
+                tutor:course.tutor.email,assignment_id:contentId,title:payload.question,description:payload.description});
+            }
+
             //updating content status completed
             current_section[curr_index].content.forEach((content,index)=>{
                 if(contentType==="lecture"&&content.video_id===contentId){
@@ -320,10 +336,12 @@ module.exports = {
                     content.completed = true;
                     content.score = payload;
                 }else if(contentType==="assignment"&&content.assignment_id===contentId){
-                    content.completed = true;
+                    content.completed = true;  
                 }
             })
-            
+
+
+            console.log(current_section[curr_index])
             
 
             //updating the active content
@@ -418,7 +436,34 @@ module.exports = {
             console.log(err)
             res.status(500).json(error("Something went wwrong..."))
         }
-    }
+    },
+
+
+
+    //Assignment
+    assignmentProgress:async(req,res)=>{
+        try{
+             const user = await User.findOne({email:req.user});
+             const course = user.enrolled_course.find((ele)=>ele.course_id.toString()===req.params.courseId);
+
+             const current_section = course.completion_status.find((ele)=>ele.session_id.toString()===req.params.sessionId);
+             const assignmentData = current_section.content.find((ele)=>ele.assignment_id===req.params.contentId)
+             
+             //getting the assignment status and feedback if completed
+             const assignment = await Assignment.findOne({assignment_id:assignmentData.assignment_id});
+             if(assignment){
+                assignmentData.status = assignment.status;
+                if(assignment?.status){
+                    assignmentData.feedback = assignment.feedback;
+                }
+             }
+             
+             res.status(200).json(success("OK",assignmentData));
+        }catch(err){
+            console.log(err)
+            res.status(500).json(error("Something went wrong..."))
+        }
+    },
 
 
 

@@ -2,13 +2,14 @@ const express = require('express');
 const { tokenVerification } = require('../middlewares/authMiddlewares');
 const {addToCart, existInCart, cartItems, deleteCartItem} = require('../controller/user/cartController');
 const { parentSubCategories } = require('../controller/admin/categoryController');
-const { stripeCheckout, stripPublishKey, orderConfirmation } = require('../controller/user/OrderController');
-const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress, findCurrentSession, fetchActiveContent, fetchCourseContent, contentCompleted, quizStatus, quizProgress } = require('../controller/user/courseController');
+const { stripeCheckout, stripPublishKey, orderConfirmation, applyCoupon } = require('../controller/user/OrderController');
+const { isEnrolled, enrolledCourses, courseProgress, createReview,updateVideoProgress, allReviews, newCourseNote, allNotes, getVideorogress, findCurrentSession, fetchActiveContent, fetchCourseContent, contentCompleted, quizStatus, quizProgress, assignmentProgress } = require('../controller/user/courseController');
 const { getAllDiscussions } = require('../controller/user/discussionController');
 const { editCourse } = require('../controller/instructor/courseController');
 const { fetchAccountDetails, updateProfileInfo, updateProfileImage, getProfileImage, resetPassword } = require('../controller/user/accountController');
 const {upload}= require('../config/multer');
 const { fetchUserInfo } = require('../controller/user/authController');
+const { courseAnnouncements } = require('../controller/instructor/AnnouncementController');
 
 const router = express.Router();
 
@@ -33,11 +34,15 @@ router.get('/enrolled-course/progress/:courseId',courseProgress);
 router.get('/course/active-session/:id',findCurrentSession);
 router.get('/course/content/:id',fetchCourseContent)
 router.get('/quiz/status/:courseId/:sessionId/:contentId',quizProgress)
+router.get('/assignment/status/:courseId/:sessionId/:contentId',assignmentProgress);
+router.get('/course/announcements/:courseId',courseAnnouncements);
+
 
 router.post('/add-to-cart/:id',addToCart);
 router.post('/checkout/stripe',stripeCheckout);
 router.post('/review/create/:id',createReview);
-router.post('/course/notes/:id',tokenVerification,newCourseNote);
+router.post('/course/notes/:id',newCourseNote);
+router.post('/coupon/apply-coupon',applyCoupon)
 
 router.put('/order-confirmation',orderConfirmation);
 router.put('/enroll/progress/:id/video-progress',updateVideoProgress);

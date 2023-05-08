@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import { details } from '../../config'
 import { ToastContainer, toast } from 'react-toastify'
 import axios from 'axios'
-import { Line } from 'react-chartjs-2';
 import moment from 'moment';
 
 
@@ -105,7 +104,7 @@ function AdminDashboard() {
                   <h3 className='text-black font-semibold text-center text-2xl'>Total Revenue</h3>
                  </div>
               </div>
-              {chartData ? <Line data={chartData} /> : <p>Loading...</p>}
+              {/* chart */}
             </div>
         </div>
         </div>

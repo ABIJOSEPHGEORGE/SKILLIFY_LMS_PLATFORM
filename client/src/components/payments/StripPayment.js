@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Navigate } from "react-router-dom";
 import Cart from "../../pages/users/Cart";
 
-function StripePayment({billing_address}){
+function StripePayment({billing_address,coupon}){
     const [stripePromise,setStripPromise] = useState(null);
     const [clientSecret,setClientSecret] = useState("")
     
@@ -22,13 +22,13 @@ function StripePayment({billing_address}){
     },[])
 
     useEffect(()=>{
-        axios.post('/user/checkout/stripe',billing_address)
+        axios.post('/user/checkout/stripe',{billing_address,coupon})
         .then((res)=>{
             setClientSecret(res.data.results.client_secret);
             sessionStorage.setItem('orderId',res.data.results.order_id);
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something Went wrong, Try again...")
             if(err?.response.status===409){
                 toast.error(err.response.data.message);
             }

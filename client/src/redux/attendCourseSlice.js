@@ -66,12 +66,13 @@ const attendCourseSlice = createSlice({
         },
         updateProgressPercentage:(state,action)=>{
             state.progress_percentage = action.payload;
-        }
+        },
+        resetStates:(state)=>initialState,
     
     }
 })
 
 export const {updateToggle,updateCourse,updateCourseProgress,updateActiveProgress,updateVideoPath
     ,updateContentTye,updateVideoProgress,updateAssignmentProgress,updateQuizProgress,updateQuizData,
-    updateContent,updateActive,updateAssignmentData,updateVideoDurations,updateProgressPercentage} = attendCourseSlice.actions;
+    updateContent,updateActive,updateAssignmentData,updateVideoDurations,updateProgressPercentage,resetStates} = attendCourseSlice.actions;
 export default attendCourseSlice.reducer;

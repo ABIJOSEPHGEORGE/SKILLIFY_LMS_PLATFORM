@@ -5,20 +5,22 @@ import {io} from 'socket.io-client'
 import jwt_decode from 'jwt-decode';
 import TimeAgo from 'react-timeago'
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-function Discussion({courseId}) {
+function Discussion() {
     const socket = io("ws://localhost:3001");
     const [message,setMessage] = useState('');
     const [discussions,setDiscussions] = useState([])
     const scrollRef = useRef();
+    const { id } = useParams()
     
     useEffect(()=>{
-        socket.emit('join_discussion',courseId);
+        socket.emit('join_discussion',id);
     })
 
      //joining to the course discussion room
      useEffect(()=>{
-        fetchDiscussions(courseId);
+        fetchDiscussions(id);
      },[])
 
      useEffect(()=>{
@@ -28,13 +30,18 @@ function Discussion({courseId}) {
         })
      })
 
-     useEffect(()=>{
-        //scrollRef.current?.scrollIntoView({behaviour:'smooth'})
-     },[discussions])
+     useEffect(() => {
+        scrollToBottom();
+      }, [message]);
+    
+      const scrollToBottom = () => {
+        scrollRef?.current?.scrollIntoView({ behavior: 'smooth' });
+      };
+
      //fetch all discussions
-     function fetchDiscussions(courseId){
+     function fetchDiscussions(){
         console.log('hjjj')
-        axios.get(`/user/discussions/${courseId}`)
+        axios.get(`/user/discussions/${id}`)
         .then((res)=>{
             setDiscussions(res.data.results?.messages);
         })
@@ -49,7 +56,7 @@ function Discussion({courseId}) {
     const user = decode?.user;
     
     const newDiscussion=()=>{
-        socket.emit("send_message",{message:message,courseId:courseId,student:user});
+        socket.emit("send_message",{message:message,courseId:id,student:user});
         setMessage('')
     }
     

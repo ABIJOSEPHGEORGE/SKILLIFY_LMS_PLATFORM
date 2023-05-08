@@ -5,21 +5,24 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateReviews } from '../../redux/course';
 import TimeAgo from 'react-timeago'
+import { useParams } from 'react-router-dom';
+import { details } from '../../config';
 
-function Reviews({courseId}) {
+function Reviews() {
     const [write,setWrite] = useState(false);
     const [review,setReview]= useState({desc:"",rating:1});
     const [userDone,setUserDone] = useState(false);
     const [error,setError] = useState(null);
     const dispatch = useDispatch();
     const {reviews} = useSelector((state)=>state.courses);
+    const { id } = useParams()
 
     useEffect(()=>{
         fetchAllReviews()
     },[])
 
     function fetchAllReviews(){
-        axios.get(`/user/reviews/${courseId}`)
+        axios.get(`/user/reviews/${id}`)
         .then((res)=>{
             const {reviews,average,totalReviews} = res.data.results;
             dispatch(updateReviews({reviews:reviews,average:average,total_reviews:totalReviews}));
@@ -33,10 +36,10 @@ function Reviews({courseId}) {
     function newReview(e){
         e.preventDefault()
         setError(null)
-        if(review.desc.trim().length===0){
+        if(review.desc.trim() === ""){
             setError({desc:'Review is required'});
         }else{
-            axios.post(`/user/review/create/${courseId}`,review)
+            axios.post(`/user/review/create/${id}`,review)
             .then((res)=>{
                 setWrite(false);
                 fetchAllReviews()
@@ -46,13 +49,15 @@ function Reviews({courseId}) {
             })
         }
     }   
+
+    
   return (
     <div className='w-full h-full font-poppins mt-5'>
         <div className="w-full px-5 bg-white p-4 flex gap-3 place-items-center place-content-between">
             <div className='flex gap-2 '>
                 <h1 className='text-md font-semibold'>Reviews</h1>
                 {
-                    [...Array(reviews?.average)].map((_,index)=>(
+                    [...Array(parseInt(reviews?.average))].map((_,index)=>(
                         <div key={index} className="inline-block mr-1">
                             <svg width="20" height="20" viewbox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 7.91677H12.4167L10 0.416763L7.58333 7.91677H0L6.18335 12.3168L3.81668 19.5834L10 15.0834L16.1834 19.5834L13.8167 12.3168L20 7.91677Z" fill="#FFCB00"></path>
@@ -79,12 +84,18 @@ function Reviews({courseId}) {
         <div className="mb-2 shadow-lg rounded-t-8xl rounded-b-5xl overflow-hidden rounded-xl">
             {
                 reviews?.reviews?.map((review,rindex)=>(
-                <div className='w-full h-auto' key={rindex}>
+                <div className='w-full h-auto max-h-40' key={rindex}>
                     <div className="pt-3 pb-3 md:pb-1 px-4 md:px-16 bg-gray-200">
                     <div className="flex flex-wrap items-center ">
                     <div className="avatar mr-20">
                         <div className="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <img src="/user-avatar.jpeg" alt='' />
+                            {
+                                review?.profile_image ?
+                                <img src={details.base_url+review?.profile_image} alt='profile_image' />
+                                :
+                                <img src="/person_avatar.jpeg" alt='profile_avatar' />
+                            }
+                            
                         </div>
                     </div>
                       <h4 className="w-full md:w-auto text-xl font-heading font-medium">{review?.user_name}</h4>
@@ -109,7 +120,7 @@ function Reviews({courseId}) {
             <div className="px-4 overflow-hidden md:px-16 pt-8 pb-12 bg-white">
                 <div className="flex flex-wrap">
                 <div className="w-full md:w-2/3 mb-6 md:mb-0">
-                    <p className="mb-8 max-w-2xl text-darkBlueGray-400 leading-loose">{review.review}</p>
+                    <p className="mb-8 max-w-2xl text-darkBlueGray-400 leading-loose">{review?.review}</p>
                     
                 </div>
                 <div className="w-full md:w-1/3 text-right">

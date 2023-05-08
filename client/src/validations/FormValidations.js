@@ -170,3 +170,17 @@ export const couponSchema = Yup.object({
     maximum_discount_amount:Yup.number().required("Maximum discount amount is required"),
     expiry_date:Yup.date().required("Coupon expiry date is required"),
 })
+
+export const assignmentSchema = Yup.object({
+    answer:Yup.string().trim().required("Assignment answer is required")
+})
+
+export const assignmentFeedback = Yup.object({
+    feedback:Yup.string().trim().required("Feedback is required")
+})
+
+export const announcementSchema = Yup.object({
+    course:Yup.string().trim().required("Please select the course"),
+    announcement:Yup.string().trim().required("Announcement is required"),
+    title:Yup.string().trim().required("Announcment title is required")
+})

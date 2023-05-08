@@ -34,6 +34,8 @@ import ViewCourse from './admin/ViewCourse'
 import UserProfile from '../pages/users/UserProfile'
 import CouponManagement from '../pages/admin/CouponManagement'
 import AdminDashboard from '../pages/admin/AdminDash'
+import Assignments from '../pages/instructor/Assignments'
+import Announcements from '../pages/instructor/Announcements'
 
 
 
@@ -72,6 +74,8 @@ function AnimatedRoutes() {
           <Route path="courses" element={<Courses/>}/>
           <Route path='create-course' element={<CreateCourse/>}/>
           <Route path='edit-course' element={<EditCourse/>}/>
+          <Route path='assignments' element={<Assignments/>}/>
+          <Route path='announcements' element={<Announcements/>}/>
         </Route>
 
         <Route path='/admin' element={<PrivateRoute role="admin"/>}>
@@ -83,6 +87,7 @@ function AnimatedRoutes() {
           <Route path='courses' element={<CourseManagement/>}/>
           <Route path='view-course' element={<ViewCourse/>}/>
           <Route path='coupon' element={<CouponManagement/>}/>
+          
         </Route>
 
 

@@ -9,7 +9,7 @@ import { details } from '../../config';
 import ReactPlayer from 'react-player'
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateActive, updateActiveProgress, updateAssignmentData, updateContent, updateContentTye, updateCourse, updateCourseProgress, updateProgressPercentage, updateQuizData, updateToggle, updateVideoDurations, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
+import { resetStates, updateActive, updateActiveProgress, updateAssignmentData, updateContent, updateContentTye, updateCourse, updateCourseProgress, updateProgressPercentage, updateQuizData, updateToggle, updateVideoDurations, updateVideoPath, updateVideoProgress } from '../../redux/attendCourseSlice';
 import Discussion from './Discussion';
 import axios from 'axios';
 import Reviews from './Reviews';
@@ -18,6 +18,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { updateMyLearning } from '../../redux/course';
 import AttendQuiz from './AttendQuiz';
 import AttendAssignment from './AttendAssignment';
+import Announcements from './Announcements';
 
 function AttendCourse() {
 
@@ -35,17 +36,27 @@ function AttendCourse() {
     const [duration, setDuration] = useState(0)
     const [seek, setSeek] = useState(false)
     const [contentType, setContentType] = useState('');
+    const [loaded,setLoaded] = useState(false);
     const [quiz, setQuiz] = useState('')
+    const [open, setOpen] = useState(active.currentSession?.index);
 
     useEffect(() => {
         isCourseEnrolled()
         courseProgress()
+
+        return ()=>{
+            setLoaded(false)
+        }
     }, [dispatch])
 
     useEffect(() => {
         fetchActiveSession()
         fetchCourseContent()
         progressPercentage()
+
+        // return()=>{
+        //     dispatch(resetStates())
+        // }
     }, []);
 
     useEffect(() => {
@@ -76,13 +87,15 @@ function AttendCourse() {
 
     }
 
-    console.log(active,"====active===");
-    console.log(content,"====content====")
 
-    const handleProgress = debounce((progress) => {
+
+    const handleProgress = (progress) => {
         const durations = {video_id:video.video_id,played_seconds:progress.playedSeconds,total_duration:duration}
         dispatch(updateVideoDurations({...video_durations,durations}))
         console.log(video_durations,"video_durations")
+        if (duration - progress.playedSeconds <= 1000) {
+            handleVideoEnded()
+          }
         axios
             .put(`/user/enroll/progress/${id}/video-progress`, {
                 // session_id: sessionId,
@@ -98,7 +111,9 @@ function AttendCourse() {
                 console.log(err);
             });
 
-    },1000)
+        
+
+    }
 
 
     function progressPercentage(){
@@ -145,6 +160,7 @@ function AttendCourse() {
             if (current_content.content_type === "lecture") {
                 setVideo({ video_path: current_content?.video_path, video_id: current_content?.video_id, content_id: current_content?._id })
                 const res = await axios.get(`/user/enroll/video-progress/${id}/${current_content.video_id}`)
+                setLoaded(true)
                 if (res.data.results.found === false) {
                     playerRef.current.seekTo(0);
                     setProgress(0)
@@ -156,7 +172,7 @@ function AttendCourse() {
                 setQuiz(current_content);
                 dispatch(updateQuizData(current_content))
             } else if (current_content.content_type === "assignment") {
-                console.log(current_content)
+                dispatch(updateAssignmentData(current_content))
             }
 
         } catch (err) {
@@ -168,7 +184,7 @@ function AttendCourse() {
 
 
 
-    const [open, setOpen] = useState(active.currentSession?.index);
+    
 
     const handleOpen = (value) => {
         setOpen(open === value ? 0 : value);
@@ -252,20 +268,20 @@ function AttendCourse() {
         setSeek(true)
     }
 
-    function handleVideoEnded() {
+    async function handleVideoEnded() {
         const current_session = active.currentSession;
         const session_id = content[current_session?.index].session_id
-        axios.put('/user/enroll/course-content/status', { courseId: id, contentId: video?.video_id, contentType: "lecture", sessionId: session_id })
-            .then((res) => {
-                fetchActiveSession()
-                renderActiveContent()
-                progressPercentage()
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+        try{
+            await axios.put('/user/enroll/course-content/status', { courseId: id, contentId: video?.video_id, contentType: "lecture", sessionId: session_id })
+            fetchActiveSession()
+            renderActiveContent()
+            progressPercentage()
+        }catch(err){
+            console.log(err)
+        } 
     }
 
+  
    
 
     return (
@@ -290,8 +306,7 @@ function AttendCourse() {
                     <div className="w-3/4 flex flex-col">
                         {/* <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video> */}
                         {
-                            contentType === "lecture" ?
-
+                            contentType === "lecture" && loaded ?
                                 <ReactPlayer width="1080px" height="960px" url={details.base_url + video?.video_path} controls={true} config={{
                                     file: {
                                         attributes: {
@@ -320,14 +335,19 @@ function AttendCourse() {
                                     onSeek={handleOnSeek}
 
                                     onDuration={handleDuration}
+                                    loop={false}
+                                    onEnded={()=>handleVideoEnded}
 
-                                    onEnded={handleVideoEnded}
                                 />
 
                                 : contentType === "quiz" ?
                                     <AttendQuiz renderActiveContent={renderActiveContent} progressPercentage={progressPercentage}/>
                                     : contentType === "assignment" ?
-                                        <AttendAssignment/> : null
+                                        <AttendAssignment renderActiveContent={renderActiveContent} progressPercentage={progressPercentage}/> 
+                                        : <div className='w-full p-5 flex flex-col place-items-center place-content-start'>
+                                        <img className='w-1/5'  src="/gif/loading.gif" alt="loading" />
+                                        <h3 className='font-semibold text-sm text-darkPink text-center'>Please wait while we are loading the content for you...</h3>
+                                        </div>
                         }
 
 
@@ -395,27 +415,36 @@ function AttendCourse() {
                                                 </div>
                                             </TabPanel>
                                             <TabPanel key="instructor" value="instructor">
-                                                <div className="w-full bg-gray-100 p-5">
+                                                <div className="w-full bg-white shadow-lg p-5">
                                                     <div className="flex gap-2 place-items-center">
                                                         <div className="w-20">
-                                                            <img className='w-14 h-14' src={course?.profile_image ? details.base_url + course?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
+                                                            <img className='w-14 h-14' src={course?.course_id?.tutor?.profile_image ? details.base_url + course?.course_id.tutor?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
                                                         </div>
                                                         <div className="flex flex-col gap-3 place-content-start">
-                                                            <h1 className='flex gap-3 font-poppins text-xl font-semibold text-black'>{course?.tutor?.first_name} {course?.tutor?.last_name}</h1>
+                                                            <h1 className='flex gap-3 font-poppins text-xl font-semibold text-black'>{course?.course_id?.tutor?.first_name} {course?.course_id?.tutor?.last_name}</h1>
                                                         </div>
                                                     </div>
-                                                    <p className='text-xl text-gray-600 '>{course?.tutor?.description}</p>
+                                                    <div className="p-5">
+                                                        <p className='text-sm text-gray-600 '>{course?.course_id?.tutor?.description}</p>
+                                                    </div>
+                                                    
                                                 </div>
                                             </TabPanel>
                                             <TabPanel key="notes" value="notes">
                                                 <div className="w-full h-96">
-                                                    <Notes courseId={course?.course_id._id} />
+                                                    <Notes  />
+                                                </div>
+
+                                            </TabPanel>
+                                            <TabPanel key="announcements" value="announcements">
+                                                <div className="w-full h-96">
+                                                    <Announcements/>
                                                 </div>
 
                                             </TabPanel>
                                             <TabPanel key="reviews" value="reviews">
                                                 <div className="w-full h-96">
-                                                    <Reviews courseId={course?.course_id._id} />
+                                                    <Reviews  />
                                                 </div>
 
                                             </TabPanel>
@@ -439,7 +468,7 @@ function AttendCourse() {
                         <div className="w-full bg-white flex flex-col gap-3 ">
                             {
                                 course?.course_id?.curriculum?.map((section, index) => (
-                                    <Accordion key={index} open={open === index} icon={<Icon id={index} open={open} />} className='bg-white px-5'>
+                                    <Accordion key={index} open={ open===index} icon={<Icon id={index} open={open} />} className='bg-white px-5'>
                                         <AccordionHeader onClick={() => handleOpen(index)} className='text-sm text-start font-semibold font-poppins capitalize tracking-wider'>
                                             {section.title}
                                         </AccordionHeader>

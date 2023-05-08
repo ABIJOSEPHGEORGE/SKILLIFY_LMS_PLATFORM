@@ -39,46 +39,20 @@ module.exports = {
     },
     dashboardChart:async(req,res)=>{
         try{
-            const ordersByMonth = await Orders.aggregate([
-                // Unwind the courses array
-                { $unwind: '$courses' },
-                // Match orders for the given course IDs and instructor email
-                {
-                  $match: {
-                    'courses.course_id': { $in: Course },
-                    'courses.tutor.email': req.user,
-                  },
-                },
-                // Lookup the courses collection to get the instructor's email address
-                {
-                  $lookup: {
-                    from: 'courses',
-                    localField: 'courses.course_id',
-                    foreignField: '_id',
-                    as: 'course',
-                  },
-                },
-                // Unwind the course array
-                { $unwind: '$course' },
-                // Add a new field 'month' with the month of the order date
-                {
-                  $addFields: {
-                    month: { $month: '$order_date' },
-                  },
-                },
-                // Group the orders by month and calculate the total bill amount for each month
-                {
-                  $group: {
-                    _id: { month: '$month' },
-                    totalAmount: { $sum: '$bill_amount' },
-                  },
-                },
-                // Sort the results by month
-                { $sort: { '_id.month': 1 } },
-                
-              ]);
-              console.log(ordersByMonth)
-              res.status(200).json(success("OK"))
+          const orders = await Orders.find({});
+          const courses = orders.map((ele)=>{
+            return ele.courses;
+          })
+
+          //avoiding duplicates id from the courses
+          
+
+          const tutor_course = await Promise.all(courses.map(async(id)=>{
+              return await Course.findOne({_id:id,"tutor.email":req.user});
+          }))
+          
+          console.log(tutor_course)
+          res.status(200).json(success("OK"))
         }catch(err){
             console.log(err)
             res.status(500).json(error("Somethiing went wrong..."))

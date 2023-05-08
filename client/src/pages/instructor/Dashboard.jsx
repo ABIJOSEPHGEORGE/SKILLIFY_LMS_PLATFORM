@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import SideMenu from '../../components/instructors/SideMenu'
-import SideBar from '../../components/admin/SideBar'
-import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
-import { details } from '../../config'
 import { ToastContainer, toast } from 'react-toastify'
 import axios from 'axios'
-import { Line } from 'react-chartjs-2';
 import moment from 'moment';
-
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 
 function InstructorDashboard() {
   const [data,setData] = useState(null)
   const [chartData, setChartData] = useState(null);
+
+
+
+
+
 
   useEffect(()=>{
     const startDate = moment().startOf('month').toDate();
@@ -61,6 +61,10 @@ function InstructorDashboard() {
       toast.error("Something went wrong...")
     })
   }
+
+ 
+
+
   return (
     <div className='flex'>
         <SideMenu/>
@@ -99,7 +103,26 @@ function InstructorDashboard() {
               </div>
             </div>
             <div className="w-full">
-              {chartData ? <Line data={chartData} /> : <p>Loading...</p>}
+              <ResponsiveContainer width="100%" aspect={3}>
+              <AreaChart
+                width={500}
+                height={200}
+                data={data}
+                syncId="anyId"
+                margin={{
+                  top: 10,
+                  right: 30,
+                  left: 0,
+                  bottom: 0
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Area type="monotone" dataKey="pv" stroke="#82ca9d" fill="#82ca9d" />
+              </AreaChart>
+              </ResponsiveContainer>
             </div>
         </div>
         </div>

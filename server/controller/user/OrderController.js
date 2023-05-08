@@ -5,6 +5,7 @@ const short = require('short-uuid');
 const Order = require('../../models/orderSchema');
 const { default: mongoose } = require('mongoose');
 const Course = require('../../models/courseSchema');
+const Coupon = require('../../models/couponSchema');
 
 
 module.exports = {
@@ -15,14 +16,21 @@ module.exports = {
         try{
            //calculating the total cart amount
            const user = await User.findOne({email:req.user}).populate('cart')
-           const cartTotal = user.cart.reduce((acc,curr)=>{
+           let cartTotal = user.cart.reduce((acc,curr)=>{
                 acc = acc + curr.course_sale_price
                 return acc;
            },0);
            
            
             //creating the order
-            const billing_address = req.body;
+            let {billing_address,coupon} = req.body;
+            coupon = coupon.split(" ").join("-").toUpperCase()
+
+            //if coupon is there applying the coupon discount
+            const couponExist = await Coupon.findOne({coupon_id:coupon});
+            if(couponExist){
+                cartTotal = cartTotal - couponExist.discount_amount;
+            }
             const order = await createOrder(billing_address,cartTotal,user)
            
            //creating stripe payment intent
@@ -98,6 +106,35 @@ module.exports = {
         }catch(err){
             console.log(err)
             return res.status(500).json(error("Something wen't wrong,Try after sometimes"))
+        }
+    },
+    applyCoupon:async(req,res)=>{
+        try{
+            let {coupon} = req.body
+            coupon = coupon.split(" ").join("-").toUpperCase()
+            const isExist = await Coupon.findOne({coupon_id:coupon});
+            if(!isExist){
+                return res.status(400).json(error("Invalid Coupon"));
+            }
+            
+            const minimum_purchase = isExist.minimum_purchase;
+            //getting the cart items
+            const cartItems = await User.findOne({email:req.user}).populate({path:'cart',model:Course})
+            //calculating the cart total
+            const subTotal = cartItems.cart.reduce((acc,curr)=>{
+                acc = acc + curr.course_sale_price;
+                return acc;
+            },0)
+
+            if(subTotal<minimum_purchase){
+                return res.status(400).json(error(`Minimum purchase should be ${minimum_purchase}`))
+            }
+
+            res.status(200).json(success("OK",{subTotal:(subTotal-isExist.discount_amount),discount:isExist.discount_amount}));
+
+        }catch(err){
+            console.log
+            res.status(500).json(error("Something went wrong..."))
         }
     }
 

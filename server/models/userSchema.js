@@ -131,7 +131,7 @@ const User = mongoose.model('User',new mongoose.Schema({
     },
     profile_image:{
         type:String,
-    }
+    },
     
 },{timestamps:true}));
 

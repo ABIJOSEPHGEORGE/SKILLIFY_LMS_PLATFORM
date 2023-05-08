@@ -6,6 +6,7 @@ import axios from "axios";
 const initialState = {
     cart:[],
     error:null,
+    subTotal:0,
 }
 
 export const fetchCartItems = createAsyncThunk('/cart/fetchCartItems',async()=>{
@@ -34,7 +35,12 @@ const cartSlice = createSlice({
             state.cart = [];
             state.error = null;
         })
+    },
+    reducers:{
+        updateSubTotal:(state,action)=>{
+            state.subTotal = action.payload;
+        }
     }
 })
-
+export const {updateSubTotal} = cartSlice.actions;
 export default cartSlice.reducer;

@@ -56,7 +56,7 @@ function NavBar() {
         setUser(res.data.results)
       })
       .catch((err)=>{
-        toast.error("Something wen't wrong...")
+        navigate('/login')
       })
     }
     

@@ -1,34 +1,84 @@
-import React, { useEffect,useState} from 'react'
+import React, { useEffect,useRef,useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import { fetchCartItems } from '../../redux/cartSlice'
+import { fetchCartItems, updateSubTotal } from '../../redux/cartSlice'
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/users/NavBar';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import {Input} from '@material-tailwind/react'
 import {useFormik} from 'formik'
 import { checkoutSchema } from '../../validations/FormValidations';
 
 import StripePayment from '../../components/payments/StripPayment';
+import axios from 'axios';
+import { AiOutlineClose } from 'react-icons/ai';
 
 
 
 function Checkout() {
 
-  const {cart} = useSelector((state)=>state.cart);
+  const {cart,subTotal} = useSelector((state)=>state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [payment,setPayment]= useState(false);
   const [billingAdd,setBillingAdd] = useState('')
+  const [coupon,setCoupon] = useState("");
+  const [applied,setApplied] = useState(false)
+  const buttonRef = useRef()
+  const errorRef = useRef()
+  const discountRef =  useRef()
+  
   useEffect(()=>{
     dispatch(fetchCartItems())
+    dispatch(updateSubTotal(cart.subTotal));
   },[])
 
+
+  useEffect(()=>{
+    if(coupon!==""){
+      buttonRef.current?.classList.remove('hidden');
+      errorRef.current?.classList.remove("hidden");
+      errorRef.current.innerText = ""
+    }else{
+      buttonRef.current?.classList.add('hidden');
+      errorRef.current?.classList.add("hidden");
+    }
+  },[coupon])
+
  
+  async function applyCoupon(){
+    try{
+      const res = await axios.post('/user/coupon/apply-coupon',{coupon:coupon});
+      if(res.data.results){
+        setApplied(true);
+        dispatch(updateSubTotal(res.data.results.subTotal));
+        discountRef.current.innerText = res.data.results.discount;
+        errorRef.current.innerText = "Coupon Applied Successfully"
+        errorRef.current?.classList.add('text-green-500')
+        errorRef.current?.classList.remove('text-red-500')
+      }
+    }catch(err){
+      if(err.response.status===400){
+        errorRef.current?.classList.remove('text-green-500')
+        errorRef.current?.classList.add('text-red-500')
+        errorRef.current.innerText = err.response.data.message
+      }else{
+        toast.error("Something wen't wrong...")
+      }
+    }
+  }
 
   function cartCheck(){
     if(cart?.cartItems?.length===0){
       return navigate('/user/cart',{replace:true});
     }
+  }
+
+  function clearCoupon(){
+        setApplied(true);
+        setCoupon("")
+        dispatch(updateSubTotal(cart?.subTotal));
+        discountRef.current.innerText = 0
+        setApplied(false)
   }
 
   cartCheck()
@@ -112,9 +162,27 @@ function Checkout() {
                         </div>
                     ))
                 }
-                <div className='w-full flex gap-2 place-content-between'>
-                    <p className='text-xl font-semibold '>Sub Total : </p>
-                    <p className='font-semibold'>₹ {cart.subTotal}</p>
+                <div className='w-full flex flex-col gap-2 place-content-between'>
+                  <div className="w-full flex flex-col gap-3 place-content-center">
+                    <div className="flex flex-col gap-2">
+                      <Input className='bg-white rounded-none' color='pink' name='coupon' label='Do you have a coupon ?' value={coupon} onChange={(e)=>setCoupon(e.target.value)}/>
+                      <p className='text-sm text-red-500 hidden' ref={errorRef}></p>
+                    </div>
+                    <div className="w-full">
+                      {
+                        !applied ?
+                        <button className='text-sm  text-darkPink hidden' onClick={()=>applyCoupon()} ref={buttonRef}>Apply Coupon</button>
+                        :
+                        <button className='text-sm text-darkPink flex place-items-center gap-1' onClick={()=>clearCoupon()}>Clear Coupon <AiOutlineClose size={15}></AiOutlineClose></button>
+                      }
+                        
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 place-items-start">
+                    <p className='text-sm font-normal'>Discount Applied : ₹<span ref={discountRef}>0</span></p>
+                    <p className='text-xl font-semibold '>Sub Total : <span>₹ {subTotal}</span></p>
+                  </div>
+
                 </div>
                
                 <button className='bg-darkPink px-3 py-2 text-white font-semibold focus:outline-none' type='submit' onClick={formik.handleSubmit}>Proceed to pay</button>
@@ -122,7 +190,7 @@ function Checkout() {
         </div>
          {
           payment &&
-          <StripePayment billing_address={billingAdd}/>
+          <StripePayment billing_address={billingAdd} coupon={coupon}/>
          }
     </div>
   )

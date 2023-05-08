@@ -24,7 +24,6 @@ function AttendQuiz({progressPercentage,renderActiveContent}) {
   const session_id = content[current_session?.index].session_id
   axios.get(`/user/quiz/status/${id}/${session_id}/${quizData?.quiz_id}`)
   .then((res)=>{
-    console.log(res.data.results,"====completed=====")
     setQuizStatus(res.data.results);
     if(res.data.results.completed){
       setScore(res.data.results.score);
@@ -125,7 +124,16 @@ function AttendQuiz({progressPercentage,renderActiveContent}) {
           {quizData.title}
         </h3>
         <p className='text-sm font-light'>{quizData.description}</p>
-        <div className='w-full p-5'>{renderQuiz()}</div>
+        {
+          quizStatus ? 
+          <div className='w-full p-5'>{renderQuiz()}</div>
+          :
+          <div className='w-full p-5 flex flex-col place-items-center place-content-start'>
+            <img className='w-1/5'  src="/gif/loading.gif" alt="loading" />
+            <h3 className='font-semibold text-sm text-darkPink text-center'>Please wait while we are loading the content for you...</h3>
+            </div>
+        }
+        
       </div>
     </div>
   );
