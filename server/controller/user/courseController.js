@@ -31,10 +31,10 @@ module.exports = {
             {$limit:productPerPage},
             {$sort:{"course_sale_price":sort}}
             ]);
-            console.log(courses)
+           
             return res.status(200).json(success("OK",{courses:courses,currentPage:page,hasNextPage:productPerPage*page<courses.length,nextPage:parseInt(page)+1,lastPage:Math.ceil(courses.length/productPerPage)}))
         }catch(err){
-            console.log(err)
+         
             res.status(500).json(error("Something went wrong, Try after sometimes"))
         }
     },
@@ -59,7 +59,7 @@ module.exports = {
                 return res.status(200).json(success("OK",false))
             }
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something went wrong"));
         }
     },
@@ -85,7 +85,7 @@ module.exports = {
             await Notes.create(newNote);
             res.status(200).json(success("OK"));
         }catch(err){
-            console.log(err)
+           
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
     },
@@ -146,7 +146,7 @@ module.exports = {
             
             res.status(200).json(success("OK",{reviews:course.reviews,currentUser:isDone,average:average,totalReviews:totalReviews}));
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Something wen't wrong, Try after sometimes"))
         }
     },
@@ -155,7 +155,7 @@ module.exports = {
     updateVideoProgress:async(req,res)=>{
         const { video_id, progress,completed,watched,total_duration } = req.body;
         try {
-            console.log(video_id,"video id")
+           
             //const courseId = new mongoose.Types.ObjectId(req.params.id)
             // Find the relevant enrolled course for the user
             const user = await User.findOne({
@@ -217,7 +217,7 @@ module.exports = {
               const videoProgress = enrolled_course.video_progress.find(
                 (video) => video.video_id === videoId
               );
-              console.log(videoProgress,"===viddeo")
+             
               if (!videoProgress) {
                 // If the video progress is not found, return an error
                 return res.status(200).json(success("Video progress not found",{found:false}));
@@ -281,7 +281,7 @@ module.exports = {
             const {curriculum} = await Course.findOne({_id:courseId}).select('curriculum');
             res.status(200).json(success("OK",curriculum));
         }catch(err){
-            console.log(err)
+           
             res.status(500).json({ message: 'Something went wrong' });
         }
     },
@@ -341,7 +341,7 @@ module.exports = {
             })
 
 
-            console.log(current_section[curr_index])
+           
             
 
             //updating the active content
@@ -404,7 +404,7 @@ module.exports = {
             res.status(200).json(success("OK"))
 
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Something wen't wrong..."))
         }
     },
@@ -414,7 +414,7 @@ module.exports = {
             const course = await enrolled_course.find((ele)=>ele.course_id.toString()===req.params.courseId);
             res.status(200).json(success("OK",course?.progress))
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Something went wrong..."))
         }
     },
@@ -428,12 +428,12 @@ module.exports = {
            
             
             const current_section = course.completion_status.find((ele)=>ele.session_id.toString()===req.params.sessionId)
-            console.log(current_section)
+        
            
             const quizData = current_section.content.find((ele)=>ele.quiz_id===req.params.contentId)
             res.status(200).json(success("OK",quizData))
         }catch(err){
-            console.log(err)
+        
             res.status(500).json(error("Something went wwrong..."))
         }
     },
@@ -460,7 +460,7 @@ module.exports = {
              
              res.status(200).json(success("OK",assignmentData));
         }catch(err){
-            console.log(err)
+           
             res.status(500).json(error("Something went wrong..."))
         }
     },

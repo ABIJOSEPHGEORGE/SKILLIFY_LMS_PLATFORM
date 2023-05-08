@@ -46,7 +46,7 @@ module.exports = {
            
           
         }catch(err){
-            console.log(err)
+           
             res.status(500).json(error("Something wen't wrong,Try after sometimes"));
         }
     },
@@ -99,12 +99,12 @@ module.exports = {
                         }
                     }
                 );
-                console.log(status)
+               
             })
             
             res.status(201).json(success("OK",response))
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something wen't wrong,Try after sometimes"))
         }
     },
@@ -133,7 +133,7 @@ module.exports = {
             res.status(200).json(success("OK",{subTotal:(subTotal-isExist.discount_amount),discount:isExist.discount_amount}));
 
         }catch(err){
-            console.log
+        
             res.status(500).json(error("Something went wrong..."))
         }
     }

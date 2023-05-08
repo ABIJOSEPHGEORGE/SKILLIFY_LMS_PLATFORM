@@ -5,7 +5,7 @@ const fs = require('fs')
 module.exports = {
     addCategory:async(req,res)=>{
         try{
-            console.log(req.body)
+           
             // getting category details
             let {category_name,category_description} = req.body;
             // converting category name into lowercase
@@ -20,7 +20,7 @@ module.exports = {
             return res.status(201).json(success('OK'));
             
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },
@@ -30,7 +30,7 @@ module.exports = {
             const category = await Category.find();
             return res.status(200).json(success("OK",{categories:category}));
         }catch(err){
-            console.log(err)
+        
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },
@@ -92,7 +92,7 @@ module.exports = {
             }
             return res.status(200).json(success("OK"));
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something went wrong, Try after sometime"))
         }
     },
@@ -133,7 +133,7 @@ module.exports = {
             })
             return res.status(200).json(success("OK",{subcategories:subcategories}))
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },
@@ -155,7 +155,7 @@ module.exports = {
             const subcategories = await Category.findOne({_id:category})
             return res.status(200).json(success("OK",subcategories))
         }catch(err){
-            console.log(err)
+       
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },
@@ -168,7 +168,7 @@ module.exports = {
             //getting the current values
             const currValue = await Category.findOne({sub_category:{$elemMatch:{_id:subId}}},{ "sub_category.$": 1, category_name: 1, _id: 0 });
             //checking whether subcategory name exist if changed
-            console.log(currValue)
+           
             const isExist = await Category.findOne({category_name:parent_category,sub_category:{$elemMatch:{sub_category_name:sub_category_name}}});
             if(sub_category_name!==currValue.sub_category[0].sub_category_name && isExist){
                 return res.status(409).json(error("Subcategory name already exist, Please choose another one"));
@@ -187,7 +187,7 @@ module.exports = {
             return res.status(200).json(success("OK"));
             
         }catch(err){
-            console.log(err)
+        
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     },
@@ -199,7 +199,7 @@ module.exports = {
             await Category.findOneAndUpdate({_id:parId},{$pull:{sub_category:{_id:subId}}});
             return res.status(200).json(success("OK"));
         }catch(err){
-            console.log(err)
+          
             return res.status(500).json(error("Something went wrong, Try after sometime"));
         }
     }

@@ -41,7 +41,7 @@ module.exports = {
 
             res.status(200).json(success("Profile Image updated successfully",req.file.path));
         }catch(err){
-           console.log(err)
+          
             res.status(500).json(error("Something went wrong..."))
         }
     },

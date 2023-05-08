@@ -11,7 +11,7 @@ module.exports ={
     uploadVideo:async(req,res)=>{
         try{
             if(req.body?.exist_path){
-                console.log(req.body)
+            
                 fs.unlink(req.body.exist_path,(err)=>{
                     if(err){
                         return err;
@@ -28,27 +28,13 @@ module.exports ={
             return res.status(500).json(error("Something wen't wrong, Try after sometimes"));
         }
     },
-    // createCourse:async(req,res)=>{
-    //     try{
-    //         req.body.course_image = req.files['course_image'][0].path;
-    //         req.body.promotional_video = req.files['promotional_video'][0].path;
-    //         req.body.curriculum = JSON.parse(req.body.curriculum)
-    //         //fetching the tutor details
-    //         const tutor = await User.findOne({email:req.user});
-    //         req.body.tutor = {first_name:tutor.first_name,last_name:tutor.last_name,profile_image:tutor.profile_image,description:tutor.description,email:tutor.email}
-    //         await Course.create(req.body)
-    //         return res.status(200).json(success("Course created successfully"));
-    //     }catch(err){
-    //         console.log(err)
-    //         return res.status(500).json(error("Something went wrong, Try after sometimes"))
-    //     }
-    // },
+    
     createCourse:async(req,res)=>{
         try{
-            console.log(req.body)
+         
             req.body.course_image = req.files['course_image'][0].path;
             req.body.promotional_video = req.files['promotional_video'][0].path;
-            console.log(req.body.curriculum)
+          
             const curriculum = JSON.parse(req.body.curriculum)
             
             // Create new ObjectIds for each curriculum
@@ -99,7 +85,7 @@ module.exports ={
     },
     editCourse:async(req,res)=>{
         try{
-            console.log(req.files)
+           
             if(Object.keys(req.files).length !== 0 && req.files['course_image']){
                 req.body.course_image = req.files['course_image'][0].path;
             }
@@ -133,7 +119,7 @@ module.exports ={
             await Course.findOneAndUpdate({_id:req.params.id},req.body,{new:true});
             res.status(200).json(success("OK"));
         }catch(err){
-            console.log(err)
+           
             return res.status(500).json(error("Something wen't wrong, Please try after sometimes"))
         }
     },

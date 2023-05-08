@@ -51,7 +51,7 @@ module.exports = {
             await User.findOneAndUpdate({email:req.user},{$pull:{cart:req.params.id}});
             return res.status(200).json(success("OK"));
         }catch(err){
-            console.log(err)
+           
             res.status(500).json(error("Something went wrong, Try after sometimes"))
         }
     },

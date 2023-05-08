@@ -13,7 +13,7 @@ module.exports = {
 
 
             if (!courses.length) {
-            console.log('No courses found for instructor.');
+       
             return;
             }
 
@@ -23,7 +23,7 @@ module.exports = {
             const orders = await Order.find({ courses: { $in: courseIds }, status: 'success' }, 'bill_amount');
 
             if (!orders.length) {
-            console.log('No completed orders found for instructor.');
+          
             return;
             }
 
@@ -32,7 +32,7 @@ module.exports = {
             
             res.status(200).json(success("OK",{totalAmount:totalAmount,afterAdmin:afterAdmin,totalCourses:courses.length,instructors:instructors.length,students:students.length}))
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Something went wrong..."))
         }
     }

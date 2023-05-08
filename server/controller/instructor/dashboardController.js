@@ -13,7 +13,7 @@ module.exports = {
             const courses = await Course.find({ 'tutor.email': req.user }, '_id');
 
             if (!courses.length) {
-            console.log('No courses found for instructor.');
+           
             return;
             }
 
@@ -23,7 +23,7 @@ module.exports = {
             const orders = await Orders.find({ courses: { $in: courseIds }, status: 'success' }, 'bill_amount');
 
             if (!orders.length) {
-            console.log('No completed orders found for instructor.');
+            
             return;
             }
 
@@ -33,7 +33,7 @@ module.exports = {
              
             res.status(200).json(success("OK",{approved_courses:approved_courses.length,pending_courses:pending_course.length,totalAmount,afterAdmin}))
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Something went wrong..."))
         }
     },
@@ -51,10 +51,10 @@ module.exports = {
               return await Course.findOne({_id:id,"tutor.email":req.user});
           }))
           
-          console.log(tutor_course)
+         
           res.status(200).json(success("OK"))
         }catch(err){
-            console.log(err)
+          
             res.status(500).json(error("Somethiing went wrong..."))
         }
     }

@@ -15,7 +15,7 @@ module.exports = {
             req.user = decode.user;
             next()
         }catch(err){
-            console.log(err)
+
             return res.status(500).json(error('Something went wrong, Try after sometimes'),res.statusCode)
         }
     },

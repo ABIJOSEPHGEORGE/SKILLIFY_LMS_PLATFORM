@@ -24,7 +24,7 @@ module.exports = {
            //joining the user to the course discussion
            socket.on('join_discussion',(courseId)=>{
                 socket.join(courseId)
-                console.log('a user joined room')
+                
            })
 
            //receiving the message and storing it to db
@@ -39,7 +39,7 @@ module.exports = {
                     email:email,
                     createdAt:new Date(),
                 }
-                console.log(newMessage)
+                
                 
                 //saving the message to db
                 const discussion = await Discussion.findOneAndUpdate({course_id:courseId},

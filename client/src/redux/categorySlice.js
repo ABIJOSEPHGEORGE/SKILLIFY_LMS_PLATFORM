@@ -13,7 +13,6 @@ export const allCategories = createAsyncThunk('category/allCategory', async () =
       const response = await axios.get('/admin/categories');
       return response.data.results.categories;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   });
