@@ -9,14 +9,14 @@ module.exports = withMT({
   theme: {
     extend: {
       colors:{
-        primary : '#FD9697',
-        secondary:'#FEF0EF',
-        primaryViolet : '#5F5982',
+        primary : '#001f54',
+        secondary:'#001f54',
+        primaryViolet : '#01497c',
         primaryBlue : '#172B4C',
-        lightPink : '#F2EDED',
-        darkPink : '#F66863',
+        lightPink : '#468faf',
+        darkPink : '#01497c',
         bgPink : '#FEF0EF',
-        lightblue:'#EFEFF6',
+        lightblue:'#E8F4FE',
         bgcart:"#F56962"
       },
       fontFamily:{

@@ -17,10 +17,10 @@ function EditCourse() {
     const dispatch = useDispatch()
     const [params] = useSearchParams();
     const courseId = params.get('id')
-    console.log(courseId)
+  
     const {formData,error} = useSelector((state)=>state.createCourse)
     const navigate = useNavigate()
-    console.log(formData)
+ 
     useEffect(()=>{
         axios.get(`/course/${courseId}`)
         .then((res)=>{
@@ -29,7 +29,7 @@ function EditCourse() {
             dispatch(updateFormData(res.data.results))
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     },[])
 
@@ -62,7 +62,7 @@ function EditCourse() {
             
         }
         if(formData.edit_mode){
-            console.log(formData)
+       
             
             axios.put(`/instructor/course/edit-course/${courseId}`,form)
             .then((res)=>{

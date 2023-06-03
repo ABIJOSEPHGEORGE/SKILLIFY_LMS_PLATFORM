@@ -67,7 +67,7 @@ function ViewCourse() {
             fetchCourse()
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
       }
 
@@ -80,7 +80,7 @@ function ViewCourse() {
             fetchCourse()
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
       }
 
@@ -91,13 +91,14 @@ function ViewCourse() {
             setPopup({...popup,toggle:false})
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
       }
 
       
   return (
     <div className='h-full w-full font-poppins'>
+        <ToastContainer position='top-center' limit={1}></ToastContainer>
         <div className="w-full z-50  bg-white border-b-2 border-darkPink h-auto p-5 flex place-content-between place-items-center">
             <div className='flex gap-3'>
                 <h2 className='text-lg font-semibold text-primaryBlue'>Course Status :</h2>

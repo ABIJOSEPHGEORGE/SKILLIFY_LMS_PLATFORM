@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SideMenu from '../../components/instructors/SideMenu'
 import axios from 'axios'
 import AssignmentFeedback from '../../components/modals/AssignmentFeedback';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 function Assignments() {
@@ -17,9 +17,9 @@ function Assignments() {
         try{
             const res = await axios.get('/instructor/assignments/');
             setAssignments(res.data.results)
-            console.log(res)
+      
         }catch(err){
-            console.log(err)
+            toast.error("Something went wrong...")
         }
     }
 

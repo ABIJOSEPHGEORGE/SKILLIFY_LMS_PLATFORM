@@ -17,7 +17,7 @@ function AllUsers() {
     function fetchUsers(){
         axios.get('/admin/users')
         .then((res)=>{
-            console.log(res)
+        
             setUsers(res.data.results.users)
         })
         .catch((err)=>{

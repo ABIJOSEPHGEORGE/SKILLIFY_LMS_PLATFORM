@@ -35,7 +35,7 @@ function Courses() {
         })
     }
 
-    console.log(courses)
+
   return (
     <div className='flex font-poppins bg-white shadow-xl rounded-md'>
         <SideMenu/>

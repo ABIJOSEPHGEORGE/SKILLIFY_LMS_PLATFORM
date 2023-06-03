@@ -7,6 +7,7 @@ import TimeAgo from 'react-timeago'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { details } from '../../config';
+import { toast } from 'react-toastify';
 
 function Discussion() {
     const socket = io(`${details.base_url}`);
@@ -41,13 +42,13 @@ function Discussion() {
 
      //fetch all discussions
      function fetchDiscussions(){
-        console.log('hjjj')
+     
         axios.get(`/user/discussions/${id}`)
         .then((res)=>{
             setDiscussions(res.data.results?.messages);
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
      }
     //decode the user from jwt and send
@@ -69,7 +70,7 @@ function Discussion() {
                     discussions?.map((dis,index)=>(
                     <div ref={scrollRef} className={dis.email===user ? 'flex flex-col w-full place-items-end' : 'flex flex-col w-full place-items-start'}>
                         <div className="w-2/5 h-32" key={index}>
-                            <div className="w-full bg-secondary rounded-2xl rounded-tl-none p-3">
+                            <div className="w-full bg-lightblue rounded-2xl rounded-tl-none p-3">
                                 <h3 className='text-md font-normal'>{dis.message}</h3>
                             </div>
                             <div className="flex place-content-between p-1">

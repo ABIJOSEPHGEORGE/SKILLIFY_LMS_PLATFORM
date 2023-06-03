@@ -7,6 +7,7 @@ import { updateReviews } from '../../redux/course';
 import TimeAgo from 'react-timeago'
 import { useParams } from 'react-router-dom';
 import { details } from '../../config';
+import { toast } from 'react-toastify';
 
 function Reviews() {
     const [write,setWrite] = useState(false);
@@ -29,7 +30,7 @@ function Reviews() {
             setUserDone(res.data.results.currentUser);
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     }
     
@@ -45,7 +46,7 @@ function Reviews() {
                 fetchAllReviews()
             })
             .catch((err)=>{
-                console.log(err)
+                toast.error("Something went wrong...")
             })
         }
     }   
@@ -53,9 +54,9 @@ function Reviews() {
     
   return (
     <div className='w-full h-full font-poppins mt-5'>
-        <div className="w-full px-5 bg-white p-4 flex gap-3 place-items-center place-content-between">
+        <div className="w-full px-5 bg-white p-4 flex h-auto gap-3 place-items-center place-content-between">
             <div className='flex gap-2 '>
-                <h1 className='text-md font-semibold'>Reviews</h1>
+                <h1 className='text-md font-semibold'>Reviews Average : </h1>
                 {
                     [...Array(parseInt(reviews?.average))].map((_,index)=>(
                         <div key={index} className="inline-block mr-1">
@@ -65,7 +66,7 @@ function Reviews() {
                         </div>
                     ))
                 }
-                <h2>{reviews?.average}</h2>
+                <h2>{parseInt(reviews?.average)}</h2>
             </div>
             <h3 className='flex gap-3 font-semibold'>Total Reviews : <span className='font-normal'>{reviews?.reviews?.length}</span></h3>
             <div>
@@ -81,12 +82,12 @@ function Reviews() {
         <>
         {
             reviews?.reviews?.length>0 ?
-        <div className="mb-2 shadow-lg rounded-t-8xl rounded-b-5xl overflow-hidden rounded-xl">
+        <div className="mb-2 shadow-lg rounded-t-8xl rounded-b-5xl h-auto rounded-xl flex flex-col gap-10">
             {
                 reviews?.reviews?.map((review,rindex)=>(
-                <div className='w-full h-auto max-h-40' key={rindex}>
+                <div className='w-full h-auto max-h-40 rounded-xl' key={rindex}>
                     <div className="pt-3 pb-3 md:pb-1 px-4 md:px-16 bg-gray-200">
-                    <div className="flex flex-wrap items-center ">
+                    <div className="flex flex-wrap items-center">
                     <div className="avatar mr-20">
                         <div className="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                             {

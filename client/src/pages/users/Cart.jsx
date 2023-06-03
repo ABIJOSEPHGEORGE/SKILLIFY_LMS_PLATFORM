@@ -7,14 +7,14 @@ import { details } from '../../config';
 import { AiOutlineCloseSquare } from 'react-icons/ai';
 import {toast,ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom';
-import { Input } from '@material-tailwind/react';
+
 
 function Cart() {
     const dispatch = useDispatch();
     const {cart} = useSelector((state)=>state.cart)
-    
 
     useEffect(()=>{
+
         dispatch(fetchCartItems())
     },[])
 
@@ -33,7 +33,7 @@ function Cart() {
 
 
   return (
-    <div className='w-full font-poppins'>
+    <div className='w-full h-full font-poppins relative'>
         <ToastContainer position='top-center' limit={3}></ToastContainer>
         <div className="w-full bg-lightblue h-60">
             <NavBar/>
@@ -110,8 +110,6 @@ function Cart() {
                 </div>
             }
         
-       
-
     </div>
   )
 }

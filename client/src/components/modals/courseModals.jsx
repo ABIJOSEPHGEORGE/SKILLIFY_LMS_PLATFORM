@@ -188,7 +188,7 @@ const handleNewOption = (index) => {
           return newQuestion;
         }),
       };
-        console.log(formValues)
+    
       dispatch(updateQuizData({index,cindex,data:formValues}))
       setEditToggle({ ...editToggle, lecture_edit: false })
     };
@@ -265,7 +265,7 @@ const EditLecture=({editToggle,setEditToggle})=>{
     const [error,setError] = useState('');
     const [msg,setMsg] = useState('')
     const videoRef = useRef()
-    console.log(video)
+  
     const handleUploadVideo=()=>{
         setError(null)
         const {valid,reason} = videoValidation(video?.upload);
@@ -278,7 +278,7 @@ const EditLecture=({editToggle,setEditToggle})=>{
             form.append('exist_path',editToggle?.lecture_content?.video_path);
             axios.post('/instructor/course/upload-video',form)
             .then((res)=>{
-                console.log(res)
+            
                 videoRef.current.textContent = "Uploaded"
                 setVideo({...video,video_name:video.upload?.name,video_id:res.data.results.videoId,video_path:res.data.results.path,toggle:false})
                 setMsg({upload:'Video Uploaded successfully'})

@@ -31,7 +31,7 @@ function ProfileImage() {
         for (let i = 0; i < binary.length; i++) {
            array.push(binary.charCodeAt(i));
         }
-        console.log(mime)
+       
         return new Blob([new Uint8Array(array)], {type: mime});
       }
       if(preview){
@@ -48,7 +48,7 @@ function ProfileImage() {
         const file = new File([blob],'profile_image',{type});
         const form = new FormData()
         form.append('profile_image',file)
-        console.log(file)
+     
         axios.patch('/user/account/profile-image',form)
         .then((res)=>{
           const profile_url = details.base_url+res.data.results;

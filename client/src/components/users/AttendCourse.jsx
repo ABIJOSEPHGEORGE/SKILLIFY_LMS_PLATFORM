@@ -19,12 +19,15 @@ import { updateMyLearning } from '../../redux/course';
 import AttendQuiz from './AttendQuiz';
 import AttendAssignment from './AttendAssignment';
 import Announcements from './Announcements';
+import { ToastContainer, toast } from 'react-toastify';
+import Loader from '../utils/Loader';
 
 function AttendCourse() {
 
     const { toggle, course,progress_percentage, course_progress, active_progress, video_progress, quiz_progress, assignment_progress,video_durations, content, active } = useSelector((state) => state.attendCourse)
     const dispatch = useDispatch();
     const videoRef = useRef(null)
+    const {loading} = useSelector(state=>state.auth)
 
     //updating progress based on recat player
     const [isPlaying, setIsPlaying] = useState(false);
@@ -53,10 +56,6 @@ function AttendCourse() {
         fetchActiveSession()
         fetchCourseContent()
         progressPercentage()
-
-        // return()=>{
-        //     dispatch(resetStates())
-        // }
     }, []);
 
     useEffect(() => {
@@ -82,7 +81,7 @@ function AttendCourse() {
                 }
             })
             .catch((err) => {
-                console.log(err)
+                toast.error("Something went wrong...")
             })
 
     }
@@ -92,24 +91,19 @@ function AttendCourse() {
     const handleProgress = (progress) => {
         const durations = {video_id:video.video_id,played_seconds:progress.playedSeconds,total_duration:duration}
         dispatch(updateVideoDurations({...video_durations,durations}))
-       
-        axios
+        try{
+            axios
             .put(`/user/enroll/progress/${id}/video-progress`, {
-                // session_id: sessionId,
+                //session_id: sessionId,
                 video_id: video.video_id,
                 progress: progress.playedSeconds,
                 watched: progress.playedSeconds === progress.duration,
                 total_duration: duration,
             })
-            .then((res) => {
-                console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-        
-
+        }catch(err){
+            toast.error("Something went wrong...")
+        }
+ 
     }
 
 
@@ -119,37 +113,43 @@ function AttendCourse() {
             dispatch(updateProgressPercentage(res.data.results));
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     }
 
 
     async function fetchActiveSession() {
+        
         try {
             const response = await axios.get(`/user/course/active-session/${id}`);
             dispatch(updateActive(response.data.results))
+      
         } catch (err) {
-            console.log(err)
+    
+            toast.error("Something went wrong...")
         }
     }
 
     //getting the active content
     async function fetchCourseContent() {
         try {
+       
             const response = await axios.get(`/user/course/content/${id}/`)
-            console.log("===fetch course",response.data.results)
+            console.log(response.data.results)
             dispatch(updateContent(response.data.results))
 
         } catch (err) {
-            console.log(err)
+           
+            toast.error("Something went wrong...")
         }
 
     }
 
     async function renderActiveContent() {
+    
         try {
             const current_session = active.currentSession;
-            console.log(content[current_session?.index])
+         
             const current_content = content[current_session?.index].content[current_session?.active_content - 1];
         
             setContentType(current_content.content_type)
@@ -159,21 +159,25 @@ function AttendCourse() {
                 const res = await axios.get(`/user/enroll/video-progress/${id}/${current_content.video_id}`)
                 setLoaded(true)
                 if (res.data.results.found === false) {
-                    playerRef.current.seekTo(0);
+                    playerRef.current?.seekTo(0);
                     setProgress(0)
                     return
+                }else{
+                    playerRef.current?.seekTo(res.data.results.progress);
+                    setProgress(res.data.results.progress)
                 }
-                playerRef.current.seekTo(res.data.results.progress);
-                setProgress(res.data.results.progress)
+                
             } else if (current_content.content_type === "quiz") {
                 setQuiz(current_content);
                 dispatch(updateQuizData(current_content))
             } else if (current_content.content_type === "assignment") {
                 dispatch(updateAssignmentData(current_content))
             }
+         
 
         } catch (err) {
-            console.log(err)
+          
+            toast.error("Something went wrong...")
         }
 
 
@@ -208,6 +212,7 @@ function AttendCourse() {
 
     const loadContent = async (content,index,cindex) => {
         try{
+       
             dispatch(updateActive({currentSession:{index:index,active_content:cindex+1}}))
             setContentType(content.content_type)
             if(content.content_type==="lecture"){
@@ -229,9 +234,10 @@ function AttendCourse() {
             }else if(content.content_type==="quiz"){
                 dispatch(updateQuizData(content))
             }
-            
+ 
         }catch(err){
-            console.log(err)
+        
+            toast.error("Something went wrong...")
         }
         
 
@@ -255,9 +261,10 @@ function AttendCourse() {
                 })
 
                 dispatch(updateVideoProgress(video_completion));
+               
             })
             .catch((err) => {
-                console.log(err)
+                toast.error("Something went wrong...")
             })
     }
 
@@ -266,15 +273,20 @@ function AttendCourse() {
     }
 
     async function handleVideoEnded() {
+   
         const current_session = active.currentSession;
         const session_id = content[current_session?.index].session_id
         try{
             await axios.put('/user/enroll/course-content/status', { courseId: id, contentId: video?.video_id, contentType: "lecture", sessionId: session_id })
-            fetchActiveSession()
-            renderActiveContent()
-            progressPercentage()
+            await Promise.all([
+                fetchActiveSession(),
+                renderActiveContent(),
+                progressPercentage()
+            ])
+        
         }catch(err){
-            console.log(err)
+          
+            toast.error("Something went wrong...")
         } 
     }
 
@@ -282,9 +294,10 @@ function AttendCourse() {
    
 
     return (
-        <div className='absolute top-0 left-0 z-50 w-full h-full font-poppins'>
+        <div className='w-full h-full font-poppins relative'>
+            <ToastContainer position='top-center' limit={2}/>
             <div className="w-full flex flex-col place-items-center p-5 h-auto">
-                <div className="w-full p-5 flex place-content-evenly place-items-center">
+                <div className="w-full p-5 flex place-content-evenly place-items-center border-b-2 border-black">
                     <div className="w-[15%] border-r-2 border-darkPink flex  place-content-start place-items-center">
                         <h1 className='text-xl font-semibold'>Skillify</h1>
                     </div>
@@ -301,7 +314,7 @@ function AttendCourse() {
                 </div>
                 <div className="w-full flex gap-2 h-full py-5">
                     <div className="w-3/4 flex flex-col">
-                        {/* <video className='w-full h-full' ref={videoRef}  onEnded={handleVideoEnded} src={details.base_url+video_path   } controls controlsList="nodownload"></video> */}
+                        
                         {
                             contentType === "lecture" && loaded ?
                                 <ReactPlayer width="1080px" height="960px" url={details.base_url + video?.video_path} controls={true} config={{
@@ -333,7 +346,7 @@ function AttendCourse() {
 
                                     onDuration={handleDuration}
                                     loop={false}
-                                    onEnded={()=>handleVideoEnded}
+                                    onEnded={handleVideoEnded}
 
                                 />
 
@@ -352,20 +365,7 @@ function AttendCourse() {
 
                         <div className='w-full h-full'>
                             <div className='flex flex-col w-full h-full'>
-                                {/* {
-                                        course?.progress < 5 &&
-                                        <div className='w-full py-10 flex gap-3 place-items-center place-content-center'>
-                                            <div className="flex gap-2 place-items-center border-r-2 border-darkPink px-2">
-                                                <img className='w-10 h-10' src={course?.profile_image ? details.base_url+course?.course_id?.tutor?.profile_image : '/tutor_avatar.png'} alt="tutor_profile" />
-                                                <div className='flex flex-col place-content-center'>
-                                                    <h1 className='font-semibold text-gray-600'>{course?.course_id?.tutor.first_name} {course?.course_id?.tutor.last_name}</h1>
-                                                    <p className='text-sm text-gray-500'>Instructor</p>
-                                                </div>
-                                                
-                                            </div>
-                                            <h3>{course?.course_id?.course_welcome_message}</h3>
-                                        </div>
-                                    } */}
+                            
                                 <div className="w-full flex gap-3">
 
                                     <Tabs value="overview" className="w-full">
@@ -504,7 +504,7 @@ function AttendCourse() {
                 </div>
             </div>
 
-
+       
 
         </div>
     )

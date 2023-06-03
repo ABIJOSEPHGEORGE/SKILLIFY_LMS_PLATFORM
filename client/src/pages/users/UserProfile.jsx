@@ -11,6 +11,7 @@ import axios from 'axios'
 import { updateProfileImage } from '../../redux/profileSlice'
 import { details } from '../../config'
 import ResetPassword from '../../components/users/profile&settings/ResetPassword'
+import Footer from '../../components/users/Footer'
 
 function UserProfile() {
     const [state,setState] = useState('profile');
@@ -36,6 +37,8 @@ function UserProfile() {
             toast.error("Something wen't wrong...")
         })
     }
+
+    
   return (
     <div className='w-full h-full'>
         <ToastContainer position='top-center' limit={3}></ToastContainer>
@@ -43,7 +46,7 @@ function UserProfile() {
             <NavBar/>
         </div>
         <div className='w-full h-full flex gap-2'>
-            <div className="w-1/6 h-auto min-h-screen pt-40 flex flex-col place-items-center bg-secondary">
+            <div className="w-1/6 h-auto min-h-screen pt-40 flex flex-col place-items-center bg-lightblue">
                 <div className="avatar flex flex-col place-items-center gap-3">
                     <div className=" w-36 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 ">
                         {
@@ -84,6 +87,7 @@ function UserProfile() {
                 }
             </div>
         </div>
+        <Footer/>
     </div>
   )
 }

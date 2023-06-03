@@ -6,7 +6,7 @@ import {CiWallet,CiLogout, CiDiscount1} from 'react-icons/ci'
 import { NavLink} from 'react-router-dom'
 import {MdOutlineAssignment, MdOutlineSpeakerNotes}  from 'react-icons/md'
 import {GrAnnounce} from 'react-icons/gr';
-import {TbStars} from 'react-icons/tb'
+import {TbReportAnalytics, TbStars} from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -41,14 +41,11 @@ function SideMenu() {
             </NavLink>
             
             
-            <NavLink to="/instructor/announcements" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <MdOutlineSpeakerNotes size={50} className='px-3'></MdOutlineSpeakerNotes>
-                <h3 className=' font-semibold '>Announcements</h3>
+            <NavLink to="/instructor/sales-report" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
+                <TbReportAnalytics size={50} className='px-3'></TbReportAnalytics>
+                <h3 className=' font-semibold '>Sales Report</h3>
             </NavLink>
-            <NavLink to="/instructor/payments" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
-                <CiWallet size={50} className='px-3'></CiWallet>
-                <h3 className=' font-semibold '>Payments</h3>
-            </NavLink>
+            
             
             
            

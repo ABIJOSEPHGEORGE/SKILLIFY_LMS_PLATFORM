@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function AttendQuiz({progressPercentage,renderActiveContent}) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -16,10 +17,10 @@ function AttendQuiz({progressPercentage,renderActiveContent}) {
         fetchQuizDetails()
     },[])
 
-    console.log(quizData,"====quizdata attend quiz===")
+
 
  function fetchQuizDetails(){
-  console.log(active,"====quiz active====")
+  
   const current_session = active.currentSession;
   const session_id = content[current_session?.index].session_id
   axios.get(`/user/quiz/status/${id}/${session_id}/${quizData?.quiz_id}`)
@@ -30,13 +31,13 @@ function AttendQuiz({progressPercentage,renderActiveContent}) {
     }
   })
   .catch((err)=>{
-    console.log(err)
+    toast.error("Something went wrong...")
   })
  }
 
 
   const handleAnswer = (isCorrect,index) => {
-    console.log(isCorrect,index,"======iscorrect")
+    
     if (isCorrect) {
       setScore(score + 1);
     }
@@ -59,7 +60,7 @@ function AttendQuiz({progressPercentage,renderActiveContent}) {
             renderActiveContent()
         })
         .catch((err)=>{
-            console.log(err)
+          toast.error("Something went wrong...")
         })
     }
   }

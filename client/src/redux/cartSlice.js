@@ -13,6 +13,7 @@ export const fetchCartItems = createAsyncThunk('/cart/fetchCartItems',async()=>{
     try{
         const response = await axios.get('/user/cart');
         return response.data.results;
+        
     }catch(err){
         console.log(err)
     }

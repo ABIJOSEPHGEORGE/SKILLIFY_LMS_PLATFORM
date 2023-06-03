@@ -17,7 +17,7 @@ function Announcements() {
     try{
       const res = await axios.get('/instructor/announcements')
       setAnnouncements(res.data.results)
-      console.log(res)
+   
     }catch(err){
       toast.error("Something went wrong...")
     }

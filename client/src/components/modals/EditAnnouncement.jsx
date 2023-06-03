@@ -32,7 +32,7 @@ function EditAnnouncement({toggle,setToggle,fetchAnnouncements}) {
             const res = await axios.get('/instructor/course');
             setCourses(res.data.results)
         }catch(err){
-            console.log(err)
+            toast.error("Something went wrong...")
         }
     }
 

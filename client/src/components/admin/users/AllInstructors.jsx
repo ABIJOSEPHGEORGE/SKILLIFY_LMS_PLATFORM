@@ -19,7 +19,7 @@ function AllInstructors() {
     function fetchInstructors(){
         axios.get('/admin/instructors')
         .then((res)=>{
-            console.log(res)
+          
             setInstructors(res.data.results.instructors)
         })
         .catch((err)=>{

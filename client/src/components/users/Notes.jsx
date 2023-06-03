@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Notes() {
     const [note,setNote] = useState('');
@@ -21,7 +22,7 @@ function Notes() {
         setCurrent(content[active?.index]);
     },[active,current])
 
-    console.log(content[active?.currentSession?.index]?.content[active?.currentSession?.active_content],"====current notes")
+    
 
     function newNote(e){
         e.preventDefault()
@@ -31,7 +32,7 @@ function Notes() {
             setNote('')
         })
         .catch((err)=>{
-            console.log(err)
+           toast.error("Something went wrong...")
         })
     }
 
@@ -41,11 +42,11 @@ function Notes() {
             setNotes(res.data.results)
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     }
 
-    console.log(notes)
+  
   return (
     <div className='w-full font-poppins'>
         <div className="flex flex-col place-items-center w-full">

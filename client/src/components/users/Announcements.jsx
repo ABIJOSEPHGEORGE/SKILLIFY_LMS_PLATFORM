@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import TimeAgo from 'react-timeago'
+import { toast } from 'react-toastify'
 
 function Announcements() {
     const { id } = useParams()
@@ -12,7 +13,7 @@ function Announcements() {
             const res = await axios.get(`/user/course/announcements/${id}`)
             setAnnouncements(res.data.results)
         }catch(err){
-            console.log(err)
+            toast.error("Something went wrong...")
         }
     }
 

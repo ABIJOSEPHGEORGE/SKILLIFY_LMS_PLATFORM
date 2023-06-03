@@ -49,9 +49,9 @@ function CourseFormThree() {
 
   const saveContent =(index,content_type)=>{
     if(content_type==="lecture"){
-      console.log(lecture)
+  
         const isValid = lectureValidation(lecture);
-        console.log(isValid)
+        
         if(!isValid){
               dispatch(createContent({index:index,
               content:{title:lecture.title,description:lecture.description,video_name:lecture.video_name,video_id:lecture.video_id,video_path:lecture.video_path,content_type:content_type}}));
@@ -136,7 +136,7 @@ function CourseFormThree() {
       }else if(newQuestion[qindex].options.reduce((acc,ele)=>{return true ? ele.answer.trim()==="" : false})){
         dispatch(updateError({option:'Option Cannot be empty, Please enter a valid option'}));
       }else if(!newQuestion[qindex].options.some(obj=>obj.isCorrect)){
-        console.log(questions)
+       
         dispatch(updateError({correctAnswer:'Please select a valid correct answer'}));
       }else{
         dispatch(createNewQuestion({sec_index,con_index,question:newQuestion[qindex]}));
@@ -166,7 +166,7 @@ function CourseFormThree() {
         setVideo(null)
     })
     .catch((err)=>{
-      console.log(err)
+      toast.error("Something went wrong...")
     })
   }
  

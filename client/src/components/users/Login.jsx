@@ -29,7 +29,7 @@ function Login() {
         onSubmit:async (values)=>{
             userLogin(values)
             .then((res)=>{
-                console.log(res)
+                
                 if(res.data.code===200){
                     //storing the jwt token in local storage
                     const token = res.data.results.token;

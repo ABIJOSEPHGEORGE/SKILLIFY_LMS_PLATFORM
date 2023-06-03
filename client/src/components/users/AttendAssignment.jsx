@@ -5,6 +5,7 @@ import {useFormik} from 'formik'
 import { assignmentSchema } from '../../validations/FormValidations';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 function AttendAssignment({progressPercentage,renderActiveContent}) {
     const {assignmentData,active,content} = useSelector(state=>state.attendCourse);
@@ -18,7 +19,7 @@ function AttendAssignment({progressPercentage,renderActiveContent}) {
     },[assignmentData])
 
     
-    console.log(assignmentData)
+    
 
 
     const {handleChange,handleBlur,handleSubmit,values,errors,touched,handleReset} = useFormik({
@@ -43,16 +44,20 @@ function AttendAssignment({progressPercentage,renderActiveContent}) {
         try{
             await axios.put('/user/enroll/course-content/status',{courseId:id,contentId:assignmentData?.assignment_id,
             contentType:"assignment",sessionId:session_id,payload:values})
-            progressPercentage()
-            renderActiveContent()
+            await Promise.all([
+                progressPercentage(),
+                renderActiveContent()
+            ])
         }catch(err){
-            console.log(err)
+            toast.error("Something went wrong...")
         }
     }
 
     async function fetchAssignmentProgress(){
         const current_session = active.currentSession;
-        const session_id = content[current_session?.index].session_id;
+        console.log(active)
+        console.log(content)
+        const session_id = content[current_session?.index]._id;
         try{
            const res = await axios.get(`/user/assignment/status/${id}/${session_id}/${assignmentData?.assignment_id}`)
             if(res.data.results.completed && res.data.results.status){
@@ -65,11 +70,12 @@ function AttendAssignment({progressPercentage,renderActiveContent}) {
                 setAssignmentStatus(false);
             }
         }catch(err){
-            console.log(err)
+            toast.error("Something went wrong...")
         }
     }
   return (
     <div className='w-full flex flex-col place-items-center place-content-center gap-5 p-5'>
+        <ToastContainer position='top-center' limit={2}></ToastContainer>
         <div className="w-full h-full flex flex-col place-content-center place-items-center">
             <div className='w-full flex flex-col gap-5 p-5'>
                 <div className="flex gap-3 place-items-center">

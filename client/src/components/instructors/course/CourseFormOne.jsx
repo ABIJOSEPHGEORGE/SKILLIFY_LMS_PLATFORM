@@ -3,6 +3,7 @@ import {useDispatch,useSelector} from 'react-redux'
 import { allCategories } from '../../../redux/categorySlice'
 import axios from 'axios'
 import { updateFormData } from '../../../redux/createCourse';
+import { toast } from 'react-toastify';
 
 
 function CourseFormOne() {
@@ -20,7 +21,7 @@ function CourseFormOne() {
                 setSubcategories(res.data.results.sub_category)
             })
             .catch((err)=>{
-                console.log(err)
+                toast.error("Something went wrong...")
             })
         }
     }

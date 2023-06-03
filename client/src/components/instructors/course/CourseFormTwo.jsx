@@ -13,7 +13,7 @@ function CourseFormTwo() {
 
   function handleImageUpload(e){
       const imageValid = imageValidation(e.target.files[0]);
-      console.log(e.target.files[0])
+     
       dispatch(updateError({...error,course_image:''}))
       if(!imageValid.valid){
         dispatch(updateError({course_image:imageValid.reason}))

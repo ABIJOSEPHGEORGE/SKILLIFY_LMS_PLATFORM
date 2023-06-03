@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SideMenu from '../../components/instructors/SideMenu'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import { details } from '../../config'
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
@@ -23,11 +23,12 @@ function CourseManagement() {
             setCourses(res.data.results);
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     }
   return (
         <div className='flex font-poppins bg-white shadow-xl rounded-md'>
+            <ToastContainer position='top-center' limit={2}></ToastContainer>
             <SideBar/>
             <div className='px-5 w-full h-full mx-5  py-10 font-poppins flex flex-col place-content-start place-items-center bg-white shadow-xl rounded-xl'>
                 <div className=" h-20 w-full flex place-content-start place-items-center">

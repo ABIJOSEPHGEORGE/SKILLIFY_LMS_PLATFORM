@@ -5,7 +5,7 @@ import {AnimatePresence} from 'framer-motion'
 import VerifyEmail from './users/VerifyEmail'
 import VerifyResetPassword from './users/VerifyResetPassword'
 import HomePage from '../pages/HomePage'
-import PrivateRoutes, { AuthRoutes, InstructorRoutes, AdminRoutes, PrivateRoute } from './PrivateRoutes'
+import PrivateRoute, { AuthRoutes, InstructorRoutes, AdminRoutes } from './PrivateRoutes'
 import { userToken } from '../helpers/user/AuthHelpers'
 import axios from 'axios'
 import OnboardingForm from './instructors/OnboardingForm,'
@@ -36,6 +36,9 @@ import CouponManagement from '../pages/admin/CouponManagement'
 import AdminDashboard from '../pages/admin/AdminDash'
 import Assignments from '../pages/instructor/Assignments'
 import Announcements from '../pages/instructor/Announcements'
+import SalesReport from '../pages/instructor/SalesReport'
+import AdminSalesReport from '../pages/admin/AdminSalesReport'
+import NotFound from '../pages/NotFound'
 
 
 
@@ -58,6 +61,7 @@ function AnimatedRoutes() {
           <Route path="instructor/onboarding" element={<OnboardingForm/>}/>
           <Route path='courses' element={<CourseListingPage/>}/>
           <Route path='course/:id' element={<CourseDetailPage/>}/>
+          <Route path='*' element={<NotFound/>}/>
       </Route>
       
         <Route path='/user' element={<PrivateRoute role="user"/>}>
@@ -76,6 +80,7 @@ function AnimatedRoutes() {
           <Route path='edit-course' element={<EditCourse/>}/>
           <Route path='assignments' element={<Assignments/>}/>
           <Route path='announcements' element={<Announcements/>}/>
+          <Route path='sales-report' element={<SalesReport/>}/>
         </Route>
 
         <Route path='/admin' element={<PrivateRoute role="admin"/>}>
@@ -87,7 +92,7 @@ function AnimatedRoutes() {
           <Route path='courses' element={<CourseManagement/>}/>
           <Route path='view-course' element={<ViewCourse/>}/>
           <Route path='coupon' element={<CouponManagement/>}/>
-          
+          <Route path='sales-report' element={<AdminSalesReport/>}/>
         </Route>
 
 

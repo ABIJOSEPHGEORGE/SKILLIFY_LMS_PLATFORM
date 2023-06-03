@@ -15,12 +15,12 @@ function Profile() {
     function fetchUserData(){
         axios.get('/user/account')
         .then((res)=>{
-            console.log(res)
+        
             setProfile(res.data.results)
-            console.log(res.data.results)
+         
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     }
 
@@ -86,7 +86,7 @@ function Profile() {
                         }
                     </div>
                     <div className="w-full">
-                        <button type='submit' className='bg-black text-white font-semibold text-md px-5 py-4 w-1/6 text-center '>Save</button>
+                        <button type='submit' className='bg-primary text-white font-semibold text-md px-5 py-4 w-1/6 text-center '>Save</button>
                     </div>
                 </form>
     </div>

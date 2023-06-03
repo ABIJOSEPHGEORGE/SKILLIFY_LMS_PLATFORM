@@ -17,13 +17,13 @@ function VerifyResetPassword() {
     useEffect(()=>{
         axios.post('/verify-reset-email',data)
         .then((res)=>{
-            console.log(res)
+            
             if(res.status===200){
                navigate('/reset-password',{state:{user:data.user},replace:true})
             }
         })
         .catch((err)=>{
-            console.log(err)
+            
             setStatus('Failed')
             setMsg(err.data.msg);
         })

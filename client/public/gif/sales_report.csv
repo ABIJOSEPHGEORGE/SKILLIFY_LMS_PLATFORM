@@ -1,0 +1,5 @@
+_id,bill_amount,order_date,after_payout,first_name,last_name,state,country
+64591547fb9b7b4bb3861f4b,9,2023-05-08T15:29:11.234Z,7.6499999999999995,Abin,George,Kerala,India
+64591671fb9b7b4bb38621b5,649,2023-05-08T15:34:09.706Z,551.65,ajith,mt,karnataka,india
+64591c86fb9b7b4bb3862f1c,899,2023-05-08T16:00:06.367Z,764.15,Abin,George,Kerala,India
+64595146fb9b7b4bb3863003,899,2023-05-08T19:45:10.728Z,764.15,Abin,George,Kerala,India

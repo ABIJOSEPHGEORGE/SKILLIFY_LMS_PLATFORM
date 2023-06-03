@@ -6,23 +6,8 @@ import Login from "./users/Login";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const PrivateRoutes = ()=>{
-    async function decode(){
-        const token = JSON.parse(localStorage.getItem('authKey'));
-        const decode = await jwt_decode(token);
-        return decode.role;
-    }
-    decode().then((res)=>{
-        return(
-            <>
-                {
-                     res==="user" ? <Outlet/> : <Navigate to='/login'/>
-                }
-            </>
-        )
-    })
-    
-}
+
+
 
 export const AuthRoutes =()=>{
     const token = JSON.parse(localStorage.getItem('authKey'));
@@ -71,13 +56,13 @@ export const AdminRoutes = ()=>{
 }
 
 
-export const PrivateRoute=({role})=>{
+const PrivateRoute=({role})=>{
     const navigate = useNavigate();
     const location =  useLocation();
 
    try{
         //Getting the token
-        const token = JSON.parse(localStorage.getItem('authKey'));
+       const token = JSON.parse(localStorage.getItem('authKey'));
         //Attachng the token to axios headers
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
@@ -107,5 +92,5 @@ export const PrivateRoute=({role})=>{
 }
 
 
-export default PrivateRoutes;
+export default PrivateRoute;
 

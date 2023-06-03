@@ -14,7 +14,6 @@ function AdminLogin() {
         onSubmit:values=>{
             axios.post('/admin/login',values)
             .then((res)=>{
-                console.log(res)
                 if(res.status===200){
                     const token = JSON.stringify(res.data.results.token);
                     localStorage.setItem('authKey',token);

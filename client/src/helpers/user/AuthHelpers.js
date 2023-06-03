@@ -58,6 +58,6 @@ export const instructorSignup = async(values)=>{
 export const tokenAuthentication = async(values)=>{
     const token = JSON.parse(localStorage.getItem('authKey'));
     const decode = await jwtDecode(token);
-    console.log(decode)
+  
     return decode;
 }

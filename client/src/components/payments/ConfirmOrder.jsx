@@ -2,6 +2,7 @@ import React, { useEffect,useState } from 'react'
 import NavBar from '../users/NavBar'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function ConfirmOrder({orderId}) {
     sessionStorage.removeItem('orderId');
@@ -12,7 +13,7 @@ function ConfirmOrder({orderId}) {
            setOrder(res.data.results)
         })
         .catch((err)=>{
-            console.log(err)
+            toast.error("Something went wrong...")
         })
     },[])
   return (

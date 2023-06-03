@@ -44,11 +44,7 @@ function SideBar() {
                 <CiDiscount1  size={50} className='px-3 text-primaryBlue'></CiDiscount1>
                 <h3 className='font-semibold text-primaryBlue'>Coupon</h3>
             </NavLink>
-            <div className="flex place-items-center h-10 my-2">
-                <CiWallet size={50} className='px-3 text-primaryBlue'></CiWallet>
-                <h3 className='font-semibold text-primaryBlue'>Payments</h3>
-            </div>
-        
+           
             <NavLink to="/admin/category" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
                 <BiCategoryAlt size={50} className='px-3'></BiCategoryAlt>
                 <h3 className='font-semibold'>Categories</h3>
@@ -57,10 +53,11 @@ function SideBar() {
                 <BiCategory size={50} className='px-3'></BiCategory>
                 <h3 className='font-semibold'>Sub Categories</h3>
             </NavLink>
-            <div className="flex place-items-center h-10 my-2">
+            <NavLink to="/admin/sales-report" className={({isActive})=>(isActive ? 'bg-primaryBlue flex place-items-center text-white my-2' : 'flex place-items-center bg-white-10 my-2')}>
                 <HiOutlineDocumentText size={50} className='px-3'></HiOutlineDocumentText>
-                <h3 className='font-semibold text-primaryBlue'>Sales Report</h3>
-            </div>
+                <h3 className='font-semibold'>Sales Report</h3>
+            </NavLink>
+           
             <div className="flex place-items-center h-10 my-2 cursor-pointer" onClick={()=>{adminLogout()}}>
                 <CiLogout size={50} className='px-3 text-primaryBlue'></CiLogout>
                 <h3 className='font-semibold text-primaryBlue'>Logout</h3>

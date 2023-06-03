@@ -15,7 +15,7 @@ function SubCategory() {
     const {subcategories} = useSelector((state)=>state.category)
     const {categories,popup} = useSelector((state)=>state.admin)
     const [toggle,setToggle] = useState({add:false,edit:false});
-    console.log(subcategories)
+   
     useEffect(()=>{
         dispatch(fetchSubcategories());
     },[dispatch,toggle])

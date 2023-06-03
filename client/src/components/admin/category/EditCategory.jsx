@@ -25,7 +25,7 @@ function EditCategory(props) {
         enableReinitialize:true,
         validationSchema:categorySchema,
         onSubmit:values=>{
-            console.log(values)
+           
             const form = new FormData()
             form.append('category_name',values.category_name);
             form.append('category_description',values.category_description);

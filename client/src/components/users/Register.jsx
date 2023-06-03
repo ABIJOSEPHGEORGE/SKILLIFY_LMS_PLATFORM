@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 function Register() {
-    const [status,setStatus] = useState(null)
+    const [status,setStatus] =  useState(null)
     const {values,errors,touched,handleChange,handleBlur,handleSubmit} = useFormik({
         initialValues:{
             first_name:'',

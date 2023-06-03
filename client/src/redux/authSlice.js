@@ -7,6 +7,7 @@ const initialState = {
     isLoggedIn:false,
     role:null,
     error:null,
+    loading:true,
 }
 
 export const login = createAsyncThunk('auth/login',async (credentials)=>{
@@ -22,7 +23,11 @@ export const login = createAsyncThunk('auth/login',async (credentials)=>{
 const authslice = createSlice({
     name:'auth',
     initialState,
-    reducers:{},
+    reducers:{
+        updateLoading:(state,action)=>{
+            state.loading = action.payload;
+        }
+    },
     extraReducers:(builder)=>{
         builder.addCase(login.pending,(state)=>{
             state.isLoggedIn = false;
@@ -46,3 +51,4 @@ const authslice = createSlice({
 })
 
 export default authslice.reducer;
+export const {updateLoading} = authslice.actions;
